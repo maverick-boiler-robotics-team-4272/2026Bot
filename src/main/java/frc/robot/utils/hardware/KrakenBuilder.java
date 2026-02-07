@@ -15,8 +15,8 @@ public class KrakenBuilder {
     private Kraken motor;
     private TalonFXConfiguration config;
 
-    private KrakenBuilder(int id, String can, String name) {
-        motor = new Kraken(id, can, name);
+    private KrakenBuilder(int id, String can, String subsystem, String name) {
+        motor = new Kraken(id, can, subsystem, name);
         config = new TalonFXConfiguration();
     }
 
@@ -172,8 +172,8 @@ public class KrakenBuilder {
      * @param id is the id of the motor
      * @return a new KrakenBuilder
      */
-    public static KrakenBuilder create(int id, String can, String name) {
-        return new KrakenBuilder(id, can, name).optimizeBUSUtilization();
+    public static KrakenBuilder create(int id, String can, String subsystem, String name) {
+        return new KrakenBuilder(id, can, subsystem, name).optimizeBUSUtilization();
     }
 
     /**
@@ -181,8 +181,8 @@ public class KrakenBuilder {
      * @param id is the id of the motor
      * @return a new KrakenBUilder
      */
-    public static KrakenBuilder createWithDefaults(int id, String can, String name) {
-        return new KrakenBuilder(id, can, name)
+    public static KrakenBuilder createWithDefaults(int id, String can, String subsystem, String name) {
+        return new KrakenBuilder(id, can, subsystem, name)
             .withCurrentLimit(40)
             .withIdleMode(NeutralModeValue.Brake)
             .optimizeBUSUtilization();

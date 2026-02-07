@@ -26,21 +26,21 @@ public class Hopper extends SubsystemBase {
   double d = 0.0000000;
 
   public Hopper() {
-    lowerMotor = KrakenBuilder.create(HOPPER_LOWER_MOTOR_ID, CAN_BUS, "Left Lower Motor")
+    lowerMotor = KrakenBuilder.create(HOPPER_LOWER_MOTOR_ID, CAN_BUS, "Hopper", "Left Lower Motor")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withSlot0PID(p,i,d)
       .withInversion(InvertedValue.Clockwise_Positive)
       .build();
     
-    lowerMotor2 = KrakenBuilder.create(HOPPER_LOWER_MOTOR_2_ID, CAN_BUS, "Right Lower Motor")
+    lowerMotor2 = KrakenBuilder.create(HOPPER_LOWER_MOTOR_2_ID, CAN_BUS, "Hopper", "Right Lower Motor")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withSlot0PID(p,i,d)
       .withInversion(InvertedValue.CounterClockwise_Positive)
       .build();
 
-    upperMotor = KrakenBuilder.create(HOPPER_UPPER_MOTOR_ID, CAN_BUS, "Upper Motor")
+    upperMotor = KrakenBuilder.create(HOPPER_UPPER_MOTOR_ID, CAN_BUS, "Hopper", "Upper Motor")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withSlot0PID(0.4, 0, 0.00000000001)
@@ -60,12 +60,10 @@ public class Hopper extends SubsystemBase {
     return () -> {
       lowerMotor.setControl(new VelocityVoltage(lowerAgitation.getAsDouble()).withEnableFOC(true));
       lowerMotor2.setControl(new VelocityVoltage(lowerAgitation.getAsDouble()).withEnableFOC(true));
-      upperMotor.setControl(new VelocityVoltage(upperAgitation.getAsDouble()/*25*/).withEnableFOC(true));
+      upperMotor.setControl(new VelocityVoltage(upperAgitation.getAsDouble()).withEnableFOC(true));
     };
   }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Hopper", lowerMotor, lowerMotor2, upperMotor);
-  }
+  public void periodic() {}
 }

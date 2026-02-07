@@ -20,7 +20,7 @@ public class Shooter extends SubsystemBase {
   Kraken motor;
 
   public Shooter() {
-    motor = KrakenBuilder.create(SHOOTER_MOTOR_ID, CAN_BUS, "Shooter Motor")
+    motor = KrakenBuilder.create(SHOOTER_MOTOR_ID, CAN_BUS,"Shooter", "Shooter Motor")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withSlot0PID(0.6, 0, 0.000000001)
@@ -39,7 +39,5 @@ public class Shooter extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Shooter", motor);
-  }
+  public void periodic() {}
 }

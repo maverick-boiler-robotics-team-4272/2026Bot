@@ -16,7 +16,7 @@ public class SubsystemConstants {
 
     public static class ShooterConstants {
         public static final int SHOOTER_MOTOR_ID = 41;
-        public static final String SHOOTER_LOG_KEY = "Subsystem/Shooter/";
+        public static final String SHOOTER_LOG_KEY = "Subsystems/Shooter/";
     }
 
     public static class IntakeConstants {

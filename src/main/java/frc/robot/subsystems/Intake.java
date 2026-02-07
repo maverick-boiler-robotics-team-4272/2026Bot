@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
   Kraken motor;
   
   public Intake() {
-    motor = KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake Motor")
+    motor = KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake", "Intake Motor")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withInversion(InvertedValue.CounterClockwise_Positive)
@@ -34,7 +34,5 @@ public Runnable intake(DoubleSupplier speed) {
 } 
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Intake", motor);
-  }
+  public void periodic() {}
 }

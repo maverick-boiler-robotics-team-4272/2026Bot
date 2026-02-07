@@ -2,12 +2,18 @@ package frc.robot.utils.hardware;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
-public class Kraken extends TalonFX{
-    private String name;
+import frc.robot.utils.periodic.Periodical;
+import frc.robot.utils.periodic.PeriodicalUtil;
 
-    public Kraken(int id, String can, String name) {
+public class Kraken extends TalonFX implements Periodical{
+    private String name;
+    private String subsystem;
+
+    public Kraken(int id, String can, String subsystem, String name) {
         super(id, can);
         this.name = name;
+        this.subsystem = subsystem;
+        PeriodicalUtil.registerPeriodic(this);
     }
 
     public String getName() {
@@ -16,5 +22,10 @@ public class Kraken extends TalonFX{
 
     public void setName(String newName) {
         name = newName;
+    }
+
+    @Override
+    public void periodic() {
+        MotorLogger.log(subsystem, this);
     }
 }

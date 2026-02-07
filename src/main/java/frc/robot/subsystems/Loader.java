@@ -18,7 +18,7 @@ public class Loader extends SubsystemBase {
   Kraken motor;
 
   public Loader() {
-    motor = KrakenBuilder.create(LOADER_MOTOR_ID, CAN_BUS, "Loader Motor")
+    motor = KrakenBuilder.create(LOADER_MOTOR_ID, CAN_BUS,"Loader", "Loader Motor")
       .withCurrentLimit(80)
       .withIdleMode( NeutralModeValue.Brake)
       .withSlot0PID(0.5, 0, 0.00000001)
@@ -35,7 +35,5 @@ public class Loader extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Loader", motor);
-  }
+  public void periodic() {}
 }
