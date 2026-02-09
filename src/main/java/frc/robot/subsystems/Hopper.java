@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
-import frc.robot.utils.hardware.MotorLogger;
 
 import static frc.robot.constants.SubsystemConstants.HopperConstants.*;
 import static frc.robot.constants.SubsystemConstants.*;
