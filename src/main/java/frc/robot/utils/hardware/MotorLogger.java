@@ -3,7 +3,6 @@ package frc.robot.utils.hardware;
 import com.ctre.phoenix6.BaseStatusSignal;
 
 import dev.doglog.DogLog;
-import frc.robot.Robot;
 
 public class MotorLogger{
     /**
