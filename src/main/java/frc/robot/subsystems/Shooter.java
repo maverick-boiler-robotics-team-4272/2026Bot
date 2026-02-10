@@ -2,8 +2,8 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.SubsystemConstants.CAN_BUS;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
-import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.*;
 import static frc.robot.constants.FieldConstants.*;
+import static frc.robot.subsystems.CommandSwerveDrivetrain.ROBOT_POSE;
 
 import java.util.function.DoubleSupplier;
 
@@ -33,14 +33,20 @@ public class Shooter extends SubsystemBase {
     return run(() -> motor.set(revSpeed));//setControl(new DutyCycleOut(revSpeed).withEnableFOC(true));
   }
 
-  double rotationAngle;
-  public void getRotationAngle() {
-    rotationAngle = Math.atan(((2*FUEL_MAX_HEIGHT_M)/(DISTANCE_TO_HUB_M)) * (1 + Math.sqrt(1 - (HUB_HEIGHT_M - SHOOTER_HEIGHT_M) / FUEL_MAX_HEIGHT_M)));
+  public double getRotationAngleRad() {
+     return Math.atan(((2*FUEL_MAX_HEIGHT_M)/(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION))) * (1 + Math.sqrt(1 - (HUB_HEIGHT_M - SHOOTER_HEIGHT_M) / FUEL_MAX_HEIGHT_M)));
   }
 
-  double velocity;
-  public void getVelocity() {
-    velocity = Math.sqrt(2 * 9.81 * FUEL_MAX_HEIGHT_M) / Math.sin(rotationAngle);
+  public double getRotationAngleDeg() {
+    return getRotationAngleRad() * 180 / Math.PI;
+  }
+
+  public double getVelocity() {
+    return Math.sqrt(2 * 9.81 * FUEL_MAX_HEIGHT_M) / Math.sin(getRotationAngleRad());
+  }
+
+  public double getVelocityRotPerSec() {
+    return getVelocity() / SHOOTER_WHEEL_CIRCUMFERENCE;
   }
 
   public Command set(double speed) {
