@@ -33,6 +33,7 @@ public class SubsystemConstants {
         public static final double DISTANCE_TO_HUB_M = 2.5;//TODO: this is a placeholder value, need to calculate the actual value when we have a drivetrain
         public static final double WHEEL_COF = 1.1;
         public static final double MAX_DRIVE_SPEED = 5; //TODO: this needs to be tested
+        public static final double MAX_ROTATIONAL_SPEED = 1; //TODO: this needs to be tested
         public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF, DCMotor.getKrakenX60Foc(4), 80, 4);
     }
 }

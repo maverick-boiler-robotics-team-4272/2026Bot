@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.*;
 
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -10,6 +11,7 @@ import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -251,9 +253,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return run(() -> this.setControl(request.get()));
     }
 
-    // public Command joystickDrive(DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joystickTheta) {
-    //     // return new Command();
-    // }
+    public Command joystickDrive(DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joystickThetaX) {
+        FieldCentric request = new SwerveRequest.FieldCentric()
+            .withDeadband(MAX_DRIVE_SPEED)
+            .withRotationalDeadband(MAX_ROTATIONAL_SPEED);
+        return run(
+            () -> this.setControl(
+                request
+                    .withVelocityX(joystickY.getAsDouble() * MAX_DRIVE_SPEED)
+                    .withVelocityY(joystickX.getAsDouble() * MAX_DRIVE_SPEED)
+                    .withRotationalRate(joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)
+            )
+        );
+    }
 
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
