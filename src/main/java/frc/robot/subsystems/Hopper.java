@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
@@ -47,20 +48,32 @@ public class Hopper extends SubsystemBase {
       .build();
   }
 
-  public Runnable agitate(double agitateSpeed) {
-    return () -> { 
-      lowerMotor.set(agitateSpeed);
-      lowerMotor2.set(agitateSpeed);
-      upperMotor.set(agitateSpeed);
-    };
+  /**
+   * @param lowerSpeed in rotations per second
+   * @param upperSpeed in rotations per secod
+   * @return
+   */
+  public Command set(double lowerSpeed, double upperSpeed) {
+    return run(() -> {
+        lowerMotor.setControl(new VelocityVoltage(lowerSpeed).withEnableFOC(true));
+        lowerMotor2.setControl(new VelocityVoltage(lowerSpeed).withEnableFOC(true));
+        upperMotor.setControl(new VelocityVoltage(upperSpeed).withEnableFOC(true));
+      }
+    );
   }
 
-  public Runnable agitate(DoubleSupplier lowerAgitation, DoubleSupplier upperAgitation) {
-    return () -> {
-      lowerMotor.setControl(new VelocityVoltage(lowerAgitation.getAsDouble()).withEnableFOC(true));
-      lowerMotor2.setControl(new VelocityVoltage(lowerAgitation.getAsDouble()).withEnableFOC(true));
-      upperMotor.setControl(new VelocityVoltage(upperAgitation.getAsDouble()).withEnableFOC(true));
-    };
+  /**
+   * @param lowerSpeed in rotations per second
+   * @param upperSpeed in rotations per secod
+   * @return
+   */
+  public Command set(DoubleSupplier lowerSpeed, DoubleSupplier upperSpeed) {
+    return run(() -> {
+        lowerMotor.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
+        lowerMotor2.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
+        upperMotor.setControl(new VelocityVoltage(upperSpeed.getAsDouble()).withEnableFOC(true));
+      }
+    );
   }
 
   @Override

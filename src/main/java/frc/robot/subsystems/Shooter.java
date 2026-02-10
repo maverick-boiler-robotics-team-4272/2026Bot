@@ -12,10 +12,10 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
-import frc.robot.utils.hardware.MotorLogger;
 
 public class Shooter extends SubsystemBase {
   Kraken motor;
@@ -29,8 +29,8 @@ public class Shooter extends SubsystemBase {
       .build();
   }
 
-  public Runnable rev(double revSpeed) {
-    return () -> motor.set(revSpeed);//setControl(new DutyCycleOut(revSpeed).withEnableFOC(true));
+  public Command rev(double revSpeed) {
+    return run(() -> motor.set(revSpeed));//setControl(new DutyCycleOut(revSpeed).withEnableFOC(true));
   }
 
   double rotationAngle;
@@ -43,14 +43,20 @@ public class Shooter extends SubsystemBase {
     velocity = Math.sqrt(2 * 9.81 * FUEL_MAX_HEIGHT_M) / Math.sin(rotationAngle);
   }
 
-  public Runnable rev(DoubleSupplier revSpeed) {//, double p, double i, double d) {
-    DogLog.log(SHOOTER_LOG_KEY + "RPS", revSpeed.getAsDouble());
+  public Command set(double speed) {
+    return run(() -> motor.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+  }
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command set(DoubleSupplier speed) {
+    DogLog.log(SHOOTER_LOG_KEY + "RPS", speed.getAsDouble());
 
-    return () -> motor.setControl(new VelocityVoltage(revSpeed.getAsDouble()).withEnableFOC(true));
+    return run(() -> motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
   }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Shooter", motor);
-  }
+  public void periodic() {}
 }

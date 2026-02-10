@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
@@ -25,12 +26,23 @@ public class Loader extends SubsystemBase {
       .build();
   }
 
-  public Runnable load(double loadSpeed) {
-    return () -> motor.set(loadSpeed);//setControl(new DutyCycleOut(loadSpeed).withEnableFOC(true));
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command set(double speed) {
+  return run(() -> motor.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+
   }
 
-  public Runnable load(DoubleSupplier loadSpeed) {
-    return () ->  motor.setControl(new VelocityVoltage(loadSpeed.getAsDouble()).withEnableFOC(true));
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command set(DoubleSupplier speed) {
+    return run(() ->  motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
   }
 
   @Override
