@@ -64,6 +64,10 @@ public class RobotContainer {
           intake.set(45)  
         );
 
+        joystick.rightTrigger().whileTrue(
+            intake.extend(4)
+        );
+
         joystick.leftBumper().whileTrue(
             hopper.set(84, 80)
         );
