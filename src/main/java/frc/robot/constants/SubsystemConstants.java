@@ -18,7 +18,10 @@ public class SubsystemConstants {
     }
 
     public static class LoaderConstants {
-        public static final int LOADER_MOTOR_ID = 31;
+        public static final int LOADER_MOTOR_1_ID = 31;
+        public static final int LOADER_MOTOR_2_ID = 32;
+        public static final String LOADER_MOTOR_1_ID_LOG_KEY = "Subsystems/Loader/Loader Motor 1/";
+        public static final String LOADER_MOTOR_2_ID_LOG_KEY = "Subsystems/Loader/Loader Motor 2/";
     }
 
     public static class ShooterConstants {
