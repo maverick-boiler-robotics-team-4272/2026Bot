@@ -49,7 +49,7 @@ public class RobotContainer {
 
         hopper.setDefaultCommand(hopper.set(0, 0));
         intake.setDefaultCommand(intake.set(0));
-        loader.setDefaultCommand(loader.set(0));
+        loader.setDefaultCommand(loader.setBoth(0));
         shooter.setDefaultCommand(shooter.set(0));
 
         // Idle while the robot is disabled. This ensures the configured
@@ -77,7 +77,7 @@ public class RobotContainer {
         );
 
         joystick.x().whileTrue(
-            loader.set(50)
+            loader.setBoth(50)
         );
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
