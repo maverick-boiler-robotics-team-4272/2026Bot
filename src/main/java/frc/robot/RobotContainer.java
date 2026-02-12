@@ -42,9 +42,9 @@ public class RobotContainer {
     private void setDefaultCommands() {
         drivetrain.setDefaultCommand(
             drivetrain.joystickDrive(
-                () -> -joystick.getLeftY() * MAX_DRIVE_SPEED, 
-                () -> -joystick.getLeftX() * MAX_DRIVE_SPEED, 
-                () -> joystick.getRightX() * MAX_DRIVE_SPEED)
+                () -> -joystick.getLeftX(), 
+                () -> -joystick.getLeftY(), 
+                () -> -joystick.getRightX())
         );
 
         hopper.setDefaultCommand(hopper.set(0, 0));
