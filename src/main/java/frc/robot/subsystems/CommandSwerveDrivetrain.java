@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
@@ -256,8 +257,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public Command joystickDrive(DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joystickThetaX) {
         FieldCentric request = new SwerveRequest.FieldCentric()
-            .withDeadband(MAX_DRIVE_SPEED)
-            .withRotationalDeadband(MAX_ROTATIONAL_SPEED);
+            .withDeadband(MAX_DRIVE_SPEED * 0.01)
+            .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
         return run(
             () -> this.setControl(
                 request

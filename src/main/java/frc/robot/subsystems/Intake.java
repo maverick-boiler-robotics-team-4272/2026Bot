@@ -6,7 +6,6 @@ import static frc.robot.constants.SubsystemConstants.*;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;

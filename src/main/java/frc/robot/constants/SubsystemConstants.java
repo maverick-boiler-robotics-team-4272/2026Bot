@@ -9,12 +9,12 @@ import edu.wpi.first.math.system.plant.DCMotor;
 
 public class SubsystemConstants {
 
-    public static final String CAN_BUS = "Drivetrain";
+    public static final String CAN_BUS = "Non-Drive";
 
     public static class HopperConstants {
-        public static final int HOPPER_LOWER_MOTOR_ID = 21;
-        public static final int HOPPER_LOWER_MOTOR_2_ID = 23;
-        public static final int HOPPER_UPPER_MOTOR_ID = 22;
+        public static final int HOPPER_LOWER_MOTOR_ID = 61;
+        public static final int HOPPER_LOWER_MOTOR_2_ID = 62;
+        public static final int HOPPER_UPPER_MOTOR_ID = 63;
     }
 
     public static class LoaderConstants {
@@ -42,7 +42,7 @@ public class SubsystemConstants {
     public static class DrivetrainConstants {
         public static final double WHEEL_COF = 1.1;//TODO: ask about this
         public static final double MAX_DRIVE_SPEED = 5; //TODO: this needs to be tested
-        public static final double MAX_ROTATIONAL_SPEED = 1; //TODO: this needs to be tested
+        public static final double MAX_ROTATIONAL_SPEED = 2; //TODO: this needs to be tested
         public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF, DCMotor.getKrakenX60Foc(4), 80, 4);
     }
 }
