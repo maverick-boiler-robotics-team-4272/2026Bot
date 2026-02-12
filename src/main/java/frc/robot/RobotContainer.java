@@ -77,7 +77,7 @@ public class RobotContainer {
         );
 
         joystick.x().whileTrue(
-            loader.set(50)
+            loader.setBoth(50)
         );
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));

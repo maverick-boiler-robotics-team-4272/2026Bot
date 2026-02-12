@@ -25,7 +25,9 @@ public class SubsystemConstants {
     }
 
     public static class ShooterConstants {
-        public static final int SHOOTER_MOTOR_ID = 41;
+        public static final int SHOOTER_MOTOR_LEFT_ID = 41;
+        public static final int SHOOTER_MOTOR_RIGHT_ID = 42;
+        public static final int HOODED_MOTOR_ID = 43;
         public static final String SHOOTER_LOG_KEY = "Subsystems/Shooter/";
         public static final double SHOOTER_WHEEL_RADIUS = 1.5;
         public static final double SHOOTER_WHEEL_CIRCUMFERENCE = Math.PI * SHOOTER_WHEEL_RADIUS;
