@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
+import static frc.robot.constants.FieldConstants.HUB_LOCATION;
 import static frc.robot.constants.SubsystemConstants.CAN_BUS;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
-import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.subsystems.CommandSwerveDrivetrain.ROBOT_POSE;
 
 import java.util.function.DoubleSupplier;
@@ -45,6 +45,17 @@ public class Shooter extends SubsystemBase {
       .build();
   }
   
+  public Command setAngle(DoubleSupplier angle) {
+    return run(
+      () -> hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true))
+    );
+  }
+
+  public Command setDesiredAngle() {
+    return run(
+      () -> hoodedMotor.setControl(new PositionVoltage(ANGLE_LOOKUP.get(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION))).withEnableFOC(true))
+    );
+  }
   /**
    * 
    * @param speed in rotations per second

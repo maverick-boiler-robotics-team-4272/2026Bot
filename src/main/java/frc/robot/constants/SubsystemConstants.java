@@ -3,8 +3,11 @@ package frc.robot.constants;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.Map;
+
 import com.pathplanner.lib.config.ModuleConfig;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 
 public class SubsystemConstants {
@@ -28,10 +31,16 @@ public class SubsystemConstants {
         public static final int SHOOTER_MOTOR_LEFT_ID = 41;
         public static final int SHOOTER_MOTOR_RIGHT_ID = 42;
         public static final int HOODED_MOTOR_ID = 43;
+
         public static final String SHOOTER_LOG_KEY = "Subsystems/Shooter/";
         public static final double SHOOTER_WHEEL_RADIUS = 1.5;
         public static final double SHOOTER_WHEEL_CIRCUMFERENCE = Math.PI * SHOOTER_WHEEL_RADIUS;
         public static final double SHOOTER_HEIGHT_M = Meters.convertFrom(16.784, Inches);
+
+        public static final InterpolatingDoubleTreeMap VELOCITY_LOOKUP = InterpolatingDoubleTreeMap
+            .ofEntries(Map.entry(0.0, 1.0));
+        public static final InterpolatingDoubleTreeMap ANGLE_LOOKUP = InterpolatingDoubleTreeMap
+            .ofEntries(Map.entry(0.0, 1.0));
     }
 
     public static class IntakeConstants {
