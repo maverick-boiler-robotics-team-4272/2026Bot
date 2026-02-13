@@ -18,6 +18,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -33,7 +34,10 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.*;
+import static frc.robot.constants.VisionConstants.*;
 
+import frc.robot.Robot;
+import frc.robot.Vision;
 import frc.robot.constants.TunerConstants;
 import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
 
@@ -49,6 +53,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
+    Vision cameraA = new Vision(this::addVisionMeasurement, CAMERA_A, CAMERA_A_TRANSFORM);
+    Vision cameraB = new Vision(this::addVisionMeasurement, CAMERA_B, CAMERA_B_TRANSFORM);
+    Vision cameraC = new Vision(this::addVisionMeasurement, CAMERA_C, CAMERA_C_TRANSFORM);
+    Vision cameraD = new Vision(this::addVisionMeasurement, CAMERA_D, CAMERA_D_TRANSFORM);
+    Vision[] cameras = {cameraA, cameraB, cameraC, cameraD};
 
     /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
     private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -294,8 +303,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     @Override
     public void periodic() {
+        //mine
         SwerveDriveState state = getState();
         ROBOT_POSE = state.Pose;
+        DogLog.log("Subsystems/Drive/Pose", ROBOT_POSE);
+        if(!Robot.isReal()) {
+            for(Vision camera : cameras) {
+                camera.simulationPeriodic(ROBOT_POSE);
+            }
+        }
+        for(Vision camera : cameras) {
+            camera.periodic();
+        }
+
+        //not mine
         /*
          * Periodically try to apply the operator perspective.
          * If we haven't applied the operator perspective before, then we should apply it regardless of DS state.
@@ -313,6 +334,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 m_hasAppliedOperatorPerspective = true;
             });
         }
+
     }
 
     private void startSimThread() {

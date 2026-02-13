@@ -12,7 +12,7 @@ public class VisionConstants {
     public static final String CAMERA_C = "Camera_C";
     public static final String CAMERA_D = "Camera_D";
 
-    public static final Transform3d CAMERA_A_TRANFROM = new Transform3d();
+    public static final Transform3d CAMERA_A_TRANSFORM = new Transform3d();
     public static final Transform3d CAMERA_B_TRANSFORM = new Transform3d();
     public static final Transform3d CAMERA_C_TRANSFORM = new Transform3d();
     public static final Transform3d CAMERA_D_TRANSFORM = new Transform3d();
