@@ -67,7 +67,7 @@ public class Hopper extends SubsystemBase {
    * @param upperSpeed in rotations per secod
    * @return
    */
-  public Command agitatie(DoubleSupplier lowerSpeed, DoubleSupplier upperSpeed) {
+  public Command agitate(DoubleSupplier lowerSpeed, DoubleSupplier upperSpeed) {
     return run(() -> {
         lowerMotor.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
         lowerMotor2.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
