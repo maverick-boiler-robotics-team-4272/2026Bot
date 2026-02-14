@@ -1,9 +1,10 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
-import frc.robot.utils.hardware.MotorLogger;
 
 import static frc.robot.constants.SubsystemConstants.CAN_BUS;
 import static frc.robot.constants.SubsystemConstants.LoaderConstants.*;
@@ -15,10 +16,17 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class Loader extends SubsystemBase {
-  Kraken motor;
+  Kraken motor1;
+  Kraken motor2;
 
   public Loader() {
-    motor = KrakenBuilder.create(LOADER_MOTOR_ID, CAN_BUS, "Loader Motor")
+    motor1 = KrakenBuilder.create(LOADER_MOTOR_1_ID, CAN_BUS, "Loader", "Loader Motor 1")
+      .withCurrentLimit(80)
+      .withIdleMode( NeutralModeValue.Brake)
+      .withSlot0PID(0.5, 0, 0.00000001)
+      .withInversion(InvertedValue.CounterClockwise_Positive)
+      .build();
+    motor2 = KrakenBuilder.create(LOADER_MOTOR_2_ID, CAN_BUS, "Loader", "Loader Motor 2")
       .withCurrentLimit(80)
       .withIdleMode( NeutralModeValue.Brake)
       .withSlot0PID(0.5, 0, 0.00000001)
@@ -26,16 +34,33 @@ public class Loader extends SubsystemBase {
       .build();
   }
 
-  public Runnable load(double loadSpeed) {
-    return () -> motor.set(loadSpeed);//setControl(new DutyCycleOut(loadSpeed).withEnableFOC(true));
+  
+  public Command loadLeft(double speed) {
+  return run(() -> motor1.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+  }
+  public Command loadRight(double speed) {
+    return run(() -> motor2.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+  }
+  public Command loadBoth(double speed) {
+    return run(() -> {
+      new SequentialCommandGroup(loadLeft(speed).withTimeout(.1), loadRight(speed).withTimeout(.1));
+      
+    });
   }
 
-  public Runnable load(DoubleSupplier loadSpeed) {
-    return () ->  motor.setControl(new VelocityVoltage(loadSpeed.getAsDouble()).withEnableFOC(true));
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command loadLeft(DoubleSupplier speed) {
+    return run(() -> motor1.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
+    
+  }
+  public Command loadRight(DoubleSupplier speed) {
+    return run(() -> motor2.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
   }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Loader", motor);
-  }
+  public void periodic() {}
 }

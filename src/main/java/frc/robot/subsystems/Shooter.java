@@ -1,45 +1,88 @@
 package frc.robot.subsystems;
 
+import static frc.robot.constants.FieldConstants.HUB_LOCATION;
 import static frc.robot.constants.SubsystemConstants.CAN_BUS;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_LOG_KEY;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_MOTOR_ID;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
+import static frc.robot.subsystems.CommandSwerveDrivetrain.ROBOT_POSE;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
-import frc.robot.utils.hardware.MotorLogger;
 
 public class Shooter extends SubsystemBase {
-  Kraken motor;
+  Kraken shooterMotorLeft;
+  Kraken shooterMotorRight;
+  Kraken hoodedMotor;
 
   public Shooter() {
-    motor = KrakenBuilder.create(SHOOTER_MOTOR_ID, CAN_BUS, "Shooter Motor")
+    shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, CAN_BUS, "Shooter", "Shooter Motor Left")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withSlot0PID(0.6, 0, 0.000000001)
       .withInversion(InvertedValue.CounterClockwise_Positive)
       .build();
+
+    shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, CAN_BUS, "Shooter", "Shooter Motor Right")
+      .withCurrentLimit(80)
+      .withIdleMode(NeutralModeValue.Coast)
+      .withSlot0PID(0.6, 0, 0.000000001)
+      .withInversion(InvertedValue.CounterClockwise_Positive)
+      .build();
+    hoodedMotor = KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
+      .withCurrentLimit(40)
+      .withIdleMode(NeutralModeValue.Coast)
+      .withSlot0PID(5, 0, 0)
+      .withInversion(InvertedValue.CounterClockwise_Positive)
+      .build();
+  }
+  
+  public Command setAngle(DoubleSupplier angle) {
+    return run(
+      () -> hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true))
+    );
   }
 
-  public Runnable rev(double revSpeed) {
-    return () -> motor.set(revSpeed);//setControl(new DutyCycleOut(revSpeed).withEnableFOC(true));
+  public Command setDesiredAngle() {
+    return run(
+      () -> hoodedMotor.setControl(new PositionVoltage(ANGLE_LOOKUP.get(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION))).withEnableFOC(true))
+    );
   }
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command rev(double speed) {
+    return run(() -> {
+      shooterMotorLeft.setControl(new VelocityVoltage(speed).withEnableFOC(true));
+      shooterMotorRight.setControl(new VelocityVoltage(speed).withEnableFOC(true));
+      }
+    );
+  }
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command rev(DoubleSupplier speed) {
+    DogLog.log(SHOOTER_LOG_KEY + "RPS", speed.getAsDouble());
 
-  public Runnable rev(DoubleSupplier revSpeed) {//, double p, double i, double d) {
-    DogLog.log(SHOOTER_LOG_KEY + "RPS", revSpeed.getAsDouble());
-
-    return () -> motor.setControl(new VelocityVoltage(revSpeed.getAsDouble()).withEnableFOC(true));
+    return run(() -> {
+      shooterMotorLeft.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
+      shooterMotorRight.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
+      }
+    );
   }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Shooter", motor);
-  }
+  public void periodic() {}
 }

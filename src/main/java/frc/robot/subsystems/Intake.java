@@ -6,35 +6,73 @@ import static frc.robot.constants.SubsystemConstants.*;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
-import frc.robot.utils.hardware.MotorLogger;
 
 public class Intake extends SubsystemBase {
   Kraken motor;
-  
+  Kraken motor2;
+
   public Intake() {
-    motor = KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake Motor")
+    motor = KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake", "Intake Motor")
       .withCurrentLimit(80)
       .withIdleMode(NeutralModeValue.Coast)
       .withInversion(InvertedValue.CounterClockwise_Positive)
+      .withSlot0PID(5, 0, 0)   
+      .build();
+    motor2 = KrakenBuilder.create(INTAKE_MOTOR_2_ID, CAN_BUS, "Intake", "Actuation Motor")
+      .withCurrentLimit(40)
+      .withIdleMode(NeutralModeValue.Brake)
+      .withInversion(InvertedValue.CounterClockwise_Positive)
+      .withSlot0PID(5, 0, 0)   
       .build();
   }
 
-public Runnable intake(double speed) {
-  return () -> motor.set(speed);//new DutyCycleOut(speed).withEnableFOC(true);
-} 
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command intake(double speed) {
+    return run(() -> motor.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+  } 
 
-public Runnable intake(DoubleSupplier speed) {
-  return () -> motor.set(speed.getAsDouble());//new DutyCycleOut(speed).withEnableFOC(true);
-} 
+  /**
+   * 
+   * @param speed in rotations per second
+   * @return
+   */
+  public Command intake(DoubleSupplier speed) {
+    return run(() -> motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
+  } 
+
+    /**
+   * 
+   * @param distance in inches of the actuation distance
+   * @return
+   */
+  public Command extend(double distance) {
+    double rotations = distance / Math.PI;
+    return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
+  }
+
+  /**
+   * 
+   * @param distance in inches of the actuation distance as a supplier
+   * @return
+   */
+  public Command extend(DoubleSupplier distance) {
+    double rotations = distance.getAsDouble() / Math.PI;
+    return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
+  }
 
   @Override
-  public void periodic() {
-    MotorLogger.log("Intake", motor);
-  }
+  public void periodic() {}
 }

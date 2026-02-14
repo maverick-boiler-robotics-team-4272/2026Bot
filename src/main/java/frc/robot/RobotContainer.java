@@ -4,118 +4,97 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
+
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
+import frc.robot.constants.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Loader;
+import frc.robot.subsystems.Shooter;
 
 public class RobotContainer {
+    private final Hopper hopper = new Hopper();
+    private final Intake intake = new Intake();
+    private final Loader loader = new Loader();
+    private final Shooter shooter = new Shooter();
+    private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+    private final Telemetry logger = new Telemetry(MAX_DRIVE_SPEED);
 
-  String shooterKey = "Shooter Speed";
-  String loaderKey = "Loader Speed";
-  String upperHopperKey = "Upper Agitation Speed";
-  String lowerHopperKey = "Lower Agitation Speed";
-  String intakeKey = "Intake Speed";
-  String p = "p";
-  String i = "i";
-  String d = "d";
 
-  Shooter shooter = new Shooter();
-  Loader loader = new Loader();
-  Hopper hopper = new Hopper();
-  Intake intake = new Intake();
-  
-  public RobotContainer() {
-    configureBindings();
-    setDefaultCommands();
-    setUpElastic();
-  }
 
-  private void setDefaultCommands() {
-    hopper.setDefaultCommand(
-      Commands.run(hopper.agitate(0), hopper)
-    );
+    public RobotContainer() {
+        setDefaultCommands();
+        configureBindings();
+    }
 
-    intake.setDefaultCommand(
-      Commands.run(intake.intake(0), intake)
-    );
+    private void setDefaultCommands() {
+        drivetrain.setDefaultCommand(
+            drivetrain.joystickDrive(
+                () -> -joystick.getLeftX(), 
+                () -> -joystick.getLeftY(), 
+                () -> -joystick.getRightX())
+        );
 
-    loader.setDefaultCommand(
-      Commands.run(loader.load(0), loader)
-    );
+        hopper.setDefaultCommand(hopper.agitate(0, 0));
+        intake.setDefaultCommand(intake.intake(0));
+        loader.setDefaultCommand(loader.loadBoth(0));
+        shooter.setDefaultCommand(shooter.rev(0));
 
-    shooter.setDefaultCommand(
-      Commands.run(shooter.rev(0), shooter)
-    );
-  }
+        // Idle while the robot is disabled. This ensures the configured
+        // neutral mode is applied to the drive motors while disabled.
+        final var idle = new SwerveRequest.Idle();
+        RobotModeTriggers.disabled().whileTrue(
+            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+        );
+    }
+    private void configureBindings() {
+        joystick.leftTrigger().whileTrue(
+          intake.intake(45)  
+        );
 
-  private void configureBindings() {
-    joystick.b().whileTrue(
-      new InstantCommand(() -> {})
-    // new LoadAndShootCommand(
-      //   loader, 
-      //   shooter, 
-      //   () -> joystick.getHID().getXButtonPressed(), 
-      //   () -> SmartDashboard.getNumber(shooterKey, 0.0), 
-      //   () -> SmartDashboard.getNumber(loaderKey, 0.0)
-      // )
-    );
+        joystick.rightTrigger().whileTrue(
+            intake.extend(4)
+        );
 
-    joystick.a().whileTrue(
-      Commands.run(
-        shooter.rev(
-          () -> SmartDashboard.getNumber(shooterKey, 0)
-        ),
-        shooter
-      )
-      // new LoadAndShootCommand(
-      //   loader, 
-      //   shooter, 
-      //   () -> joystick.getHID().getXButtonPressed(), 
-      //   () -> SmartDashboard.getNumber(shooterKey, 0.0), 
-      //   () -> SmartDashboard.getNumber(loaderKey, 0.0)
-      // ).repeatedly()
-    );
+        joystick.leftBumper().whileTrue(
+            hopper.agitate(84, 80)
+        );
 
-    joystick.x().whileTrue(
-      Commands.run(
-        loader.load(
-          () -> SmartDashboard.getNumber(loaderKey, 0)
-        ), 
-        loader)
-    );
+        joystick.a().whileTrue(
+            shooter.rev(50)
+        );
 
-    joystick.leftBumper().whileTrue(
-      Commands.run(
-        hopper.agitate(
-          () -> SmartDashboard.getNumber(lowerHopperKey, 0.0),
-          () -> SmartDashboard.getNumber(upperHopperKey, 0.0)
-        )
-      ).repeatedly()
-    );
+        joystick.x().whileTrue(
+            loader.loadBoth(50)
+        );
 
-    joystick.leftTrigger().whileTrue(
-      Commands.run(
-        intake.intake(
-          () -> SmartDashboard.getNumber(intakeKey, 0.1)
-        )
-      ).repeatedly()
-    );  
-  }
+        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
 
-  private void setUpElastic() {
-    SmartDashboard.setDefaultNumber(shooterKey, 47.5);
-    SmartDashboard.setDefaultNumber(loaderKey, 50);
-    SmartDashboard.setDefaultNumber(upperHopperKey, 84);
-    SmartDashboard.setDefaultNumber(lowerHopperKey, 84);
-    SmartDashboard.setDefaultNumber(intakeKey, 0.32);
-  }
+        joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+        // Run SysId routines when holding back/start and X/Y.
+        // Note that each routine should be run exactly once in a single log.
+        joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+        drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    public Command getAutonomousCommand() {
+        return Commands.print("No Auto");
+    }
 }
