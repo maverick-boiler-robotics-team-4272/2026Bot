@@ -8,6 +8,8 @@ import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRI
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -15,7 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.ArmShooterCommand;
+import frc.robot.commands.DriveThenClimbCommand;
 import frc.robot.constants.TunerConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -27,6 +31,7 @@ public class RobotContainer {
     private final Intake intake = new Intake();
     private final Loader loader = new Loader();
     private final Shooter shooter = new Shooter();
+    private final Climber climber = new Climber();
     private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -48,6 +53,7 @@ public class RobotContainer {
                 () -> -joystick.getRightX())
         );
 
+        climber.setDefaultCommand(climber.climb(0));
         hopper.setDefaultCommand(hopper.agitate(0, 0));
         intake.setDefaultCommand(intake.intake(0));
         loader.setDefaultCommand(loader.loadBoth(0));
@@ -85,10 +91,17 @@ public class RobotContainer {
           new ArmShooterCommand(shooter, hopper, drivetrain, () -> -joystick.getLeftX(), () -> -joystick.getLeftY()).repeatedly().withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
         );
 
+        joystick.rightBumper().whileTrue(
+          drivetrain.pidToPoint(new Pose2d(7, 3, Rotation2d.fromDegrees(360)))  
+        );
+
         joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));
 
         joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
+        joystick.povDown().whileTrue(
+            new DriveThenClimbCommand(drivetrain, climber)  
+        );
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
         joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
