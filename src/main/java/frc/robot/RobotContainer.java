@@ -47,10 +47,10 @@ public class RobotContainer {
                 () -> -joystick.getRightX())
         );
 
-        hopper.setDefaultCommand(hopper.set(0, 0));
-        intake.setDefaultCommand(intake.set(0));
-        loader.setDefaultCommand(loader.setBoth(0));
-        shooter.setDefaultCommand(shooter.set(0));
+        hopper.setDefaultCommand(hopper.agitate(0, 0));
+        intake.setDefaultCommand(intake.intake(0));
+        loader.setDefaultCommand(loader.loadBoth(0));
+        shooter.setDefaultCommand(shooter.rev(0));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -61,7 +61,7 @@ public class RobotContainer {
     }
     private void configureBindings() {
         joystick.leftTrigger().whileTrue(
-          intake.set(45)  
+          intake.intake(45)  
         );
 
         joystick.rightTrigger().whileTrue(
@@ -69,15 +69,15 @@ public class RobotContainer {
         );
 
         joystick.leftBumper().whileTrue(
-            hopper.set(84, 80)
+            hopper.agitate(84, 80)
         );
 
         joystick.a().whileTrue(
-            shooter.set(50)
+            shooter.rev(50)
         );
 
         joystick.x().whileTrue(
-            loader.setBoth(50)
+            loader.loadBoth(50)
         );
 
         joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
