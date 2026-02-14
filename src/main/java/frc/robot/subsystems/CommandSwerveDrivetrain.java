@@ -21,6 +21,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -51,6 +52,7 @@ import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
     public static Pose2d ROBOT_POSE = new Pose2d();
+    PIDController drivePID = new PIDController(DRIVE_P, DRIVE_I, DRIVE_D);
     private static final double kSimLoopPeriod = 0.004; // 4 ms
     private Notifier m_simNotifier = null;
     private double m_lastSimTime;
@@ -282,12 +284,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Command pointTowardsPoint(Translation2d desiredPoint, DoubleSupplier joystickX, DoubleSupplier joystickY) {
-
         FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
             .withDeadband(MAX_DRIVE_SPEED * 0.01)
             .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01);
-            request.withHeadingPID(2, 0, 0);
+            request.withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D);
 
         return run(() -> {
 
@@ -303,6 +304,30 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             );
         });
     }
+
+public Command pidToPoint(Pose2d pose) {
+    FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
+        .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+        .withDeadband(MAX_DRIVE_SPEED * 0.01)
+        .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01)
+        .withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D);
+
+    return run(() -> {
+        double velX = drivePID.calculate(pose.getX(), ROBOT_POSE.getX());
+        double velY = drivePID.calculate(pose.getY(), ROBOT_POSE.getY());
+
+
+        this.setControl(
+            request
+                .withVelocityX(velX)
+                .withVelocityY(velY)
+                .withTargetDirection(pose.getRotation().plus(Rotation2d.k180deg))
+        );
+    });
+}
+
+
+
 
 
     
@@ -334,7 +359,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveDriveState state = getState();
         ROBOT_POSE = state.Pose;
         DogLog.log("Subsystems/Drive/Pose", ROBOT_POSE);
-        DogLog.log("Subsustems/Drive/HubPose", HUB_LOCATION);
+        DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
         if(!Robot.isReal()) {
             for(Vision camera : cameras) {
                 camera.simulationPeriodic(ROBOT_POSE);
@@ -343,6 +368,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         for(Vision camera : cameras) {
             camera.periodic();
         }
+        DogLog.log("Subsystems/Drive/This Pose", new Pose2d(7, 3, Rotation2d.fromDegrees(360)));
 
         //not mine
         /*

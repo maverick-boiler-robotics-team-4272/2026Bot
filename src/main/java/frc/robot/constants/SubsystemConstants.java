@@ -53,10 +53,24 @@ public class SubsystemConstants {
         public static final int INTAKE_SPEED = 40;
     }
 
+    public static class ClimberConstants {
+        public static final int CLIMBER_MOTOR_ID = 71;
+        public static final int UNLATCH_ROTATIONS = 10;//TODO: tune
+        public static final int CLIMB_ROTATIONS = 100;//TODO: Tune
+    }
+
     public static class DrivetrainConstants {
         public static final double WHEEL_COF = 1.1;//TODO: ask about this
         public static final double MAX_DRIVE_SPEED = 5; //TODO: this needs to be tested
         public static final double MAX_ROTATIONAL_SPEED = 2; //TODO: this needs to be tested
         public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF, DCMotor.getKrakenX60Foc(4), 80, 4);
+
+        public static final double DRIVE_P = 5.0;
+        public static final double DRIVE_I = 0.0;
+        public static final double DRIVE_D = 0.0;
+
+        public static final double ROTATION_P = 10.0;
+        public static final double ROTATION_I = 0.0;
+        public static final double ROTATION_D = 0.0;
     }
 }
