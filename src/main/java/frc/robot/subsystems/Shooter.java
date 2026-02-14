@@ -61,7 +61,7 @@ public class Shooter extends SubsystemBase {
    * @param speed in rotations per second
    * @return
    */
-  public Command set(double speed) {
+  public Command rev(double speed) {
     return run(() -> {
       shooterMotorLeft.setControl(new VelocityVoltage(speed).withEnableFOC(true));
       shooterMotorRight.setControl(new VelocityVoltage(speed).withEnableFOC(true));
@@ -73,7 +73,7 @@ public class Shooter extends SubsystemBase {
    * @param speed in rotations per second
    * @return
    */
-  public Command set(DoubleSupplier speed) {
+  public Command rev(DoubleSupplier speed) {
     DogLog.log(SHOOTER_LOG_KEY + "RPS", speed.getAsDouble());
 
     return run(() -> {

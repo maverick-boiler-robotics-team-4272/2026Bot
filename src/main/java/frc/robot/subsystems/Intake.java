@@ -40,7 +40,7 @@ public class Intake extends SubsystemBase {
    * @param speed in rotations per second
    * @return
    */
-  public Command set(double speed) {
+  public Command intake(double speed) {
     return run(() -> motor.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
   } 
 
@@ -49,7 +49,7 @@ public class Intake extends SubsystemBase {
    * @param speed in rotations per second
    * @return
    */
-  public Command set(DoubleSupplier speed) {
+  public Command intake(DoubleSupplier speed) {
     return run(() -> motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
   } 
 

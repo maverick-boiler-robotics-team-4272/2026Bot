@@ -15,8 +15,6 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import dev.doglog.DogLog;
-
 public class Loader extends SubsystemBase {
   Kraken motor1;
   Kraken motor2;
@@ -37,15 +35,15 @@ public class Loader extends SubsystemBase {
   }
 
   
-  public Command set1(double speed) {
+  public Command loadLeft(double speed) {
   return run(() -> motor1.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
   }
-  public Command set2(double speed) {
+  public Command loadRight(double speed) {
     return run(() -> motor2.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
   }
-  public Command setBoth(double speed) {
+  public Command loadBoth(double speed) {
     return run(() -> {
-      new SequentialCommandGroup(set1(speed).withTimeout(.1), set2(speed).withTimeout(.1));
+      new SequentialCommandGroup(loadLeft(speed).withTimeout(.1), loadRight(speed).withTimeout(.1));
       
     });
   }
@@ -55,15 +53,11 @@ public class Loader extends SubsystemBase {
    * @param speed in rotations per second
    * @return
    */
-  public Command set1(DoubleSupplier speed) {
-    DogLog.log(LOADER_MOTOR_1_ID_LOG_KEY + "RPS", speed.getAsDouble());
-    
+  public Command loadLeft(DoubleSupplier speed) {
     return run(() -> motor1.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
     
   }
-  public Command set2(DoubleSupplier speed) {
-    DogLog.log(LOADER_MOTOR_2_ID_LOG_KEY + "RPS", speed.getAsDouble());
-
+  public Command loadRight(DoubleSupplier speed) {
     return run(() -> motor2.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
   }
 

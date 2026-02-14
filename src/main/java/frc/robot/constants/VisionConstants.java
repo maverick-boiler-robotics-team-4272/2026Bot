@@ -17,6 +17,6 @@ public class VisionConstants {
     public static final Transform3d CAMERA_C_TRANSFORM = new Transform3d();
     public static final Transform3d CAMERA_D_TRANSFORM = new Transform3d();
 
-    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVIATIONS = VecBuilder.fill(5, 5, 3.14159265358979323846264338327950288419716939937901);
-    public static final Matrix<N3, N1> MULTI_TAG_STD_DEVIATIONs = VecBuilder.fill(0.2, 0.3, 1);
+    public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVIATIONS = VecBuilder.fill(0.5, 0.5, 3.14159265358979323846264338327950288419716939937901);
+    public static final Matrix<N3, N1> MULTI_TAG_STD_DEVIATIONs = VecBuilder.fill(0.2, 0.2, 2.71828);
 }
