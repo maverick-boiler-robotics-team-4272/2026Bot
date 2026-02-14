@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
+import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentricFacingAngle;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -279,6 +280,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         );
     }
 
+    public Command pointTowardsPoint(Translation2d desiredPoint, DoubleSupplier joystickX, DoubleSupplier joystickY) {
+
+        FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+            .withDeadband(MAX_DRIVE_SPEED * 0.01)
+            .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01);
+            request.withHeadingPID(2, 0, 0);
+
+        return run(() -> {
+
+            Translation2d delta = desiredPoint.minus(ROBOT_POSE.getTranslation());
+
+            Rotation2d targetAngle = delta.getAngle();
+
+            this.setControl(
+                request
+                    .withVelocityX(joystickY.getAsDouble() * MAX_DRIVE_SPEED)
+                    .withVelocityY(joystickX.getAsDouble() * MAX_DRIVE_SPEED)
+                    .withTargetDirection(targetAngle)
+            );
+        });
+    }
+
+
+    
     /**
      * Runs the SysId Quasistatic test in the given direction for the routine
      * specified by {@link #m_sysIdRoutineToApply}.
@@ -307,6 +333,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         SwerveDriveState state = getState();
         ROBOT_POSE = state.Pose;
         DogLog.log("Subsystems/Drive/Pose", ROBOT_POSE);
+        DogLog.log("Subsustems/Drive/HubPose", HUB_LOCATION);
         if(!Robot.isReal()) {
             for(Vision camera : cameras) {
                 camera.simulationPeriodic(ROBOT_POSE);

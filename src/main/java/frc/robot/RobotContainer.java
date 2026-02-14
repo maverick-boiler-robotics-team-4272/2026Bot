@@ -10,10 +10,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+import frc.robot.commands.ArmShooterCommand;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -80,7 +81,11 @@ public class RobotContainer {
             loader.loadBoth(50)
         );
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        joystick.a().toggleOnTrue(
+          new ArmShooterCommand(shooter, hopper, drivetrain, () -> -joystick.getLeftX(), () -> -joystick.getLeftY()).repeatedly().withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
+        );
+
+        joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));
 
         joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
