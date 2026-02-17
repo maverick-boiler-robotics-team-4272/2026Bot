@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.ArmShooterCommand;
 import frc.robot.commands.DriveThenClimbCommand;
+import frc.robot.commands.IntakeCommand;
+import frc.robot.commands.ShootCommand;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -43,21 +45,22 @@ public class RobotContainer {
     public RobotContainer() {
         setDefaultCommands();
         configureBindings();
+        // configureRealBindings();
     }
 
     private void setDefaultCommands() {
         drivetrain.setDefaultCommand(
             drivetrain.joystickDrive(
-                () -> -joystick.getLeftX(), 
-                () -> -joystick.getLeftY(), 
-                () -> -joystick.getRightX())
+                joystick::getLeftX,
+                joystick::getLeftY,
+                joystick::getRightX)
         );
 
         climber.setDefaultCommand(climber.climb(0));
-        hopper.setDefaultCommand(hopper.agitate(0, 0));
-        intake.setDefaultCommand(intake.intake(0));
+        hopper.setDefaultCommand(hopper.agitate(0, 0)); //will probably be a constant rev speed, but not at the moment
+        intake.setDefaultCommand(intake.defaultCommand());
         loader.setDefaultCommand(loader.loadBoth(0));
-        shooter.setDefaultCommand(shooter.rev(0));
+        shooter.setDefaultCommand(shooter.rev(0)); //will be a constant rev speed, but not at the moment
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

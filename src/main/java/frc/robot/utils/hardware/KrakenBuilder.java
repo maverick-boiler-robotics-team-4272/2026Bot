@@ -4,11 +4,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.StrictFollower;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class KrakenBuilder {
@@ -67,27 +63,6 @@ public class KrakenBuilder {
                 .withStatorCurrentLimit(limit)
                 .withStatorCurrentLimitEnable(true)
         );
-        return this;
-    }
-
-    /**
-     * Makes the motor follow the leadMotor's current state and configuration
-     * @param leadMotor is the lead motor itself
-     * @param alignmentValue determines whether it is spinning the same or a different way. MotorAlighmentValue.Aligned or .Opposed
-     * @return itself
-     */
-    public KrakenBuilder asFollower(TalonFX leadMotor, MotorAlignmentValue alignmentValue) {
-        motor.setControl(new Follower(leadMotor.getDeviceID(), alignmentValue));
-        return this;
-    }
-
-    /**
-     * Makes the motor follow the leadMotor's current state and configuration, but ignores the leadMotors inversion settings
-     * @param followerId is the leadMotor's id
-     * @return itself
-     */
-    public KrakenBuilder asStrictFollower(int followerId) {
-        motor.setControl(new StrictFollower(followerId));
         return this;
     }
 

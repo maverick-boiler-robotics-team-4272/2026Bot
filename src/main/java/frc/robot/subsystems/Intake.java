@@ -73,6 +73,15 @@ public class Intake extends SubsystemBase {
     return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
   }
 
+  public Command defaultCommand() {
+    return run(
+      ()->{
+        extend(0);
+        intake(0);
+      }
+    );
+  }
+
   @Override
   public void periodic() {}
 }
