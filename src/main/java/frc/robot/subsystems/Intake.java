@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.*;
 import static frc.robot.constants.SubsystemConstants.*;
 
-
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -22,17 +22,21 @@ public class Intake extends SubsystemBase {
 
   public Intake() {
     motor = KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake", "Intake Motor")
-      .withCurrentLimit(80)
-      .withIdleMode(NeutralModeValue.Coast)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .withSlot0PID(5, 0, 0)   
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(60)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withSlot0PID(5, 0, 0)
+        .build();
     motor2 = KrakenBuilder.create(INTAKE_MOTOR_2_ID, CAN_BUS, "Intake", "Actuation Motor")
-      .withCurrentLimit(40)
-      .withIdleMode(NeutralModeValue.Brake)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .withSlot0PID(5, 0, 0)   
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(30)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Brake)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withSlot0PID(5, 0, 0)
+        .build();
   }
 
   /**
@@ -42,7 +46,7 @@ public class Intake extends SubsystemBase {
    */
   public Command intake(double speed) {
     return run(() -> motor.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
-  } 
+  }
 
   /**
    * 
@@ -51,9 +55,9 @@ public class Intake extends SubsystemBase {
    */
   public Command intake(DoubleSupplier speed) {
     return run(() -> motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
-  } 
+  }
 
-    /**
+  /**
    * 
    * @param distance in inches of the actuation distance
    * @return
@@ -75,13 +79,13 @@ public class Intake extends SubsystemBase {
 
   public Command defaultCommand() {
     return run(
-      ()->{
-        extend(0);
-        intake(0);
-      }
-    );
+        () -> {
+          extend(0);
+          intake(0);
+        });
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+  }
 }

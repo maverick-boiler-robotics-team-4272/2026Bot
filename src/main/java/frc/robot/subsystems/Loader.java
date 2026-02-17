@@ -11,6 +11,7 @@ import static frc.robot.constants.SubsystemConstants.LoaderConstants.*;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -21,30 +22,35 @@ public class Loader extends SubsystemBase {
 
   public Loader() {
     motor1 = KrakenBuilder.create(LOADER_MOTOR_1_ID, CAN_BUS, "Loader", "Loader Motor 1")
-      .withCurrentLimit(80)
-      .withIdleMode(NeutralModeValue.Coast)
-      .withSlot0PID(0.5, 0, 0.00000001)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(40)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.5, 0, 0.00000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
     motor2 = KrakenBuilder.create(LOADER_MOTOR_2_ID, CAN_BUS, "Loader", "Loader Motor 2")
-      .withCurrentLimit(80)
-      .withIdleMode(NeutralModeValue.Coast)
-      .withSlot0PID(0.5, 0, 0.00000001)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(40)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.5, 0, 0.00000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
   }
 
-  
   public Command loadLeft(double speed) {
-  return run(() -> motor1.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+    return run(() -> motor1.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
   }
+
   public Command loadRight(double speed) {
     return run(() -> motor2.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
   }
+
   public Command loadBoth(double speed) {
     return run(() -> {
       new ParallelCommandGroup(loadLeft(speed), loadRight(speed));
-      
+
     });
   }
 
@@ -55,12 +61,14 @@ public class Loader extends SubsystemBase {
    */
   public Command loadLeft(DoubleSupplier speed) {
     return run(() -> motor1.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
-    
+
   }
+
   public Command loadRight(DoubleSupplier speed) {
     return run(() -> motor2.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+  }
 }

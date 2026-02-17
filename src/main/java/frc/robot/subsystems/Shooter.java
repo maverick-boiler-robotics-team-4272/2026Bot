@@ -7,6 +7,7 @@ import static frc.robot.subsystems.CommandSwerveDrivetrain.ROBOT_POSE;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -22,46 +23,50 @@ public class Shooter extends SubsystemBase {
   Kraken shooterMotorRight;
   Kraken hoodedMotor;
 
-  double desiredSpeed = 0; 
+  double desiredSpeed = 0;
 
   public Shooter() {
-    //PID needs to be aggressive
+    // PID needs to be aggressive
     shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, CAN_BUS, "Shooter", "Shooter Motor Left")
-      .withCurrentLimit(80)
-      .withIdleMode(NeutralModeValue.Coast)
-      .withSlot0PID(0.6, 0, 0.000000001)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(80)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.6, 0, 0.000000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
 
     shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, CAN_BUS, "Shooter", "Shooter Motor Right")
-      .withCurrentLimit(80)
-      .withIdleMode(NeutralModeValue.Coast)
-      .withSlot0PID(0.6, 0, 0.000000001)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(80)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.6, 0, 0.000000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
 
     hoodedMotor = KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
-      .withCurrentLimit(40)
-      .withIdleMode(NeutralModeValue.Coast)
-      .withSlot0PID(5, 0, 0)
-      .withInversion(InvertedValue.CounterClockwise_Positive)
-      .build();
+        .withCurrentLimit(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(20)
+            .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(5, 0, 0)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
   }
-  
+
   public Command setAngle(DoubleSupplier angle) {
     return run(
-      () -> hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true))
-    );
+        () -> hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true)));
   }
 
   public Command setAngle(double angle) {
     return run(
-      () -> hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true))
-    );
+        () -> hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true)));
   }
 
   public Command setDesiredAngle() {
-    if(ROBOT_POSE.getX() < 4.03 || ROBOT_POSE.getX() > FIELD_LENGTH_M - 4.03) {
+    if (ROBOT_POSE.getX() < 4.03 || ROBOT_POSE.getX() > FIELD_LENGTH_M - 4.03) {
       return setAngle(ANGLE_LOOKUP.get(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION)));
     } else {
       return setAngle(40); // maximize distance! along with the fact that the shooter can only go that far
@@ -69,12 +74,13 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command setDesiredSpeed() {
-    if(ROBOT_POSE.getX() < 4.03 || ROBOT_POSE.getX() > FIELD_LENGTH_M - 4.03) {
+    if (ROBOT_POSE.getX() < 4.03 || ROBOT_POSE.getX() > FIELD_LENGTH_M - 4.03) {
       return rev(VELOCITY_LOOKUP.get(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION)));
     } else {
-      return rev(45); //Is this a good shuttle speed?
+      return rev(45); // Is this a good shuttle speed?
     }
   }
+
   /**
    * 
    * @param speed in rotations per second
@@ -85,9 +91,9 @@ public class Shooter extends SubsystemBase {
     return run(() -> {
       shooterMotorLeft.setControl(new VelocityVoltage(speed).withEnableFOC(true));
       shooterMotorRight.setControl(new VelocityVoltage(speed).withEnableFOC(true));
-      }
-    );
+    });
   }
+
   /**
    * 
    * @param speed in rotations per second
@@ -97,17 +103,17 @@ public class Shooter extends SubsystemBase {
     return run(() -> {
       shooterMotorLeft.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
       shooterMotorRight.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
-      }
-    );
+    });
   }
 
   public boolean isAtDesiredSpeed() {
-    if(shooterMotorLeft.getRotorVelocity().getValueAsDouble() >= desiredSpeed) {
+    if (shooterMotorLeft.getRotorVelocity().getValueAsDouble() >= desiredSpeed) {
       return true;
     }
     return false;
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+  }
 }

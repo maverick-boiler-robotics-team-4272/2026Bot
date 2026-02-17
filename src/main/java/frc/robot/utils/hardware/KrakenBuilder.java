@@ -19,62 +19,63 @@ public class KrakenBuilder {
     /**
      * Reduces CAN traffic for better performance
      * This is already integrated
+     * 
      * @return itself
      */
     public KrakenBuilder optimizeBUSUtilization() {
         motor.optimizeBusUtilization();
         return this;
     }
+
     /**
      * Sets the inversion value of the motor
-     * @param Invertedvalue is either InvertedValue.Clockwise_Positive or .CounterClockwise_Positive
-     * The motor defaults to CounterClockwise_Positive
+     * 
+     * @param Invertedvalue is either InvertedValue.Clockwise_Positive or
+     *                      .CounterClockwise_Positive
+     *                      The motor defaults to CounterClockwise_Positive
      * @return itself
      */
     public KrakenBuilder withInversion(InvertedValue Invertedvalue) {
         config.withMotorOutput(
-            new MotorOutputConfigs()
-                .withInverted(Invertedvalue)
-        );
+                new MotorOutputConfigs()
+                        .withInverted(Invertedvalue));
         return this;
     }
 
     /**
      * Sets the idle state of the motor
+     * 
      * @param neutralModeValue is either NeutralModeValue.Brake or .Coast
      * @return itself
      */
     public KrakenBuilder withIdleMode(NeutralModeValue neutralModeValue) {
         config.withMotorOutput(
-            new MotorOutputConfigs()
-                .withNeutralMode(neutralModeValue)
-        );
+                new MotorOutputConfigs()
+                        .withNeutralMode(neutralModeValue));
         return this;
     }
 
     /**
      * Sets the current limits of the motor
+     * 
      * @param limit is the limit for the motor
      * @return itself
      */
-    public KrakenBuilder withCurrentLimit(double limit) {
-        config.withCurrentLimits(
-            new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(limit)
-                .withStatorCurrentLimitEnable(true)
-        );
+    public KrakenBuilder withCurrentLimit(CurrentLimitsConfigs limit) {
+        config.withCurrentLimits(limit);
         return this;
     }
 
     /**
      * Sets PID for the motor when Slot0 is selected
      * We currently don't have another Slot
+     * 
      * @param p proportianal gain
      * @param i integral gain (rarely use, if ever)
      * @param d derivative gain
      * @return itslef
      */
-     public KrakenBuilder withSlot0PID(double p, double i, double d) {
+    public KrakenBuilder withSlot0PID(double p, double i, double d) {
         var slot0Configs = new Slot0Configs();
         slot0Configs.kP = p;
         slot0Configs.kI = i;
@@ -86,6 +87,7 @@ public class KrakenBuilder {
     /**
      * Sets PID for the motor when Slot0 is selected
      * We currently don't have another Slot
+     * 
      * @param p proportianal gain
      * @param i integral gain (rarely use, if ever)
      * @param d derivative gain
@@ -105,6 +107,7 @@ public class KrakenBuilder {
     /**
      * Sets PID for the motor when Slot0 is selected
      * We currently don't have another Slot
+     * 
      * @param p proportianal gain
      * @param i integral gain (don't use)
      * @param d derivative gain
@@ -124,6 +127,7 @@ public class KrakenBuilder {
     /**
      * Sets PID for the motor when Slot0 is selected
      * We currently don't have another Slot
+     * 
      * @param p proportianal gain
      * @param i integral gain (don't use)
      * @param d derivative gain
@@ -144,6 +148,7 @@ public class KrakenBuilder {
 
     /**
      * Makes a new KrakenBuilder
+     * 
      * @param id is the id of the motor
      * @return a new KrakenBuilder
      */
@@ -152,35 +157,47 @@ public class KrakenBuilder {
     }
 
     /**
-     * Makes a new KrakenBuilder with pre-defined defaults: current limit of 40 idle mode of Brake
+     * Makes a new KrakenBuilder with pre-defined defaults: current limit of 40 idle
+     * mode of Brake
+     * 
      * @param id is the id of the motor
      * @return a new KrakenBUilder
      */
     public static KrakenBuilder createWithDefaults(int id, String can, String subsystem, String name) {
         return new KrakenBuilder(id, can, subsystem, name)
-            .withCurrentLimit(40)
-            .withIdleMode(NeutralModeValue.Brake)
-            .optimizeBUSUtilization();
+                .withCurrentLimit(new CurrentLimitsConfigs()
+                        .withSupplyCurrentLimit(40)
+                        .withSupplyCurrentLimitEnable(true))
+                .withIdleMode(NeutralModeValue.Brake)
+                .optimizeBUSUtilization();
     }
 
     /**
      * Gets configuration and applies it to the motor
+     * 
      * @return the motor
      */
     public Kraken build() {
         motor.getConfigurator().apply(config);
         return motor;
-    } 
+    }
 
 }
 /*
-* 
-* @param p proportianal gain
-* @param i integral gain (don't use)
-* @param d derivative gain
-* @param s static feed forward
-* @param a acceleration feedforward gain
-* @param v velocity feed forward gain
-* @param g gravity feedforward / feedback gain
-* @return itself
-*/
+ * 
+ * @param p proportianal gain
+ * 
+ * @param i integral gain (don't use)
+ * 
+ * @param d derivative gain
+ * 
+ * @param s static feed forward
+ * 
+ * @param a acceleration feedforward gain
+ * 
+ * @param v velocity feed forward gain
+ * 
+ * @param g gravity feedforward / feedback gain
+ * 
+ * @return itself
+ */
