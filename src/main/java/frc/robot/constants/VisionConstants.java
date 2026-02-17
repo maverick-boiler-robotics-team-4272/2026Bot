@@ -16,15 +16,15 @@ public class VisionConstants {
 
     public static final Transform3d CAMERA_A_TRANSFORM = new Transform3d(
         Units.inchesToMeters(12.318),//x
-        Units.inchesToMeters(12.627),//y
+        Units.inchesToMeters(-12.627),//y
         Units.inchesToMeters(16.553),//z
         new Rotation3d(0/*roll*/, 0/*pitch*/, 90/*yaw*/)
     ); //Right side
     public static final Transform3d CAMERA_B_TRANSFORM = new Transform3d(
-        Units.inchesToMeters(-12.318),
+        Units.inchesToMeters(12.318),
         Units.inchesToMeters(12.627),
         Units.inchesToMeters(16.553),
-        new Rotation3d(0,0,270)
+        new Rotation3d(0,0,270) //Maybe?
     ); //Left side
     public static final Transform3d CAMERA_C_TRANSFORM = new Transform3d(); //right shooter
     public static final Transform3d CAMERA_D_TRANSFORM = new Transform3d(); //left shooter
