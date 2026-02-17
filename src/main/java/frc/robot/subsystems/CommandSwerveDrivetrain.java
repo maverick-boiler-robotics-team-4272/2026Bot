@@ -38,6 +38,7 @@ import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.*;
 import static frc.robot.constants.VisionConstants.*;
 
+import frc.robot.Robot;
 import frc.robot.Vision;
 import frc.robot.constants.TunerConstants;
 import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
@@ -359,14 +360,14 @@ public Command pidToPoint(Pose2d pose) {
         ROBOT_POSE = state.Pose;
         DogLog.log("Subsystems/Drive/Pose", ROBOT_POSE);
         DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
-        // if(!Robot.isReal()) {
-        //     for(Vision camera : cameras) {
-        //         camera.simulationPeriodic(ROBOT_POSE);
-        //     }
-        // }
-        // for(Vision camera : cameras) {
-        //     camera.periodic();
-        // }
+        if(!Robot.isReal()) {
+            for(Vision camera : cameras) {
+                camera.simulationPeriodic(ROBOT_POSE);
+            }
+        }
+        for(Vision camera : cameras) {
+            camera.periodic();
+        }
         DogLog.log("Subsystems/Drive/This Pose", new Pose2d(7, 3, Rotation2d.fromDegrees(360)));
 
         //not mine

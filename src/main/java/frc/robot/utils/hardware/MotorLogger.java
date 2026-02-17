@@ -12,22 +12,30 @@ public class MotorLogger{
      */
     public static void log(String subsystem, Kraken motor) {
         StringBuilder keyBuilder = new StringBuilder("Subsystems/").append(subsystem).append("/Motors/");
-        var current = motor.getSupplyCurrent();
+        var supplyCurrent = motor.getSupplyCurrent();
+        var statorCurrent = motor.getStatorCurrent();
         var voltage = motor.getMotorVoltage();
         var temp = motor.getDeviceTemp();
         var velocity = motor.getVelocity();
+        var position = motor.getPosition();
         BaseStatusSignal.refreshAll(
-            current,
+            supplyCurrent,
+            statorCurrent,
             voltage,
             temp,
-            velocity
+            velocity,
+            position
         );
         int deadLength = keyBuilder.length();
         keyBuilder.append(motor.getName()).append("/");
         int length = keyBuilder.length();
 
-        keyBuilder.append("Current");
-        DogLog.log(keyBuilder.toString(), current.getValueAsDouble());
+        keyBuilder.append("Supply Current");
+        DogLog.log(keyBuilder.toString(), supplyCurrent.getValueAsDouble());
+
+        keyBuilder.setLength(length);
+        keyBuilder.append("Stator Current");
+        DogLog.log(keyBuilder.toString(), statorCurrent.getValueAsDouble());
 
         keyBuilder.setLength(length);
         keyBuilder.append("Voltage");
@@ -40,6 +48,10 @@ public class MotorLogger{
         keyBuilder.setLength(length);
         keyBuilder.append("Velocity");
         DogLog.log(keyBuilder.toString(), velocity.getValueAsDouble());
+
+        keyBuilder.setLength(length);
+        keyBuilder.append("Position");
+        DogLog.log(keyBuilder.toString(), position.getValueAsDouble());
         keyBuilder.setLength(deadLength);   
     }   
 }
