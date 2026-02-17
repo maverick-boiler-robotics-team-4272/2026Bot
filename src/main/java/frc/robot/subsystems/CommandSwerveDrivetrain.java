@@ -38,7 +38,6 @@ import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.*;
 import static frc.robot.constants.VisionConstants.*;
 
-import frc.robot.Robot;
 import frc.robot.Vision;
 import frc.robot.constants.TunerConstants;
 import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
@@ -243,8 +242,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                         .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())                
             ),
             new PPHolonomicDriveController(
-                new PIDConstants(5.0,0,0), //TODO: tune these drive pid constants
-                new PIDConstants(5.0,0,0) //TODO: tune these rotational pid constants
+                new PIDConstants(DRIVE_P, DRIVE_I, DRIVE_D), //TODO: tune these drive pid constants
+                new PIDConstants(ROTATION_P,ROTATION_I, ROTATION_D) //TODO: tune these rotational pid constants
             ),
             config,
             () -> {
@@ -276,9 +275,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return run(
             () -> this.setControl(
                 request
-                    .withVelocityX(joystickY.getAsDouble() * MAX_DRIVE_SPEED)
-                    .withVelocityY(joystickX.getAsDouble() * MAX_DRIVE_SPEED)
-                    .withRotationalRate(joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)
+                    .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
+                    .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
+                    .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)
             )
         );
     }
@@ -294,7 +293,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
             Translation2d delta = desiredPoint.minus(ROBOT_POSE.getTranslation());
 
-            Rotation2d targetAngle = delta.getAngle();
+            Rotation2d targetAngle = delta.getAngle().plus(Rotation2d.k180deg);
 
             this.setControl(
                 request
@@ -360,14 +359,14 @@ public Command pidToPoint(Pose2d pose) {
         ROBOT_POSE = state.Pose;
         DogLog.log("Subsystems/Drive/Pose", ROBOT_POSE);
         DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
-        if(!Robot.isReal()) {
-            for(Vision camera : cameras) {
-                camera.simulationPeriodic(ROBOT_POSE);
-            }
-        }
-        for(Vision camera : cameras) {
-            camera.periodic();
-        }
+        // if(!Robot.isReal()) {
+        //     for(Vision camera : cameras) {
+        //         camera.simulationPeriodic(ROBOT_POSE);
+        //     }
+        // }
+        // for(Vision camera : cameras) {
+        //     camera.periodic();
+        // }
         DogLog.log("Subsystems/Drive/This Pose", new Pose2d(7, 3, Rotation2d.fromDegrees(360)));
 
         //not mine

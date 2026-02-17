@@ -11,7 +11,6 @@ public class IntakeCommand extends ParallelCommandGroup {
   public IntakeCommand(Intake intake, Hopper hopper){
     super(
         intake.extend(EXTEND_DISTANCE),
-        
         intake.intake(INTAKE_SPEED),
         hopper.agitate(HOPPER_UPPER_SPEED, HOPPER_UPPER_SPEED)
     );
