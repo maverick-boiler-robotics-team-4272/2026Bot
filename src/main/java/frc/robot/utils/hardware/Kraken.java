@@ -5,7 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import frc.robot.utils.periodic.Periodical;
 import frc.robot.utils.periodic.PeriodicalUtil;
 
-public class Kraken extends TalonFX implements Periodical{
+public class Kraken extends TalonFX implements Periodical {
     private String name;
     private String subsystem;
 
