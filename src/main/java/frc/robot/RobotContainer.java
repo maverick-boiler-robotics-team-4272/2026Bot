@@ -5,12 +5,14 @@
 package frc.robot;
 
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
+import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
+import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -40,7 +42,6 @@ public class RobotContainer {
   public RobotContainer() {
     setDefaultCommands();
     configureBindings();
-    // configureRealBindings();
   }
 
   private void setDefaultCommands() {
@@ -48,13 +49,10 @@ public class RobotContainer {
         drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
 
     climber.setDefaultCommand(climber.climb(0));
-    hopper.setDefaultCommand(
-        hopper.agitate(0, 0)); // will probably be a constant rev speed, but not at the
-    // moment
+    hopper.setDefaultCommand(hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)); //Yes, The hopper should be running at all times
     intake.setDefaultCommand(intake.defaultCommand());
     loader.setDefaultCommand(loader.loadBoth(0));
-    shooter.setDefaultCommand(
-        shooter.rev(0)); // will be a constant rev speed, but not at the moment
+    shooter.setDefaultCommand(shooter.rev(IDLE_SPEED));
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -64,37 +62,19 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.intake(45));
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// check
 
-    joystick.rightTrigger().whileTrue(intake.extend(4));
+    joystick.a().whileTrue(
+      ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX, joystick::getLeftY)
+    ); //IT WORKS!!!!
 
-    joystick.leftBumper().whileTrue(hopper.agitate(84, 80));
+    joystick.povDown().whileTrue(ClimbCommands.driveThenClimbCommand(drivetrain, climber, () -> joystick.getHID().getXButton())); //Yup
 
-    joystick.a().whileTrue(shooter.rev(50));
 
-    joystick.x().whileTrue(loader.loadBoth(50));
+    joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));//sure
 
-    joystick
-        .a()
-        .toggleOnTrue(
-            ShooterCommands.armShooterCommand(
-                    shooter,
-                    hopper,
-                    drivetrain,
-                    () -> -joystick.getLeftX(),
-                    () -> -joystick.getLeftY())
-                .repeatedly()
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));//not me
 
-    joystick
-        .rightBumper()
-        .whileTrue(drivetrain.pidToPoint(new Pose2d(7, 3, Rotation2d.fromDegrees(360))));
-
-    joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));
-
-    joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-    joystick.povDown().whileTrue(ClimbCommands.driveThenClimbCommand(drivetrain, climber));
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
     joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));

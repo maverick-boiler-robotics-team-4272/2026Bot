@@ -16,12 +16,12 @@ public class FieldConstants {
   public static final Pose2d CLIMB_POSE_LEFT =
       new Pose2d(15.469, 3.297, Rotation2d.fromDegrees(90));
   public static final Pose2d CLIMB_POSE_RIGHT =
-      new Pose2d(15.481, 5.357, Rotation2d.fromDegrees(-90));
+      new Pose2d(15.461, 5.357, Rotation2d.fromDegrees(-90));
   public static ArrayList<Pose2d> CLIMB_POSES = new ArrayList<>(2);
 
   static {
     CLIMB_POSES.add(CLIMB_POSE_RIGHT);
-    // CLIMB_POSES.add(CLIMB_POSE_LEFT);
+    CLIMB_POSES.add(CLIMB_POSE_LEFT);
   }
 
   public static final Translation2d HUB_LOCATION =

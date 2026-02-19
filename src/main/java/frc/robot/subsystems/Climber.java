@@ -7,6 +7,8 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
@@ -14,6 +16,7 @@ import frc.robot.utils.hardware.KrakenBuilder;
 
 public class Climber extends SubsystemBase {
   Kraken motor;
+  double rotations;
 
   public Climber() {
     motor =
@@ -29,9 +32,14 @@ public class Climber extends SubsystemBase {
   }
 
   public Command climb(double rotations) {
-    return run(() -> motor.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
+    return run(() ->  {
+      this.rotations = rotations;
+      motor.setControl(new PositionVoltage(rotations).withEnableFOC(true));
+    });
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    DogLog.log(CLIMBER_KEY + "Rotations", rotations);
+  }
 }

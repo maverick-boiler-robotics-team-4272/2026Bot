@@ -8,6 +8,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
@@ -17,6 +19,7 @@ import java.util.function.DoubleSupplier;
 public class Intake extends SubsystemBase {
   Kraken motor;
   Kraken motor2;
+  double rotations;
 
   public Intake() {
     motor =
@@ -63,7 +66,7 @@ public class Intake extends SubsystemBase {
    * @return
    */
   public Command extend(double distance) {
-    double rotations = distance / Math.PI;
+    rotations = distance / Math.PI;
     return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
   }
 
@@ -76,14 +79,25 @@ public class Intake extends SubsystemBase {
     return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
   }
 
+  public Command setIntakeState(double extendDistance, double rotationsPerSecond) {
+    return run(
+      () -> {
+        rotations = extendDistance / Math.PI;
+        motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true));
+        motor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
+      }
+    );
+  }
   public Command defaultCommand() {
     return run(
         () -> {
-          extend(0);
-          intake(0);
+          rotations = 0;
+          setIntakeState(0, 0);
         });
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    DogLog.log(INTAKE_KEY + "distance", rotations);
+  }
 }
