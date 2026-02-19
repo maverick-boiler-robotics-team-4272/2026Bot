@@ -19,38 +19,36 @@ import java.util.function.DoubleSupplier;
 
 public class ShooterCommands {
   public static Command fullShooterCommand(
-    Shooter shooter,
-    Hopper hopper,
-    Loader loader,
-    CommandSwerveDrivetrain drive,
-    DoubleSupplier joystickX,
-    DoubleSupplier joystickY
-  ) {
-      return new ParallelCommandGroup(
+      Shooter shooter,
+      Hopper hopper,
+      Loader loader,
+      CommandSwerveDrivetrain drive,
+      DoubleSupplier joystickX,
+      DoubleSupplier joystickY) {
+    return new ParallelCommandGroup(
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         drive.pointTowardsPoint(HUB_LOCATION, joystickX, joystickY),
         setDesiredShooterStates(shooter, drive),
         new ConditionalCommand(
-          loader.loadBoth(70), 
-          loader.loadBoth(0), 
-          shooter::isAtDesiredSpeed)
-      );
+            loader.loadBoth(70),
+            loader.loadBoth(0),
+            shooter::isAtDesiredSpeed));
   }
 
   public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {
-      return shooter.defer(() -> Commands.repeatingSequence(
+    return shooter.defer(() -> Commands.repeatingSequence(
         shooter.setShooterState(
-          () -> ANGLE_LOOKUP.get(drive.getState().Pose.getTranslation().getDistance(HUB_LOCATION)), 
-          () -> VELOCITY_LOOKUP.get(drive.getState().Pose.getTranslation().getDistance(HUB_LOCATION)))
-          .until(() -> {
-            return !(isRedSide() ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03 : drive.getState().Pose.getX() < 4.03);
-          }), //(isRedSide ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03 : drive.getState().Pose.getX() < 4.03)
+            () -> ANGLE_LOOKUP.get(drive.getState().Pose.getTranslation().getDistance(HUB_LOCATION)),
+            () -> VELOCITY_LOOKUP.get(drive.getState().Pose.getTranslation().getDistance(HUB_LOCATION)))
+            .until(() -> {
+              return !(isRedSide() ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03
+                  : drive.getState().Pose.getX() < 4.03);
+            }), // (isRedSide ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03 :
+                // drive.getState().Pose.getX() < 4.03)
         shooter.setShooterState(40, 45).until(
-          () -> {
-            return (isRedSide() ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03 : drive.getState().Pose.getX() < 4.03);
-          }
-        )
-      )
-    );    
+            () -> {
+              return (isRedSide() ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03
+                  : drive.getState().Pose.getX() < 4.03);
+            })));
   }
 }

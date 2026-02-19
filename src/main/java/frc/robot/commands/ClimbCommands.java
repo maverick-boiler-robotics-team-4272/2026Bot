@@ -15,13 +15,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 public class ClimbCommands {
   public static Command driveThenClimbCommand(CommandSwerveDrivetrain drive, Climber climber, BooleanSupplier ready) {
     return new ParallelCommandGroup(
-      drive.defer(() -> drive.pidToPoint(drive.getState().Pose.nearest(CLIMB_POSES))),
-      Commands.repeatingSequence(
-        new SequentialCommandGroup(
-          climber.climb(UNLATCH_ROTATIONS).until(ready),
-          climber.climb(CLIMB_ROTATIONS)
-        )
-      )
-    );
+        drive.defer(() -> drive.pidToPoint(drive.getState().Pose.nearest(CLIMB_POSES))),
+        Commands.repeatingSequence(
+            new SequentialCommandGroup(
+                climber.climb(UNLATCH_ROTATIONS).until(ready),
+                climber.climb(CLIMB_ROTATIONS))));
   }
 }

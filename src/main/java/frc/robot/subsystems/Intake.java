@@ -22,26 +22,24 @@ public class Intake extends SubsystemBase {
   double rotations;
 
   public Intake() {
-    motor =
-        KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake", "Intake Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(60)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .withSlot0PID(5, 0, 0)
-            .build();
-    motor2 =
-        KrakenBuilder.create(INTAKE_MOTOR_2_ID, CAN_BUS, "Intake", "Actuation Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(30)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Brake)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .withSlot0PID(5, 0, 0)
-            .build();
+    motor = KrakenBuilder.create(INTAKE_MOTOR_ID, CAN_BUS, "Intake", "Intake Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withSlot0PID(5, 0, 0)
+        .build();
+    motor2 = KrakenBuilder.create(INTAKE_MOTOR_2_ID, CAN_BUS, "Intake", "Actuation Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(30)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Brake)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withSlot0PID(5, 0, 0)
+        .build();
   }
 
   /**
@@ -81,13 +79,13 @@ public class Intake extends SubsystemBase {
 
   public Command setIntakeState(double extendDistance, double rotationsPerSecond) {
     return run(
-      () -> {
-        rotations = extendDistance / Math.PI;
-        motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true));
-        motor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
-      }
-    );
+        () -> {
+          rotations = extendDistance / Math.PI;
+          motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true));
+          motor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
+        });
   }
+
   public Command defaultCommand() {
     return run(
         () -> {

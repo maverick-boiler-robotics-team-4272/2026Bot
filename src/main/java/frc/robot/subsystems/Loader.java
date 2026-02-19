@@ -18,26 +18,24 @@ public class Loader extends SubsystemBase {
   Kraken motor2;
 
   public Loader() {
-    motor1 =
-        KrakenBuilder.create(LOADER_MOTOR_1_ID, CAN_BUS, "Loader", "Loader Motor 1")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(0.5, 0, 0.00000001)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .build();
-    motor2 =
-        KrakenBuilder.create(LOADER_MOTOR_2_ID, CAN_BUS, "Loader", "Loader Motor 2")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(0.5, 0, 0.00000001)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .build();
+    motor1 = KrakenBuilder.create(LOADER_MOTOR_1_ID, CAN_BUS, "Loader", "Loader Motor 1")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.5, 0, 0.00000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
+    motor2 = KrakenBuilder.create(LOADER_MOTOR_2_ID, CAN_BUS, "Loader", "Loader Motor 2")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.5, 0, 0.00000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
   }
 
   public Command loadLeft(double speed) {
@@ -71,5 +69,6 @@ public class Loader extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+  }
 }

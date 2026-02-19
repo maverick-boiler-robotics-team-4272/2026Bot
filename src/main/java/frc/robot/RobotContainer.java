@@ -49,7 +49,10 @@ public class RobotContainer {
         drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
 
     climber.setDefaultCommand(climber.climb(0));
-    hopper.setDefaultCommand(hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)); //Yes, The hopper should be running at all times, or only running if we have a sensor for fuel
+    hopper.setDefaultCommand(hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)); // Yes, The hopper should be
+                                                                                      // running at all times, or only
+                                                                                      // running if we have a sensor for
+                                                                                      // fuel
     intake.setDefaultCommand(intake.defaultCommand());
     loader.setDefaultCommand(loader.loadBoth(0));
     shooter.setDefaultCommand(shooter.rev(IDLE_SPEED));
@@ -65,15 +68,15 @@ public class RobotContainer {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
 
     joystick.a().whileTrue(
-      ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX, joystick::getLeftY)
-    ); //IT WORKS!!!!
+        ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX,
+            joystick::getLeftY)); // IT WORKS!!!!
 
-    joystick.povDown().whileTrue(ClimbCommands.driveThenClimbCommand(drivetrain, climber, () -> joystick.getHID().getXButton())); //Yup
+    joystick.povDown()
+        .whileTrue(ClimbCommands.driveThenClimbCommand(drivetrain, climber, () -> joystick.getHID().getXButton())); // Yup
 
+    joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
-    joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));//sure
-
-    joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));//not me
+    joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));// not me
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.

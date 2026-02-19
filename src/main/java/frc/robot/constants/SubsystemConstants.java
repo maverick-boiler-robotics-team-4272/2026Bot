@@ -38,10 +38,11 @@ public class SubsystemConstants {
     public static final double SHOOTER_HEIGHT_M = Meters.convertFrom(16.784, Inches);
     public static final double IDLE_SPEED = 0; // TODO: ask aobut this value
 
-    public static final InterpolatingDoubleTreeMap VELOCITY_LOOKUP = //TODO: make constant when ready
-        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 5.0));
-    public static final InterpolatingDoubleTreeMap ANGLE_LOOKUP =
-        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 4.0));
+    public static final InterpolatingDoubleTreeMap VELOCITY_LOOKUP = // TODO: make constant when ready
+        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0),
+            Map.entry(3.0, 5.0));
+    public static final InterpolatingDoubleTreeMap ANGLE_LOOKUP = InterpolatingDoubleTreeMap
+        .ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 4.0));
   }
 
   public static class IntakeConstants {
@@ -63,8 +64,8 @@ public class SubsystemConstants {
     public static final double WHEEL_COF = 1.1; // TODO: ask about this
     public static final double MAX_DRIVE_SPEED = 5; // TODO: this needs to be tested
     public static final double MAX_ROTATIONAL_SPEED = 20; // TODO: this needs to be tested
-    public static final ModuleConfig MODULE_CONFIG =
-        new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF, DCMotor.getKrakenX60Foc(4), 80, 4);
+    public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF,
+        DCMotor.getKrakenX60Foc(4), 80, 4);
 
     public static final double DRIVE_P = 5.0;
     public static final double DRIVE_I = 0.0;

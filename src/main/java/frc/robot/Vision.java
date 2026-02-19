@@ -57,30 +57,34 @@ public class Vision {
   private VisionSystemSim visionSim;
 
   /**
-   * @param estConsumer Lamba that will accept a pose estimate and pass it to your desired {@link
-   *     edu.wpi.first.math.estimator.SwerveDrivePoseEstimator}
+   * @param estConsumer Lamba that will accept a pose estimate and pass it to your
+   *                    desired {@link
+   *                    edu.wpi.first.math.estimator.SwerveDrivePoseEstimator}
    */
   public Vision(EstimateConsumer estConsumer, String cameraName, Transform3d robotToCam) {
     this.estConsumer = estConsumer;
     camera = new PhotonCamera(cameraName);
-    photonEstimator =
-        new PhotonPoseEstimator(
-            AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark), robotToCam);
+    photonEstimator = new PhotonPoseEstimator(
+        AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark), robotToCam);
 
     // ----- Simulation
     if (Robot.isSimulation()) {
-      // Create the vision system simulation which handles cameras and targets on the field.
+      // Create the vision system simulation which handles cameras and targets on the
+      // field.
       visionSim = new VisionSystemSim("main");
-      // Add all the AprilTags inside the tag layout as visible targets to this simulated field.
+      // Add all the AprilTags inside the tag layout as visible targets to this
+      // simulated field.
       visionSim.addAprilTags(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark));
-      // Create simulated camera properties. These can be set to mimic your actual camera.
+      // Create simulated camera properties. These can be set to mimic your actual
+      // camera.
       var cameraProp = new SimCameraProperties();
       cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
       cameraProp.setCalibError(0.35, 0.10);
       cameraProp.setFPS(15);
       cameraProp.setAvgLatencyMs(50);
       cameraProp.setLatencyStdDevMs(15);
-      // Create a PhotonCameraSim which will update the linked PhotonCamera's values with visible
+      // Create a PhotonCameraSim which will update the linked PhotonCamera's values
+      // with visible
       // targets.
       cameraSim = new PhotonCameraSim(camera, cameraProp);
       // Add the simulated camera to view the targets on this simulated field.
@@ -101,10 +105,9 @@ public class Vision {
 
       if (Robot.isSimulation()) {
         visionEst.ifPresentOrElse(
-            est ->
-                getSimDebugField()
-                    .getObject("VisionEstimation")
-                    .setPose(est.estimatedPose.toPose2d()),
+            est -> getSimDebugField()
+                .getObject("VisionEstimation")
+                .setPose(est.estimatedPose.toPose2d()),
             () -> {
               getSimDebugField().getObject("VisionEstimation").setPoses();
             });
@@ -121,11 +124,13 @@ public class Vision {
   }
 
   /**
-   * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard
-   * deviations based on number of tags, estimation strategy, and distance from the tags.
+   * Calculates new standard deviations This algorithm is a heuristic that creates
+   * dynamic standard
+   * deviations based on number of tags, estimation strategy, and distance from
+   * the tags.
    *
    * @param estimatedPose The estimated pose to guess standard deviations for.
-   * @param targets All targets in this camera frame
+   * @param targets       All targets in this camera frame
    */
   private void updateEstimationStdDevs(
       Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
@@ -139,17 +144,18 @@ public class Vision {
       int numTags = 0;
       double avgDist = 0;
 
-      // Precalculation - see how many tags we found, and calculate an average-distance metric
+      // Precalculation - see how many tags we found, and calculate an
+      // average-distance metric
       for (var tgt : targets) {
         var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
-        if (tagPose.isEmpty()) continue;
+        if (tagPose.isEmpty())
+          continue;
         numTags++;
-        avgDist +=
-            tagPose
-                .get()
-                .toPose2d()
-                .getTranslation()
-                .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
+        avgDist += tagPose
+            .get()
+            .toPose2d()
+            .getTranslation()
+            .getDistance(estimatedPose.get().estimatedPose.toPose2d().getTranslation());
       }
 
       if (numTags == 0) {
@@ -159,11 +165,13 @@ public class Vision {
         // One or more tags visible, run the full heuristic.
         avgDist /= numTags;
         // Decrease std devs if multiple targets are visible
-        if (numTags > 1) estStdDevs = MULTI_TAG_STD_DEVIATIONs;
+        if (numTags > 1)
+          estStdDevs = MULTI_TAG_STD_DEVIATIONs;
         // Increase std devs based on (average) distance
         if (numTags == 1 && avgDist > 4)
           estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
-        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+        else
+          estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
         curStdDevs = estStdDevs;
       }
     }
@@ -172,7 +180,8 @@ public class Vision {
   /**
    * Returns the latest standard deviations of the estimated pose from {@link
    * #getEstimatedGlobalPose()}, for use with {@link
-   * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}. This should
+   * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
+   * SwerveDrivePoseEstimator}. This should
    * only be used when there are targets visible.
    */
   public Matrix<N3, N1> getEstimationStdDevs() {
@@ -187,12 +196,14 @@ public class Vision {
 
   /** Reset pose history of the robot in the vision system simulation. */
   public void resetSimPose(Pose2d pose) {
-    if (Robot.isSimulation()) visionSim.resetRobotPose(pose);
+    if (Robot.isSimulation())
+      visionSim.resetRobotPose(pose);
   }
 
   /** A Field2d for visualizing our robot and objects on the field. */
   public Field2d getSimDebugField() {
-    if (!Robot.isSimulation()) return null;
+    if (!Robot.isSimulation())
+      return null;
     return visionSim.getDebugField();
   }
 

@@ -19,20 +19,19 @@ public class Climber extends SubsystemBase {
   double rotations;
 
   public Climber() {
-    motor =
-        KrakenBuilder.create(CLIMBER_MOTOR_ID, CAN_BUS, "Climber", "Climber Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Brake)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .withSlot0PID(0, 0, 0)
-            .build();
+    motor = KrakenBuilder.create(CLIMBER_MOTOR_ID, CAN_BUS, "Climber", "Climber Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Brake)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withSlot0PID(0, 0, 0)
+        .build();
   }
 
   public Command climb(double rotations) {
-    return run(() ->  {
+    return run(() -> {
       this.rotations = rotations;
       motor.setControl(new PositionVoltage(rotations).withEnableFOC(true));
     });

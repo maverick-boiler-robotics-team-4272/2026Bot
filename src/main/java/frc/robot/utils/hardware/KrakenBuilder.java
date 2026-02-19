@@ -29,8 +29,9 @@ public class KrakenBuilder {
   /**
    * Sets the inversion value of the motor
    *
-   * @param Invertedvalue is either InvertedValue.Clockwise_Positive or .CounterClockwise_Positive
-   *     The motor defaults to CounterClockwise_Positive
+   * @param Invertedvalue is either InvertedValue.Clockwise_Positive or
+   *                      .CounterClockwise_Positive
+   *                      The motor defaults to CounterClockwise_Positive
    * @return itself
    */
   public KrakenBuilder withInversion(InvertedValue Invertedvalue) {
@@ -61,7 +62,8 @@ public class KrakenBuilder {
   }
 
   /**
-   * Sets PID for the motor when Slot0 is selected We currently don't have another Slot
+   * Sets PID for the motor when Slot0 is selected We currently don't have another
+   * Slot
    *
    * @param p proportianal gain
    * @param i integral gain (rarely use, if ever)
@@ -78,7 +80,8 @@ public class KrakenBuilder {
   }
 
   /**
-   * Sets PID for the motor when Slot0 is selected We currently don't have another Slot
+   * Sets PID for the motor when Slot0 is selected We currently don't have another
+   * Slot
    *
    * @param p proportianal gain
    * @param i integral gain (rarely use, if ever)
@@ -97,7 +100,8 @@ public class KrakenBuilder {
   }
 
   /**
-   * Sets PID for the motor when Slot0 is selected We currently don't have another Slot
+   * Sets PID for the motor when Slot0 is selected We currently don't have another
+   * Slot
    *
    * @param p proportianal gain
    * @param i integral gain (don't use)
@@ -116,7 +120,8 @@ public class KrakenBuilder {
   }
 
   /**
-   * Sets PID for the motor when Slot0 is selected We currently don't have another Slot
+   * Sets PID for the motor when Slot0 is selected We currently don't have another
+   * Slot
    *
    * @param p proportianal gain
    * @param i integral gain (don't use)
@@ -147,7 +152,8 @@ public class KrakenBuilder {
   }
 
   /**
-   * Makes a new KrakenBuilder with pre-defined defaults: current limit of 40 idle mode of Brake
+   * Makes a new KrakenBuilder with pre-defined defaults: current limit of 40 idle
+   * mode of Brake
    *
    * @param id is the id of the motor
    * @return a new KrakenBUilder

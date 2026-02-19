@@ -7,12 +7,12 @@ public class MotorLogger {
   /**
    * Automatic motor logger
    *
-   * @param subsystem is the name of the subsystem, the directory is taken care of from there
-   * @param motors is a list of as many motors as you please
+   * @param subsystem is the name of the subsystem, the directory is taken care of
+   *                  from there
+   * @param motors    is a list of as many motors as you please
    */
   public static void log(String subsystem, Kraken motor) {
-    StringBuilder keyBuilder =
-        new StringBuilder("Subsystems/").append(subsystem).append("/Motors/");
+    StringBuilder keyBuilder = new StringBuilder("Subsystems/").append(subsystem).append("/Motors/");
     var supplyCurrent = motor.getSupplyCurrent();
     var statorCurrent = motor.getStatorCurrent();
     var voltage = motor.getMotorVoltage();
@@ -21,7 +21,7 @@ public class MotorLogger {
     var position = motor.getPosition();
 
     BaseStatusSignal.refreshAll(supplyCurrent, statorCurrent, voltage, temp, velocity, position);
-    
+
     int deadLength = keyBuilder.length();
     keyBuilder.append(motor.getName()).append("/");
     int length = keyBuilder.length();

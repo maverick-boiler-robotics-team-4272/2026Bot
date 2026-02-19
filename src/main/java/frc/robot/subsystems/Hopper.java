@@ -25,38 +25,35 @@ public class Hopper extends SubsystemBase {
   double d = 0.0000000;
 
   public Hopper() {
-    lowerMotor =
-        KrakenBuilder.create(HOPPER_LOWER_MOTOR_ID, CAN_BUS, "Hopper", "Left Lower Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(p, i, d)
-            .withInversion(InvertedValue.Clockwise_Positive)
-            .build();
+    lowerMotor = KrakenBuilder.create(HOPPER_LOWER_MOTOR_ID, CAN_BUS, "Hopper", "Left Lower Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(p, i, d)
+        .withInversion(InvertedValue.Clockwise_Positive)
+        .build();
 
-    lowerMotor2 =
-        KrakenBuilder.create(HOPPER_LOWER_MOTOR_2_ID, CAN_BUS, "Hopper", "Right Lower Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(p, i, d)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .build();
+    lowerMotor2 = KrakenBuilder.create(HOPPER_LOWER_MOTOR_2_ID, CAN_BUS, "Hopper", "Right Lower Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(p, i, d)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
 
-    upperMotor =
-        KrakenBuilder.create(HOPPER_UPPER_MOTOR_ID, CAN_BUS, "Hopper", "Upper Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(40)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(0.4, 0, 0.00000000001)
-            .withInversion(InvertedValue.Clockwise_Positive)
-            .build();
+    upperMotor = KrakenBuilder.create(HOPPER_UPPER_MOTOR_ID, CAN_BUS, "Hopper", "Upper Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.4, 0, 0.00000000001)
+        .withInversion(InvertedValue.Clockwise_Positive)
+        .build();
   }
 
   /**
@@ -88,5 +85,6 @@ public class Hopper extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+  }
 }

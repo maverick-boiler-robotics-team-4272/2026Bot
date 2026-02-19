@@ -25,38 +25,35 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     // PID needs to be aggressive
-    shooterMotorLeft =
-        KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, CAN_BUS, "Shooter", "Shooter Motor Left")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(80)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(0.6, 0, 0.000000001)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .build();
+    shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, CAN_BUS, "Shooter", "Shooter Motor Left")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(80)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.6, 0, 0.000000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
 
-    shooterMotorRight =
-        KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, CAN_BUS, "Shooter", "Shooter Motor Right")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(80)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(0.6, 0, 0.000000001)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .build();
+    shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, CAN_BUS, "Shooter", "Shooter Motor Right")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(80)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(0.6, 0, 0.000000001)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
 
-    hoodedMotor =
-        KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
-            .withCurrentLimit(
-                new CurrentLimitsConfigs()
-                    .withSupplyCurrentLimit(20)
-                    .withSupplyCurrentLimitEnable(true))
-            .withIdleMode(NeutralModeValue.Coast)
-            .withSlot0PID(5, 0, 0)
-            .withInversion(InvertedValue.CounterClockwise_Positive)
-            .build();
+    hoodedMotor = KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(20)
+                .withSupplyCurrentLimitEnable(true))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PID(5, 0, 0)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .build();
   }
 
   public Command setAngle(DoubleSupplier angle) {
@@ -96,24 +93,22 @@ public class Shooter extends SubsystemBase {
 
   public Command setShooterState(DoubleSupplier anglePosition, DoubleSupplier rotationsPerSecond) {
     return run(
-      () -> {
-        hoodedMotor.setControl(new PositionVoltage(anglePosition.getAsDouble()).withEnableFOC(true));
-        desiredSpeed = rotationsPerSecond.getAsDouble();
-        shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
-        shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
-      }
-    );
+        () -> {
+          hoodedMotor.setControl(new PositionVoltage(anglePosition.getAsDouble()).withEnableFOC(true));
+          desiredSpeed = rotationsPerSecond.getAsDouble();
+          shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
+          shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
+        });
   }
 
   public Command setShooterState(double anglePosition, double rotationsPerSecond) {
     return run(
-      () -> {
-        hoodedMotor.setControl(new PositionVoltage(anglePosition).withEnableFOC(true));
-        desiredSpeed = rotationsPerSecond;
-        shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
-        shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
-      }
-    );
+        () -> {
+          hoodedMotor.setControl(new PositionVoltage(anglePosition).withEnableFOC(true));
+          desiredSpeed = rotationsPerSecond;
+          shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
+          shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
+        });
   }
 
   public boolean isAtDesiredSpeed() {
