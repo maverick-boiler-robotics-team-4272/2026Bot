@@ -19,7 +19,9 @@ public class MotorLogger {
     var temp = motor.getDeviceTemp();
     var velocity = motor.getVelocity();
     var position = motor.getPosition();
+
     BaseStatusSignal.refreshAll(supplyCurrent, statorCurrent, voltage, temp, velocity, position);
+    
     int deadLength = keyBuilder.length();
     keyBuilder.append(motor.getName()).append("/");
     int length = keyBuilder.length();
