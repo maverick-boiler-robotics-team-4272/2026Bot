@@ -1,15 +1,15 @@
 package frc.robot.subsystems;
 
-import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.SubsystemConstants.CAN_BUS;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
-import static frc.robot.subsystems.CommandSwerveDrivetrain.ROBOT_POSE;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
@@ -68,31 +68,14 @@ public class Shooter extends SubsystemBase {
     return run(() -> hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true)));
   }
 
-  public Command setDesiredAngle() {
-    if (ROBOT_POSE.getX() < 4.03 || ROBOT_POSE.getX() > FIELD_LENGTH_M - 4.03) {
-      return setAngle(ANGLE_LOOKUP.get(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION)));
-    } else {
-      return setAngle(
-          40); // maximize distance! along with the fact that the shooter can only go that far
-    }
-  }
-
-  public Command setDesiredSpeed() {
-    if (ROBOT_POSE.getX() < 4.03 || ROBOT_POSE.getX() > FIELD_LENGTH_M - 4.03) {
-      return rev(VELOCITY_LOOKUP.get(ROBOT_POSE.getTranslation().getDistance(HUB_LOCATION)));
-    } else {
-      return rev(45); // Is this a good shuttle speed?
-    }
-  }
-
   /**
    * @param speed in rotations per second
    * @return
    */
   public Command rev(double speed) {
-    desiredSpeed = speed;
     return run(
         () -> {
+          desiredSpeed = speed;
           shooterMotorLeft.setControl(new VelocityVoltage(speed).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(speed).withEnableFOC(true));
         });
@@ -105,10 +88,32 @@ public class Shooter extends SubsystemBase {
   public Command rev(DoubleSupplier speed) {
     return run(
         () -> {
+          desiredSpeed = speed.getAsDouble();
           shooterMotorLeft.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
-          shooterMotorRight.setControl(
-              new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
+          shooterMotorRight.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
         });
+  }
+
+  public Command setShooterState(DoubleSupplier anglePosition, DoubleSupplier rotationsPerSecond) {
+    return run(
+      () -> {
+        hoodedMotor.setControl(new PositionVoltage(anglePosition.getAsDouble()).withEnableFOC(true));
+        desiredSpeed = rotationsPerSecond.getAsDouble();
+        shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
+        shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
+      }
+    );
+  }
+
+  public Command setShooterState(double anglePosition, double rotationsPerSecond) {
+    return run(
+      () -> {
+        hoodedMotor.setControl(new PositionVoltage(anglePosition).withEnableFOC(true));
+        desiredSpeed = rotationsPerSecond;
+        shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
+        shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
+      }
+    );
   }
 
   public boolean isAtDesiredSpeed() {
@@ -119,5 +124,7 @@ public class Shooter extends SubsystemBase {
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    DogLog.log(SHOOTER_LOG_KEY + "/recomended speed", desiredSpeed);
+  }
 }

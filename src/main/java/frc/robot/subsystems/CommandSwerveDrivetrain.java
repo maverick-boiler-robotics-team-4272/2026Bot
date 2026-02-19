@@ -48,7 +48,6 @@ import java.util.function.Supplier;
  * https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/tuner-swerve/index.html
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
-  public static Pose2d ROBOT_POSE = new Pose2d();
   PIDController drivePID = new PIDController(DRIVE_P, DRIVE_I, DRIVE_D);
   private static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
@@ -283,14 +282,14 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     return run(
         () -> {
-          Translation2d delta = desiredPoint.minus(ROBOT_POSE.getTranslation());
+          Translation2d delta = desiredPoint.minus(getState().Pose.getTranslation());
 
           Rotation2d targetAngle = delta.getAngle().plus(Rotation2d.k180deg);
 
           this.setControl(
               request
-                  .withVelocityX(joystickY.getAsDouble() * MAX_DRIVE_SPEED)
-                  .withVelocityY(joystickX.getAsDouble() * MAX_DRIVE_SPEED)
+                  .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
+                  .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
                   .withTargetDirection(targetAngle));
         });
   }
@@ -305,8 +304,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     return run(
         () -> {
-          double velX = drivePID.calculate(pose.getX(), ROBOT_POSE.getX());
-          double velY = drivePID.calculate(pose.getY(), ROBOT_POSE.getY());
+          double velX = drivePID.calculate(pose.getX(), getState().Pose.getX());
+          double velY = drivePID.calculate(pose.getY(), getState().Pose.getY());
 
           this.setControl(
               request
@@ -341,13 +340,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   @Override
   public void periodic() {
     // mine
-    SwerveDriveState state = getState();
-    ROBOT_POSE = state.Pose;
-    DogLog.log("Subsystems/Drive/Pose", ROBOT_POSE);
+    DogLog.log("Subsystems/Drive/Pose", getState().Pose);
     DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {
-        camera.simulationPeriodic(ROBOT_POSE);
+        camera.simulationPeriodic(getState().Pose);
       }
     }
     for (Vision camera : cameras) {

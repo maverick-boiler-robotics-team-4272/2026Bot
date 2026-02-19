@@ -36,11 +36,12 @@ public class SubsystemConstants {
     public static final double SHOOTER_WHEEL_RADIUS = 1.5;
     public static final double SHOOTER_WHEEL_CIRCUMFERENCE = Math.PI * SHOOTER_WHEEL_RADIUS;
     public static final double SHOOTER_HEIGHT_M = Meters.convertFrom(16.784, Inches);
+    public static final double IDLE_SPEED = 0; // TODO: ask aobut this value
 
     public static final InterpolatingDoubleTreeMap VELOCITY_LOOKUP =
-        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0));
+        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 5.0));
     public static final InterpolatingDoubleTreeMap ANGLE_LOOKUP =
-        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0));
+        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 4.0));
   }
 
   public static class IntakeConstants {
@@ -48,12 +49,14 @@ public class SubsystemConstants {
     public static final int INTAKE_MOTOR_2_ID = 52;
     public static final double EXTEND_DISTANCE = 40;
     public static final int INTAKE_SPEED = 40;
+    public static final String INTAKE_KEY = "Subsystems/Intake/";
   }
 
   public static class ClimberConstants {
     public static final int CLIMBER_MOTOR_ID = 71;
+    public static final String CLIMBER_KEY = "Subsystems/Climber/";
     public static final int UNLATCH_ROTATIONS = 10; // TODO: tune
-    public static final int CLIMB_ROTATIONS = 100; // TODO: Tune
+    public static final int CLIMB_ROTATIONS = 77; // TODO: Tune
   }
 
   public static class DrivetrainConstants {
