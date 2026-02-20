@@ -6,6 +6,7 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.*;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -92,6 +93,15 @@ public class Intake extends SubsystemBase {
           rotations = 0;
           setIntakeState(0, 0);
         });
+  }
+
+  public Command zeroHood() {
+    return run(
+      () -> {
+        motor2.setControl(new VoltageOut(1).withEnableFOC(true));
+        motor2.setPosition(motor2.getPosition().getValue());
+      }
+    );
   }
 
   @Override
