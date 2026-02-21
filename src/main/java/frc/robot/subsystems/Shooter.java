@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 import java.util.function.DoubleSupplier;
@@ -22,6 +23,7 @@ public class Shooter extends SubsystemBase {
   Kraken hoodedMotor;
 
   double desiredSpeed = 0;
+  double desiredAngle = 0;
 
   public Shooter() {
     // PID needs to be aggressive
@@ -58,11 +60,17 @@ public class Shooter extends SubsystemBase {
 
   public Command setAngle(DoubleSupplier angle) {
     return run(
-        () -> hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true)));
+        () -> {
+          hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true));
+          desiredAngle = angle.getAsDouble();
+        });
   }
 
   public Command setAngle(double angle) {
-    return run(() -> hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true)));
+    return run(() -> {
+      hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true));
+      desiredAngle = angle;
+    });
   }
 
   /**
@@ -94,6 +102,7 @@ public class Shooter extends SubsystemBase {
   public Command setShooterState(DoubleSupplier anglePosition, DoubleSupplier rotationsPerSecond) {
     return run(
         () -> {
+          desiredAngle = anglePosition.getAsDouble();
           hoodedMotor.setControl(new PositionVoltage(anglePosition.getAsDouble()).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond.getAsDouble();
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
@@ -104,6 +113,7 @@ public class Shooter extends SubsystemBase {
   public Command setShooterState(double anglePosition, double rotationsPerSecond) {
     return run(
         () -> {
+          desiredAngle = anglePosition;
           hoodedMotor.setControl(new PositionVoltage(anglePosition).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond;
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
@@ -112,14 +122,15 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isAtDesiredSpeed() {
-    if (shooterMotorLeft.getRotorVelocity().getValueAsDouble() >= desiredSpeed) {
+    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed - 1) {
       return true;
     }
-    return false;
+    return Robot.isReal() ? false : true; // sim is always at the right velocity
   }
 
   @Override
   public void periodic() {
     DogLog.log(SHOOTER_LOG_KEY + "/recomended speed", desiredSpeed);
+    DogLog.log(SHOOTER_LOG_KEY + "/recomended angle", desiredAngle);
   }
 }

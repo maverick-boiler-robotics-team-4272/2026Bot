@@ -7,6 +7,8 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
@@ -16,6 +18,8 @@ import java.util.function.DoubleSupplier;
 public class Loader extends SubsystemBase {
   Kraken motor1;
   Kraken motor2;
+
+  double speed = 0;
 
   public Loader() {
     motor1 = KrakenBuilder.create(LOADER_MOTOR_1_ID, CAN_BUS, "Loader", "Loader Motor 1")
@@ -49,6 +53,7 @@ public class Loader extends SubsystemBase {
   public Command loadBoth(double speed) {
     return run(
         () -> {
+          this.speed = speed;
           motor1.setControl(new VelocityVoltage(speed).withEnableFOC(true));
           motor2.setControl(new VelocityVoltage(speed).withEnableFOC(true));
         });
@@ -70,5 +75,6 @@ public class Loader extends SubsystemBase {
 
   @Override
   public void periodic() {
+    DogLog.log(LOADER_KEY + "Speed", speed);
   }
 }

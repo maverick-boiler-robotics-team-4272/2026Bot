@@ -63,8 +63,8 @@ public class Intake extends SubsystemBase {
    * @param distance in inches of the actuation distance
    * @return
    */
-  public Command extend(double distance) {
-    rotations = distance / Math.PI;
+  public Command extend(double rotations) {
+    this.rotations = rotations;
     return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
   }
 
@@ -72,15 +72,15 @@ public class Intake extends SubsystemBase {
    * @param distance in inches of the actuation distance as a supplier
    * @return
    */
-  public Command extend(DoubleSupplier distance) {
-    double rotations = distance.getAsDouble() / Math.PI;
-    return run(() -> motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
+  public Command extend(DoubleSupplier rotations) {
+    this.rotations = rotations.getAsDouble();
+    return run(() -> motor2.setControl(new PositionVoltage(this.rotations).withEnableFOC(true)));
   }
 
-  public Command setIntakeState(double extendDistance, double rotationsPerSecond) {
+  public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
     return run(
         () -> {
-          rotations = extendDistance / Math.PI;
+          rotations = rotationsDistance;
           motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true));
           motor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         });
@@ -89,8 +89,7 @@ public class Intake extends SubsystemBase {
   public Command defaultCommand() {
     return run(
         () -> {
-          rotations = 0;
-          setIntakeState(0, 0);
+          setIntakeState(rotations, 0);
         });
   }
 
