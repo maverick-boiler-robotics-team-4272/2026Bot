@@ -20,6 +20,8 @@ import java.util.function.DoubleSupplier;
 public class Intake extends SubsystemBase {
   Kraken motor;
   Kraken motor2;
+
+  double speed;
   double rotations;
 
   public Intake() {
@@ -48,7 +50,10 @@ public class Intake extends SubsystemBase {
    * @return
    */
   public Command intake(double speed) {
-    return run(() -> motor.setControl(new VelocityVoltage(speed).withEnableFOC(true)));
+    return run(() -> {
+      this.speed = speed;
+      motor.setControl(
+        new VelocityVoltage(speed).withEnableFOC(true));});
   }
 
   /**
@@ -57,7 +62,9 @@ public class Intake extends SubsystemBase {
    */
   public Command intake(DoubleSupplier speed) {
     return run(
-        () -> motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true)));
+        () -> {
+          this.speed = speed.getAsDouble();
+          motor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));});
   }
 
   /**
@@ -82,6 +89,7 @@ public class Intake extends SubsystemBase {
     return run(
         () -> {
           rotations = rotationsDistance;
+          speed = rotationsPerSecond;
           motor2.setControl(new PositionVoltage(rotations).withEnableFOC(true));
           motor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         });
@@ -106,5 +114,6 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     DogLog.log(INTAKE_KEY + "distance", rotations);
+    DogLog.log(INTAKE_KEY + "speed", speed);
   }
 }
