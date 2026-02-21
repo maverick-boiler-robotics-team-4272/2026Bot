@@ -142,6 +142,30 @@ public class KrakenBuilder {
   }
 
   /**
+   * Sets PID for the motor when Slot0 is selected We currently don't have another
+   * Slot
+   *
+   * @param p proportianal gain
+   * @param i integral gain (don't use)
+   * @param d derivative gain
+   * @param s static feed forward
+   * @param g gravity feedforward / feedback gain
+   * @return itself
+   */
+  public KrakenBuilder withSlot0PIDSGAV(double p, double i, double d, double s, double g, double a, double v) {
+    var slot0Configs = new Slot0Configs();
+    slot0Configs.kP = p;
+    slot0Configs.kI = i;
+    slot0Configs.kD = d;
+    slot0Configs.kS = s;
+    slot0Configs.kG = g;
+    slot0Configs.kA = a;
+    slot0Configs.kV = v;
+    config.withSlot0(slot0Configs);
+    return this;
+  }
+
+  /**
    * Makes a new KrakenBuilder
    *
    * @param id is the id of the motor

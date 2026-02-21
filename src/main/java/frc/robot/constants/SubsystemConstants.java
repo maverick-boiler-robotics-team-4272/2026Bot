@@ -10,12 +10,12 @@ import java.util.Map;
 
 public class SubsystemConstants {
 
-  public static final String CAN_BUS = "Non-Drive";
+  public static final String CAN_BUS = "Drivetrain";
 
   public static class HopperConstants {
     public static final int HOPPER_LOWER_MOTOR_ID = 61;
     public static final int HOPPER_LOWER_MOTOR_2_ID = 62;
-    public static final int HOPPER_UPPER_MOTOR_ID = 63;
+    public static final int HOPPER_UPPER_MOTOR_ID = 60;
 
     public static final String HOPPER_KEY = "Subststems/Hopper/";
 
@@ -53,7 +53,8 @@ public class SubsystemConstants {
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 51;
     public static final int INTAKE_MOTOR_2_ID = 52;
-    public static final double EXTEND_DISTANCE = 40;
+
+    public static final double EXTEND_DISTANCE = 10.6;
     public static final int INTAKE_SPEED = 40;
     public static final String INTAKE_KEY = "Subsystems/Intake/";
   }

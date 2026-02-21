@@ -4,8 +4,11 @@ import static frc.robot.constants.SubsystemConstants.*;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
@@ -22,11 +25,8 @@ public class Hopper extends SubsystemBase {
   Kraken lowerMotor2;
   Kraken upperMotor;
 
-  double upperSpeed = 0;
-  double lowerSpeed = 0;
-  double p = 2;
-  double i = 0.0;
-  double d = 0.0000000;
+  double desiredUpperSpeed = 0;
+  double desiredLowerSpeed = 0;
 
   public Hopper() {
     lowerMotor = KrakenBuilder.create(HOPPER_LOWER_MOTOR_ID, CAN_BUS, "Hopper", "Left Lower Motor")
@@ -35,9 +35,11 @@ public class Hopper extends SubsystemBase {
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PID(p, i, d)
+        .withSlot0PIDSGAV(2, 0, 0, 0, 0, 0, 0.12413)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
+
+    lowerMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
     lowerMotor2 = KrakenBuilder.create(HOPPER_LOWER_MOTOR_2_ID, CAN_BUS, "Hopper", "Right Lower Motor")
         .withCurrentLimit(
@@ -45,9 +47,13 @@ public class Hopper extends SubsystemBase {
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PID(p, i, d)
+        .withSlot0PIDSGAV(2, 0, 0, 0, 0, 0, 0.12413 * 24.0 / 11.0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
+
+    lowerMotor2.setControl(new Follower(HOPPER_LOWER_MOTOR_ID, MotorAlignmentValue.Opposed));
+
+    lowerMotor2.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
     upperMotor = KrakenBuilder.create(HOPPER_UPPER_MOTOR_ID, CAN_BUS, "Hopper", "Upper Motor")
         .withCurrentLimit(
@@ -55,9 +61,11 @@ public class Hopper extends SubsystemBase {
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PID(0.4, 0, 0.00000000001)
+        .withSlot0PIDSGAV(0.4, 0, 0.0, 0, 0, 0, 0.12413 * 24.0 / 11.0)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
+
+    upperMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
   }
 
   /**
@@ -68,10 +76,9 @@ public class Hopper extends SubsystemBase {
   public Command agitate(double lowerSpeed, double upperSpeed) {
     return run(
         () -> {
-          this.upperSpeed = upperSpeed;
-          this.lowerSpeed = lowerSpeed;
+          this.desiredUpperSpeed = upperSpeed;
+          this.desiredLowerSpeed = lowerSpeed;
           lowerMotor.setControl(new VelocityVoltage(lowerSpeed).withEnableFOC(true));
-          lowerMotor2.setControl(new VelocityVoltage(lowerSpeed).withEnableFOC(true));
           upperMotor.setControl(new VelocityVoltage(upperSpeed).withEnableFOC(true));
         });
   }
@@ -84,17 +91,16 @@ public class Hopper extends SubsystemBase {
   public Command agitate(DoubleSupplier lowerSpeed, DoubleSupplier upperSpeed) {
     return run(
         () -> {
-          this.upperSpeed = upperSpeed.getAsDouble();
-          this.lowerSpeed = lowerSpeed.getAsDouble();
+          this.desiredUpperSpeed = upperSpeed.getAsDouble();
+          this.desiredLowerSpeed = lowerSpeed.getAsDouble();
           lowerMotor.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
-          lowerMotor2.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
           upperMotor.setControl(new VelocityVoltage(upperSpeed.getAsDouble()).withEnableFOC(true));
         });
   }
 
   @Override
   public void periodic() {
-    DogLog.log(HOPPER_KEY + "upperSpeed", upperSpeed);
-    DogLog.log(HOPPER_KEY + "lowerSpeed", lowerSpeed);
+    DogLog.log(HOPPER_KEY + "upperSpeed", desiredUpperSpeed);
+    DogLog.log(HOPPER_KEY + "lowerSpeed", desiredLowerSpeed);
   }
 }

@@ -4,6 +4,7 @@ import static frc.robot.constants.SubsystemConstants.CAN_BUS;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -28,23 +29,23 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     // PID needs to be aggressive
-    shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, CAN_BUS, "Shooter", "Shooter Motor Left")
+    shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, "rio", "Shooter", "Shooter Motor Left")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PID(0.6, 0, 0.000000001)
+        .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
-    shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, CAN_BUS, "Shooter", "Shooter Motor Right")
+    shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, "rio", "Shooter", "Shooter Motor Right")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PID(0.6, 0, 0.000000001)
+        .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -54,9 +55,11 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(20)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PID(5, 0, 0)
+        .withSlot0PID(1, 0, 0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
+
+    hoodedMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(348.0 * 24.0 / (16.0 * 11.0)));
   }
 
   public Command setAngle(DoubleSupplier angle) {
@@ -76,11 +79,10 @@ public class Shooter extends SubsystemBase {
 
   public Command zeroHood() {
     return run(
-      () -> {
-        hoodedMotor.setControl(new VoltageOut(1).withEnableFOC(true));
-        hoodedMotor.setPosition(hoodedMotor.getPosition().getValue());
-      }
-    );
+        () -> {
+          hoodedMotor.setControl(new VoltageOut(1).withEnableFOC(true));
+          hoodedMotor.setPosition(hoodedMotor.getPosition().getValue());
+        });
   }
 
   /**

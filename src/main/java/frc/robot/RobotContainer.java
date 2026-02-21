@@ -5,8 +5,6 @@
 package frc.robot;
 
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
-import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
-import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED;
@@ -37,6 +35,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private final CommandXboxController joystick = new CommandXboxController(0);
+  private final CommandXboxController operator = new CommandXboxController(1);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final Telemetry logger = new Telemetry(MAX_DRIVE_SPEED);
 
@@ -50,10 +49,7 @@ public class RobotContainer {
         drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
 
     climber.setDefaultCommand(climber.climb(0));
-    hopper.setDefaultCommand(hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)); // Yes, The hopper should be
-                                                                                      // running at all times, or only
-                                                                                      // running if we have a sensor for
-                                                                                      // fuel
+    hopper.setDefaultCommand(hopper.agitate(0, 0));
     intake.setDefaultCommand(intake.defaultCommand());
     loader.setDefaultCommand(loader.loadBoth(0));
     shooter.setDefaultCommand(shooter.rev(IDLE_SPEED));
@@ -67,8 +63,9 @@ public class RobotContainer {
 
   private void configureBindings() {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.leftTrigger().whileTrue(hopper.agitate(10, 5));
 
-    joystick.leftBumper().onTrue(intake.setIntakeState(0, 0));
+    joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
 
     joystick.a().whileTrue(
         ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX,
@@ -89,6 +86,15 @@ public class RobotContainer {
     joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
     joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+
+    // testing commands
+    operator.rightBumper().whileTrue(intake.extend(10.6));
+    operator.leftBumper().whileTrue(intake.extend(0.0));
+    operator.a().whileTrue(shooter.setShooterState(0.04, 50));
+    operator.b().whileTrue(shooter.setShooterState(0.08, 50));
+
+    operator.x().whileTrue(loader.loadBoth(20));
+    operator.y().whileTrue(hopper.agitate(20, 20));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
