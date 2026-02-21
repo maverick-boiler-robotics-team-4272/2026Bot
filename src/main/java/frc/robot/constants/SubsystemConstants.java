@@ -23,8 +23,8 @@ public class SubsystemConstants {
   public static class LoaderConstants {
     public static final int LOADER_MOTOR_1_ID = 31;
     public static final int LOADER_MOTOR_2_ID = 32;
-    public static final String LOADER_MOTOR_1_ID_LOG_KEY = "Subsystems/Loader/Loader Motor 1/";
-    public static final String LOADER_MOTOR_2_ID_LOG_KEY = "Subsystems/Loader/Loader Motor 2/";
+
+    public static final String LOADER_KEY = "Subsystems/Loader/";
   }
 
   public static class ShooterConstants {
@@ -38,11 +38,13 @@ public class SubsystemConstants {
     public static final double SHOOTER_HEIGHT_M = Meters.convertFrom(16.784, Inches);
     public static final double IDLE_SPEED = 0; // TODO: ask aobut this value
 
-    public static final InterpolatingDoubleTreeMap VELOCITY_LOOKUP = // TODO: make constant when ready
-        InterpolatingDoubleTreeMap.ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0),
-            Map.entry(3.0, 5.0));
-    public static final InterpolatingDoubleTreeMap ANGLE_LOOKUP = InterpolatingDoubleTreeMap
-        .ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 4.0));
+    public static final double SHOOTER_VELOCITY = 50; // TODO: tune
+    public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
+    public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
+        .ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 4.0),
+            Map.entry(4.0, 5.0));
+    public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
+        .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0), Map.entry(4.0, 4.0));
   }
 
   public static class IntakeConstants {

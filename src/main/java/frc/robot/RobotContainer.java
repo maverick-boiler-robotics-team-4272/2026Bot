@@ -14,6 +14,7 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -67,12 +68,16 @@ public class RobotContainer {
   private void configureBindings() {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
 
+    joystick.leftBumper().onTrue(intake.setIntakeState(0, 0));
+
     joystick.a().whileTrue(
         ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX,
-            joystick::getLeftY)); // IT WORKS!!!!
+            joystick::getLeftY, () -> joystick.getHID().getXButton())); // IT WORKS!!!!
 
     joystick.povDown()
-        .whileTrue(ClimbCommands.driveThenClimbCommand(drivetrain, climber, () -> joystick.getHID().getXButton())); // Yup
+        .whileTrue(
+            ClimbCommands.driveThenClimbCommand(drivetrain, climber, intake, () -> joystick.getHID().getXButton())
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // Yup
 
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
