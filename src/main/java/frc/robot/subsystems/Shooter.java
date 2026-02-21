@@ -6,6 +6,7 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -71,6 +72,15 @@ public class Shooter extends SubsystemBase {
       hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true));
       desiredAngle = angle;
     });
+  }
+
+  public Command zeroHood() {
+    return run(
+      () -> {
+        hoodedMotor.setControl(new VoltageOut(1).withEnableFOC(true));
+        hoodedMotor.setPosition(hoodedMotor.getPosition().getValue());
+      }
+    );
   }
 
   /**
