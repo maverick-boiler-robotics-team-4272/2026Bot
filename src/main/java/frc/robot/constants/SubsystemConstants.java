@@ -17,7 +17,7 @@ public class SubsystemConstants {
     public static final int HOPPER_LOWER_MOTOR_2_ID = 62;
     public static final int HOPPER_UPPER_MOTOR_ID = 60;
 
-    public static final String HOPPER_KEY = "Subststems/Hopper/";
+    public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
     public static final int HOPPER_LOWER_SPEED = 60;
     public static final int HOPPER_UPPER_SPEED = 40;

@@ -8,10 +8,17 @@ import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRI
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_LOG_KEY;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -42,6 +49,7 @@ public class RobotContainer {
   public RobotContainer() {
     setDefaultCommands();
     configureBindings();
+    intiElastic();
   }
 
   private void setDefaultCommands() {
@@ -49,10 +57,10 @@ public class RobotContainer {
         drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
 
     climber.setDefaultCommand(climber.climb(0));
-    hopper.setDefaultCommand(hopper.agitate(0, 0));
-    intake.setDefaultCommand(intake.defaultCommand());
+    hopper.setDefaultCommand(hopper.stop());
+    intake.setDefaultCommand(intake.setDefaultCommand());
     loader.setDefaultCommand(loader.loadBoth(0));
-    shooter.setDefaultCommand(shooter.rev(IDLE_SPEED));
+    shooter.setDefaultCommand(shooter.defaultCommand());
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -62,8 +70,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
-    joystick.leftTrigger().whileTrue(hopper.agitate(10, 5));
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 45));// checkmark
+    joystick.rightTrigger().whileTrue(hopper.agitate(42, 30));
 
     joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
 
@@ -90,13 +98,30 @@ public class RobotContainer {
     // testing commands
     operator.rightBumper().whileTrue(intake.extend(10.6));
     operator.leftBumper().whileTrue(intake.extend(0.0));
-    operator.a().whileTrue(shooter.setShooterState(0.04, 50));
-    operator.b().whileTrue(shooter.setShooterState(0.08, 50));
+    operator.a().whileTrue(shooter.setShooterState(0.04, 70));
+    operator.b().whileTrue(shooter.setShooterState(0.08, 70));
 
-    operator.x().whileTrue(loader.loadBoth(20));
-    operator.y().whileTrue(hopper.agitate(20, 20));
+    operator.povUp().whileTrue(shooter.setShooterState(() -> {
+      return SmartDashboard.getNumber(SHOOTER_LOG_KEY, 0);
+    }, () -> 0));
+    operator.x().whileTrue(loader.loadBoth(40));
+    operator.y().whileTrue(hopper.agitate(42, 30));
+    // Attempt at making a sequential command group for opening and closing intake
+    operator.rightTrigger().onTrue(
+        new SequentialCommandGroup(
+            intake.setIntakeState(8, 40),
+            new WaitCommand(0.5),
+            intake.setIntakeState(2, 40),
+            new WaitCommand(0.5)));
+
+    operator.povLeft().whileTrue(intake.zeroExtension());
+    operator.povRight().whileTrue(shooter.zeroHood());
 
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void intiElastic() {
+    SmartDashboard.putNumber(SHOOTER_LOG_KEY, 0);
   }
 
   public Command getAutonomousCommand() {

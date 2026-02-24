@@ -29,11 +29,14 @@ public class Intake extends SubsystemBase {
     intakeMotor = KrakenBuilder.create(INTAKE_MOTOR_ID, "rio", "Intake", "Intake Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
+                .withStatorCurrentLimitEnable(false)
                 .withSupplyCurrentLimit(60)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(60)
+                .withSupplyCurrentLowerTime(5.0))
         .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.CounterClockwise_Positive)
-        .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 24.0 / 11.0)
+        .withSlot0PIDSGAV(5, 0, 0, 12, 0, 0, 0)// 0.12413 * 24.0 * 2.8 / 11.0)
         .build();
     intakeMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
@@ -46,7 +49,6 @@ public class Intake extends SubsystemBase {
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
-    intakeMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / 11.0));
   }
 
   /**
@@ -102,18 +104,33 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command defaultCommand() {
+  public Command setIntakeState(DoubleSupplier rotationsDistance, DoubleSupplier rotationsPerSecond) {
     return run(
         () -> {
-          setIntakeState(desiredExtensionRotations, 0);
+          desiredExtensionRotations = rotationsDistance.getAsDouble();
+          desiredIntakeSpeed = rotationsPerSecond.getAsDouble();
+          extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble()).withEnableFOC(true));
+          intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
         });
   }
 
-  public Command zeroHood() {
+  public Command zeroExtension() {
     return run(
         () -> {
-          extensionMotor.setControl(new VoltageOut(1).withEnableFOC(true));
-          extensionMotor.setPosition(extensionMotor.getPosition().getValue());
+          desiredExtensionRotations = 0;
+          extensionMotor.setControl(new VoltageOut(-6).withEnableFOC(true));
+          extensionMotor.setPosition(0);
+        });
+  }
+
+  public Command setDefaultCommand() {
+    return run(
+        () -> {
+          desiredIntakeSpeed = 0;
+          desiredExtensionRotations = extensionMotor.getPosition().getValueAsDouble();
+          extensionMotor
+              .setControl(new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withEnableFOC(true));
+          intakeMotor.setControl(new VoltageOut(0).withEnableFOC(true));
         });
   }
 

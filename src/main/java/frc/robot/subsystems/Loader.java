@@ -30,7 +30,7 @@ public class Loader extends SubsystemBase {
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
         .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
-        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withInversion(InvertedValue.Clockwise_Positive)
         .build();
     motor1.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
     motor2 = KrakenBuilder.create(LOADER_MOTOR_2_ID, CAN_BUS, "Loader", "Loader Motor 2")
