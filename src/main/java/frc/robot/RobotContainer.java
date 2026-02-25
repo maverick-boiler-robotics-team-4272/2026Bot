@@ -76,13 +76,16 @@ public class RobotContainer {
     joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
 
     joystick.a().whileTrue(
-        ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX,
+        ShooterCommands.fullShooterCommand(shooter, hopper, loader, intake, drivetrain, joystick::getLeftX,
             joystick::getLeftY, () -> joystick.getHID().getXButton())); // IT WORKS!!!!
 
     joystick.povDown()
         .whileTrue(
             ClimbCommands.driveThenClimbCommand(drivetrain, climber, intake, () -> joystick.getHID().getXButton())
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // Yup
+
+    joystick.leftStick().whileTrue(
+        intake.agitateIntake());
 
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
@@ -96,8 +99,6 @@ public class RobotContainer {
     joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
-    operator.rightBumper().whileTrue(intake.extend(10.6));
-    operator.leftBumper().whileTrue(intake.extend(0.0));
     operator.a().whileTrue(shooter.setShooterState(0.04, 70));
     operator.b().whileTrue(shooter.setShooterState(0.08, 70));
 
@@ -106,13 +107,6 @@ public class RobotContainer {
     }, () -> 0));
     operator.x().whileTrue(loader.loadBoth(40));
     operator.y().whileTrue(hopper.agitate(42, 30));
-    // Attempt at making a sequential command group for opening and closing intake
-    operator.rightTrigger().onTrue(
-        new SequentialCommandGroup(
-            intake.setIntakeState(8, 40),
-            new WaitCommand(0.5),
-            intake.setIntakeState(2, 40),
-            new WaitCommand(0.5)));
 
     operator.povLeft().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());

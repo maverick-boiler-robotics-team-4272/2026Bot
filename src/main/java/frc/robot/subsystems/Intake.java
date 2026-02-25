@@ -13,7 +13,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 import java.util.function.DoubleSupplier;
@@ -75,25 +79,6 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  /**
-   * @param distance in inches of the actuation distance
-   * @return
-   */
-  public Command extend(double rotations) {
-    this.desiredExtensionRotations = rotations;
-    return run(() -> extensionMotor.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
-  }
-
-  /**
-   * @param distance in inches of the actuation distance as a supplier
-   * @return
-   */
-  public Command extend(DoubleSupplier rotations) {
-    this.desiredExtensionRotations = rotations.getAsDouble();
-    return run(
-        () -> extensionMotor.setControl(new PositionVoltage(this.desiredExtensionRotations).withEnableFOC(true)));
-  }
-
   public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
     return run(
         () -> {
@@ -132,6 +117,12 @@ public class Intake extends SubsystemBase {
               .setControl(new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withEnableFOC(true));
           intakeMotor.setControl(new VoltageOut(0).withEnableFOC(true));
         });
+  }
+
+  public Command agitateIntake() {
+    return new SequentialCommandGroup(
+        setIntakeState(8, 30).withTimeout(0.75),
+        setIntakeState(EXTEND_DISTANCE, 30).withTimeout(0.75)).repeatedly();
   }
 
   @Override

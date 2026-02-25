@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Loader;
 import frc.robot.subsystems.Shooter;
 
@@ -23,12 +24,14 @@ public class ShooterCommands {
       Shooter shooter,
       Hopper hopper,
       Loader loader,
+      Intake intake,
       CommandSwerveDrivetrain drive,
       DoubleSupplier joystickX,
       DoubleSupplier joystickY,
       BooleanSupplier isReady) {
     return new ParallelCommandGroup(
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
+        intake.agitateIntake(),
         drive.pointTowardsPoint(HUB_LOCATION, joystickX, joystickY),
         setDesiredShooterStates(shooter, drive),
         Commands.repeatingSequence(
