@@ -12,6 +12,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -55,26 +56,11 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(20)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(200, 0.0, 0.01, 05, 0.0, 0, 0)
+        .withSlot0PIDSGAV(200, 0.0, 0.01, 0, 0.0, 0, 0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
     hoodedMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(348.0 * 24.0 / (16.0 * 11.0)));
-  }
-
-  public Command setAngle(DoubleSupplier angle) {
-    return run(
-        () -> {
-          hoodedMotor.setControl(new PositionVoltage(angle.getAsDouble()).withEnableFOC(true));
-          desiredAngle = angle.getAsDouble();
-        });
-  }
-
-  public Command setAngle(double angle) {
-    return run(() -> {
-      hoodedMotor.setControl(new PositionVoltage(angle).withEnableFOC(true));
-      desiredAngle = angle;
-    });
   }
 
   public Command zeroHood() {
@@ -83,32 +69,8 @@ public class Shooter extends SubsystemBase {
           desiredAngle = 0.0;
           hoodedMotor.setControl(new VoltageOut(-1).withEnableFOC(true));
           hoodedMotor.setPosition(0.0);
-        });
-  }
-
-  /**
-   * @param speed in rotations per second
-   * @return
-   */
-  public Command rev(double speed) {
-    return run(
-        () -> {
-          desiredSpeed = speed;
-          shooterMotorLeft.setControl(new VelocityVoltage(speed).withEnableFOC(true));
-          shooterMotorRight.setControl(new VelocityVoltage(speed).withEnableFOC(true));
-        });
-  }
-
-  /**
-   * @param speed in rotations per second
-   * @return
-   */
-  public Command rev(DoubleSupplier speed) {
-    return run(
-        () -> {
-          desiredSpeed = speed.getAsDouble();
-          shooterMotorLeft.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
-          shooterMotorRight.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
+          shooterMotorLeft.setControl(new VoltageOut(0).withEnableFOC(true));
+          shooterMotorRight.setControl(new VoltageOut(0).withEnableFOC(true));
         });
   }
 
@@ -116,7 +78,8 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           desiredAngle = anglePosition.getAsDouble();
-          hoodedMotor.setControl(new PositionVoltage(anglePosition.getAsDouble() + .004).withEnableFOC(true));
+          hoodedMotor.setControl(
+              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .004, 0, 0.1)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond.getAsDouble();
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
@@ -127,7 +90,7 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           desiredAngle = anglePosition;
-          hoodedMotor.setControl(new PositionVoltage(anglePosition + .004).withEnableFOC(true));
+          hoodedMotor.setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .004, 0, 0.1)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond;
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
@@ -155,6 +118,6 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     DogLog.log(SHOOTER_LOG_KEY + "/recomended speed", desiredSpeed);
-    DogLog.log(SHOOTER_LOG_KEY + "/recomended angle", desiredAngle);
+    DogLog.log(SHOOTER_LOG_KEY + "/recomended rotations", desiredAngle);
   }
 }
