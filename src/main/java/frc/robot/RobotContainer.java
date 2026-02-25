@@ -105,7 +105,7 @@ public class RobotContainer {
     operator.povUp().whileTrue(shooter.setShooterState(() -> {
       return SmartDashboard.getNumber(SHOOTER_LOG_KEY, 0);
     }, () -> 0));
-    operator.x().whileTrue(loader.loadBoth(40));
+    operator.x().whileTrue(loader.loadBoth(60));
     operator.y().whileTrue(hopper.agitate(42, 30));
 
     operator.povLeft().whileTrue(intake.zeroExtension());

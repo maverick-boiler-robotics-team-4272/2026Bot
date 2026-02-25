@@ -53,6 +53,11 @@ public class Intake extends SubsystemBase {
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
+
+    extensionMotor.getConfigurator()
+        .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0 * 3.0 * Math.PI)));
+
+    extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
   }
 
   /**
@@ -127,7 +132,7 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    DogLog.log(INTAKE_KEY + "distance", desiredExtensionRotations);
-    DogLog.log(INTAKE_KEY + "speed", desiredIntakeSpeed);
+    DogLog.log(INTAKE_KEY + "desired distance", desiredExtensionRotations);
+    DogLog.log(INTAKE_KEY + "desired speed", desiredIntakeSpeed);
   }
 }
