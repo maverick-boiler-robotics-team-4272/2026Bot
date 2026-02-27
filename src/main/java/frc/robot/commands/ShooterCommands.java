@@ -31,12 +31,13 @@ public class ShooterCommands {
       BooleanSupplier isReady) {
     return new ParallelCommandGroup(
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
-        intake.agitateIntake(),
         drive.pointTowardsPoint(HUB_LOCATION, joystickX, joystickY),
         setDesiredShooterStates(shooter, drive),
         Commands.repeatingSequence(
             new ConditionalCommand(
-                loader.loadBoth(70),
+                new ParallelCommandGroup(
+                    intake.agitateIntake(),
+                    loader.loadBoth(70)),
                 loader.loadBoth(0),
                 () -> {
                   return isReady.getAsBoolean() && shooter.isAtDesiredSpeed();

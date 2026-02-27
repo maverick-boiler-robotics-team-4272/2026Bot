@@ -47,17 +47,18 @@ public class Intake extends SubsystemBase {
     extensionMotor = KrakenBuilder.create(INTAKE_MOTOR_2_ID, "rio", "Intake", "Actuation Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(30)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(50))
         .withIdleMode(NeutralModeValue.Brake)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
 
-    extensionMotor.getConfigurator()
-        .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0 * 3.0 * Math.PI)));
+    // extensionMotor.getConfigurator()
+    // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
 
-    extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
+    // extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
   }
 
   /**
@@ -126,8 +127,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(8, 30).withTimeout(0.75),
-        setIntakeState(EXTEND_DISTANCE, 30).withTimeout(0.75)).repeatedly();
+        setIntakeState(6, 30).withTimeout(0.5),
+        setIntakeState(EXTEND_DISTANCE, 30).withTimeout(0.5)).repeatedly();
   }
 
   @Override

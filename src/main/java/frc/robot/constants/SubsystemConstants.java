@@ -54,7 +54,7 @@ public class SubsystemConstants {
     public static final int INTAKE_MOTOR_ID = 51;
     public static final int INTAKE_MOTOR_2_ID = 52;
 
-    public static final double EXTEND_DISTANCE = 12;
+    public static final double EXTEND_DISTANCE = 10.6;
     public static final int INTAKE_SPEED = 40;
     public static final String INTAKE_KEY = "Subsystems/Intake/";
   }
@@ -73,11 +73,11 @@ public class SubsystemConstants {
     public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF,
         DCMotor.getKrakenX60Foc(4), 80, 4);
 
-    public static final double DRIVE_P = 5.0;
+    public static final double DRIVE_P = 4.0;
     public static final double DRIVE_I = 0.0;
-    public static final double DRIVE_D = 0.0;
+    public static final double DRIVE_D = 0.01;
 
-    public static final double ROTATION_P = 10.0;
+    public static final double ROTATION_P = 5.0;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
   }

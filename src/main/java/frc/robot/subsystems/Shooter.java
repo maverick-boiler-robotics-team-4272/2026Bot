@@ -5,7 +5,10 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -36,9 +39,9 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0, 0, 0.0, 0, 0, 0, 0.12413 * 1.03)
+        .withSlot0PIDSGAV(0.2, 0.0, 0.00, 0.35, 0, 0, 0.123)
         .withInversion(InvertedValue.Clockwise_Positive)
-        .build();
+        .build(); // p = 0.1, d = 0.001, s = 0.2
 
     shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, "rio", "Shooter", "Shooter Motor Right")
         .withCurrentLimit(
@@ -46,7 +49,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0, 0, 0.0, 0, 0, 0, 0.12413 * 1.03)
+        .withSlot0PIDSGAV(0.20, 0.0, 0.00, 0.32, 0, 0, 0.123)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -56,7 +59,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(20)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(200, 0.0, 0.01, 0, 0.0, 0, 0)
+        .withSlot0PIDSGAV(500, 0.0, 0.00, 0.0, 0.5, 0, 0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -79,7 +82,7 @@ public class Shooter extends SubsystemBase {
         () -> {
           desiredAngle = anglePosition.getAsDouble();
           hoodedMotor.setControl(
-              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .004, 0, 0.1)).withEnableFOC(true));
+              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .000, 0, 0.1)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond.getAsDouble();
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
@@ -90,7 +93,7 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           desiredAngle = anglePosition;
-          hoodedMotor.setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .004, 0, 0.1)).withEnableFOC(true));
+          hoodedMotor.setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .000, 0, 0.1)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond;
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
@@ -112,6 +115,18 @@ public class Shooter extends SubsystemBase {
           hoodedMotor.setControl(new PositionVoltage(0).withEnableFOC(true));
           shooterMotorLeft.setControl(new VoltageOut(0).withEnableFOC(true));
           shooterMotorRight.setControl(new VoltageOut(0).withEnableFOC(true));
+        });
+  }
+
+  public Command setVoltage(DoubleSupplier anglePosition, DoubleSupplier rotationsPerSecond) {
+    return run(
+        () -> {
+          desiredAngle = anglePosition.getAsDouble();
+          hoodedMotor.setControl(
+              new VoltageOut(anglePosition.getAsDouble()).withEnableFOC(true));
+          desiredSpeed = rotationsPerSecond.getAsDouble();
+          shooterMotorLeft.setControl(new VoltageOut(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
+          shooterMotorRight.setControl(new VoltageOut(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
         });
   }
 

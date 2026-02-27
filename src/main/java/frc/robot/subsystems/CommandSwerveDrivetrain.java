@@ -339,26 +339,27 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         .withDeadband(MAX_DRIVE_SPEED * 0.01)
         .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01)
         .withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D);
-    
-    if(getState().Pose.nearest(TRENCH_POSES).equals(LEFT_OUT[0])) {
+
+    if (getState().Pose.nearest(TRENCH_POSES).equals(LEFT_OUT[0])) {
       trenchPoses = LEFT_OUT;
-    } else if(getState().Pose.nearest(TRENCH_POSES).equals(LEFT_IN[0])) {
+    } else if (getState().Pose.nearest(TRENCH_POSES).equals(LEFT_IN[0])) {
       trenchPoses = LEFT_IN;
-    } else if(getState().Pose.nearest(TRENCH_POSES).equals(RIGHT_OUT[0])) {
+    } else if (getState().Pose.nearest(TRENCH_POSES).equals(RIGHT_OUT[0])) {
       trenchPoses = RIGHT_OUT;
-    } else if(getState().Pose.nearest(TRENCH_POSES).equals(RIGHT_IN[0])) {
+    } else if (getState().Pose.nearest(TRENCH_POSES).equals(RIGHT_IN[0])) {
       trenchPoses = RIGHT_IN;
     }
 
-    return run( () -> {
+    return run(() -> {
       new SequentialCommandGroup(
-        pidToPoint(trenchPoses[0]).until(() -> getState().Pose.getTranslation().getDistance(trenchPoses[0].getTranslation()) < 1),
-        pidToPoint(trenchPoses[1]).until(() -> getState().Pose.getTranslation().getDistance(trenchPoses[1].getTranslation()) < 0.5),
-        pidToPoint(trenchPoses[2]).until(() -> getState().Pose.getTranslation().getDistance(trenchPoses[2].getTranslation()) < 0.5),
-        pidToPoint(trenchPoses[3])
-      );
-    }
-    );    
+          pidToPoint(trenchPoses[0])
+              .until(() -> getState().Pose.getTranslation().getDistance(trenchPoses[0].getTranslation()) < 1),
+          pidToPoint(trenchPoses[1])
+              .until(() -> getState().Pose.getTranslation().getDistance(trenchPoses[1].getTranslation()) < 0.5),
+          pidToPoint(trenchPoses[2])
+              .until(() -> getState().Pose.getTranslation().getDistance(trenchPoses[2].getTranslation()) < 0.5),
+          pidToPoint(trenchPoses[3]));
+    });
   }
 
   /**
@@ -398,7 +399,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     for (Vision camera : cameras) {
       camera.periodic();
     }
-    DogLog.log("Subsystems/Drive/This Pose", new Pose2d(7, 3, Rotation2d.fromDegrees(360)));
 
     // not mine
     /*
