@@ -16,8 +16,11 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -78,7 +81,7 @@ public class RobotContainer {
     // neutral mode is applied to the drive motors while disabled.
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled()
-        .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+        .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true).withName("Idle"));
   }
 
   private void configureBindings() {
@@ -143,19 +146,20 @@ public class RobotContainer {
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("EXAMPLE", command);
     NamedCommands.registerCommand(
-      "Intake",
-      intake.setIntakeState(EXTEND_DISTANCE,INTAKE_SPEED)
-    );
+        "Intake",
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));
   }
-  
+
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
 
-    autoTab =  Shuffleboard.getTab("Auto");
+    autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("AutoChooser", autoChooser);
 
-    // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE PATHPLANNER AUTO", /*mirror*/false))
-    autoChooser.setDefaultOption("Test", new PathPlannerAuto("Test", false));
+    // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE
+    // PATHPLANNER AUTO", /*mirror*/false))
+    autoChooser.setDefaultOption("New Auto", new PathPlannerAuto("New Auto", false));
+  }
 
   public void intiElastic() {
     SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0);
@@ -163,6 +167,15 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No Auto");
+    // var auto = new PathPlannerAuto("New Auto", false).withName("auto command");
+    PathPlannerPath path;
+    try {
+      path = PathPlannerPath.fromChoreoTrajectory("test");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    var auto = AutoBuilder.followPath(path);
+    return auto;
   }
 }

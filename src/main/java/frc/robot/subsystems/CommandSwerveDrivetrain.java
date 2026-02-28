@@ -288,7 +288,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             request
                 .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
                 .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
-                .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)));
+                .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)))
+        .withName("Joystick Drive");
   }
 
   public Command pointTowardsPoint(
@@ -390,6 +391,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // mine
     DogLog.log("Subsystems/Drive/Pose", getState().Pose);
     DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
+    if (getCurrentCommand() != null) {
+      DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
+    } else {
+      DogLog.log("Subsystems/Drive/CurrentCommand", "None");
+    }
+
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {
         camera.simulationPeriodic(getState().Pose);
