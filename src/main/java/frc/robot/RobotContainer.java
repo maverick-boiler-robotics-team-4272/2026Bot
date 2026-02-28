@@ -13,11 +13,15 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_LO
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -136,6 +140,7 @@ public class RobotContainer {
 
     operator.leftTrigger().whileTrue(
         drivetrain.pidThroughTrench());
+    operator.rightTrigger().whileTrue(new PathPlannerAuto("Test",false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -156,6 +161,7 @@ public class RobotContainer {
 
     // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE PATHPLANNER AUTO", /*mirror*/false))
     autoChooser.setDefaultOption("Test", new PathPlannerAuto("Test", false));
+  }
 
   public void intiElastic() {
     SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0);
@@ -163,6 +169,13 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No Auto");
+    try{
+      PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
+
+      return AutoBuilder.followPath(path);
+    } catch (Exception e) {
+      DriverStation.reportError("Failed to load auto path: " + e.getMessage(), e.getStackTrace());
+      return Commands.none();
+    }
   }
 }
