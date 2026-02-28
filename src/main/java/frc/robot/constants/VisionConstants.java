@@ -16,7 +16,7 @@ public class VisionConstants {
 
         public static final Transform3d CAMERA_A_TRANSFORM = new Transform3d(
                         Units.inchesToMeters(12.313), // x
-                        Units.inchesToMeters(-12.667), // y
+                        Units.inchesToMeters(12.667), // y
                         Units.inchesToMeters(16.5), // z
                         new Rotation3d(Math.PI /* roll */, 0 /* pitch */, Math.PI / 2 /* yaw */)); // Right side
         public static final Transform3d CAMERA_B_TRANSFORM = new Transform3d(

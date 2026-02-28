@@ -39,9 +39,7 @@ public class ShooterCommands {
                     intake.agitateIntake(),
                     loader.loadBoth(70)),
                 loader.loadBoth(0),
-                () -> {
-                  return isReady.getAsBoolean() && shooter.isAtDesiredSpeed();
-                })));
+                shooter::isAtDesiredSpeed)));
   }
 
   public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {

@@ -123,6 +123,9 @@ public class RobotContainer {
     operator.povLeft().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
 
+    operator.leftTrigger().whileTrue(
+        drivetrain.pidThroughTrench());
+
     drivetrain.registerTelemetry(logger::telemeterize);
   }
 

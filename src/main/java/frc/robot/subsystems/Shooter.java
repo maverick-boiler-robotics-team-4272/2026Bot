@@ -59,7 +59,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(20)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(500, 0.0, 0.00, 0.0, 0.5, 0, 0)
+        .withSlot0PIDSGAV(400, 0.0, 0.00, 0.0, 0.5, 0, 0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -82,7 +82,7 @@ public class Shooter extends SubsystemBase {
         () -> {
           desiredAngle = anglePosition.getAsDouble();
           hoodedMotor.setControl(
-              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .000, 0, 0.1)).withEnableFOC(true));
+              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .000, 0, 0.05)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond.getAsDouble();
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
@@ -93,7 +93,8 @@ public class Shooter extends SubsystemBase {
     return run(
         () -> {
           desiredAngle = anglePosition;
-          hoodedMotor.setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .000, 0, 0.1)).withEnableFOC(true));
+          hoodedMotor
+              .setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .000, 0, 0.05)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond;
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));

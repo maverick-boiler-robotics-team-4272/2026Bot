@@ -127,8 +127,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(6, 30).withTimeout(0.5),
-        setIntakeState(EXTEND_DISTANCE, 30).withTimeout(0.5)).repeatedly();
+        setIntakeState(6, 0).withTimeout(0.5),
+        setIntakeState(EXTEND_DISTANCE, 0).withTimeout(0.5)).repeatedly();
   }
 
   @Override

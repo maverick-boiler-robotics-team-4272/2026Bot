@@ -77,7 +77,7 @@ public class SubsystemConstants {
     public static final double DRIVE_I = 0.0;
     public static final double DRIVE_D = 0.01;
 
-    public static final double ROTATION_P = 5.0;
+    public static final double ROTATION_P = 10.0;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
   }
