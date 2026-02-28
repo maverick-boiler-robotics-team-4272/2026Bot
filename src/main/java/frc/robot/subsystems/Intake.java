@@ -13,7 +13,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 import java.util.function.DoubleSupplier;
@@ -29,24 +33,32 @@ public class Intake extends SubsystemBase {
     intakeMotor = KrakenBuilder.create(INTAKE_MOTOR_ID, "rio", "Intake", "Intake Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
+                .withStatorCurrentLimitEnable(false)
                 .withSupplyCurrentLimit(60)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(60)
+                .withSupplyCurrentLowerTime(5.0))
         .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.CounterClockwise_Positive)
-        .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 24.0 / 11.0)
+        .withSlot0PIDSGAV(5, 0, 0, 12, 0, 0, 0)// 0.12413 * 24.0 * 2.8 / 11.0)
         .build();
     intakeMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
     extensionMotor = KrakenBuilder.create(INTAKE_MOTOR_2_ID, "rio", "Intake", "Actuation Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(30)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(50))
         .withIdleMode(NeutralModeValue.Brake)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
-    intakeMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / 11.0));
+
+    // extensionMotor.getConfigurator()
+    // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
+
+    // extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
   }
 
   /**
@@ -73,25 +85,6 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  /**
-   * @param distance in inches of the actuation distance
-   * @return
-   */
-  public Command extend(double rotations) {
-    this.desiredExtensionRotations = rotations;
-    return run(() -> extensionMotor.setControl(new PositionVoltage(rotations).withEnableFOC(true)));
-  }
-
-  /**
-   * @param distance in inches of the actuation distance as a supplier
-   * @return
-   */
-  public Command extend(DoubleSupplier rotations) {
-    this.desiredExtensionRotations = rotations.getAsDouble();
-    return run(
-        () -> extensionMotor.setControl(new PositionVoltage(this.desiredExtensionRotations).withEnableFOC(true)));
-  }
-
   public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
     return run(
         () -> {
@@ -102,24 +95,45 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command defaultCommand() {
+  public Command setIntakeState(DoubleSupplier rotationsDistance, DoubleSupplier rotationsPerSecond) {
     return run(
         () -> {
-          setIntakeState(desiredExtensionRotations, 0);
+          desiredExtensionRotations = rotationsDistance.getAsDouble();
+          desiredIntakeSpeed = rotationsPerSecond.getAsDouble();
+          extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble()).withEnableFOC(true));
+          intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
         });
   }
 
-  public Command zeroHood() {
+  public Command zeroExtension() {
     return run(
         () -> {
-          extensionMotor.setControl(new VoltageOut(1).withEnableFOC(true));
-          extensionMotor.setPosition(extensionMotor.getPosition().getValue());
+          desiredExtensionRotations = 0;
+          extensionMotor.setControl(new VoltageOut(-6).withEnableFOC(true));
+          extensionMotor.setPosition(0);
         });
+  }
+
+  public Command setDefaultCommand() {
+    return run(
+        () -> {
+          desiredIntakeSpeed = 0;
+          desiredExtensionRotations = extensionMotor.getPosition().getValueAsDouble();
+          extensionMotor
+              .setControl(new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withEnableFOC(true));
+          intakeMotor.setControl(new VoltageOut(0).withEnableFOC(true));
+        });
+  }
+
+  public Command agitateIntake() {
+    return new SequentialCommandGroup(
+        setIntakeState(6, 0).withTimeout(0.5),
+        setIntakeState(EXTEND_DISTANCE, 0).withTimeout(0.5)).repeatedly();
   }
 
   @Override
   public void periodic() {
-    DogLog.log(INTAKE_KEY + "distance", desiredExtensionRotations);
-    DogLog.log(INTAKE_KEY + "speed", desiredIntakeSpeed);
+    DogLog.log(INTAKE_KEY + "desired distance", desiredExtensionRotations);
+    DogLog.log(INTAKE_KEY + "desired speed", desiredIntakeSpeed);
   }
 }

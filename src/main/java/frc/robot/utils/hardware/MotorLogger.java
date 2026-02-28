@@ -50,4 +50,5 @@ public class MotorLogger {
     DogLog.log(keyBuilder.toString(), position.getValueAsDouble());
     keyBuilder.setLength(deadLength);
   }
+
 }
