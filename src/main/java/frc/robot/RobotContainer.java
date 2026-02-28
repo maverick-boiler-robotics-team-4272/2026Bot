@@ -10,6 +10,13 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEE
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -34,6 +41,9 @@ public class RobotContainer {
   private final Climber climber = new Climber();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+  private ShuffleboardTab autoTab;
+  private SendableChooser<Command> autoChooser;
+
   private final CommandXboxController joystick = new CommandXboxController(0);
   private final CommandXboxController operator = new CommandXboxController(1);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -42,6 +52,8 @@ public class RobotContainer {
   public RobotContainer() {
     setDefaultCommands();
     configureBindings();
+
+    setupAutos();
   }
 
   private void setDefaultCommands() {
@@ -97,6 +109,25 @@ public class RobotContainer {
     operator.y().whileTrue(hopper.agitate(20, 20));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+  }
+
+  public void registerNamedCommands() {
+    // NamedCommands.registerCommand("EXAMPLE", command);
+    NamedCommands.registerCommand(
+      "Intake",
+      intake.setIntakeState(EXTEND_DISTANCE,INTAKE_SPEED)
+    );
+  }
+  
+  public void setupAutos() {
+    autoChooser = new SendableChooser<>();
+
+    autoTab =  Shuffleboard.getTab("Auto");
+    autoTab.add("AutoChooser", autoChooser);
+
+    // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE PATHPLANNER AUTO", /*mirror*/false))
+    autoChooser.setDefaultOption("Test", new PathPlannerAuto("Test", false));
+
   }
 
   public Command getAutonomousCommand() {

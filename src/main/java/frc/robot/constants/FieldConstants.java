@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+
 import java.util.ArrayList;
 
 public class FieldConstants {
@@ -12,6 +14,7 @@ public class FieldConstants {
   public static final double ROBOT_MASS_KG = 68.4;
   public static final double FIELD_LENGTH_M = 16.54;
   public static final double FIELD_WIDTH_M = 8.07;
+  public static final SendableChooser<String> SIDE_CHOOSER = new SendableChooser<>();
 
   public static final Pose2d CLIMB_POSE_LEFT = new Pose2d(15.469, 3.297, Rotation2d.fromDegrees(90));
   public static final Pose2d CLIMB_POSE_RIGHT = new Pose2d(15.461, 5.357, Rotation2d.fromDegrees(-90));
@@ -46,6 +49,7 @@ public class FieldConstants {
     TRENCH_POSES.add(TRENCH_LEFT_IN_APPROACH);
     TRENCH_POSES.add(TRENCH_RIGHT_OUT_APPROACH);
     TRENCH_POSES.add(TRENCH_RIGHT_IN_APPROACH);
+    
   }
   public static boolean isRedSide() {
     if (DriverStation.getAlliance().isPresent()
