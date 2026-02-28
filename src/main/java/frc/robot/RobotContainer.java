@@ -4,10 +4,12 @@
 
 package frc.robot;
 
+import static frc.robot.constants.FieldConstants.TUNE_POSE;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_LOG_KEY;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,8 +19,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
+import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -54,6 +61,7 @@ public class RobotContainer {
     configureBindings();
 
     setupAutos();
+    intiElastic();
   }
 
   private void setDefaultCommands() {
@@ -61,10 +69,10 @@ public class RobotContainer {
         drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
 
     climber.setDefaultCommand(climber.climb(0));
-    hopper.setDefaultCommand(hopper.agitate(0, 0));
-    intake.setDefaultCommand(intake.defaultCommand());
+    hopper.setDefaultCommand(hopper.stop());
+    intake.setDefaultCommand(intake.setDefaultCommand());
     loader.setDefaultCommand(loader.loadBoth(0));
-    shooter.setDefaultCommand(shooter.rev(IDLE_SPEED));
+    shooter.setDefaultCommand(shooter.defaultCommand());
 
     // Idle while the robot is disabled. This ensures the configured
     // neutral mode is applied to the drive motors while disabled.
@@ -74,23 +82,30 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
-    joystick.leftTrigger().whileTrue(hopper.agitate(10, 5));
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 45));// checkmark
+    joystick.rightTrigger().whileTrue(hopper.agitate(42, 30));
 
     joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
 
     joystick.a().whileTrue(
-        ShooterCommands.fullShooterCommand(shooter, hopper, loader, drivetrain, joystick::getLeftX,
+        ShooterCommands.fullShooterCommand(shooter, hopper, loader, intake,
+            drivetrain, joystick::getLeftX,
             joystick::getLeftY, () -> joystick.getHID().getXButton())); // IT WORKS!!!!
 
-    joystick.povDown()
-        .whileTrue(
-            ClimbCommands.driveThenClimbCommand(drivetrain, climber, intake, () -> joystick.getHID().getXButton())
-                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // Yup
+    // joystick.povDown()
+    // .whileTrue(
+    // ClimbCommands.driveThenClimbCommand(drivetrain, climber, intake, () ->
+    // joystick.getHID().getXButton())
+    // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // Yup
+
+    operator.leftBumper().whileTrue(
+        intake.agitateIntake());
 
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
     joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));// not me
+
+    joystick.leftStick().whileTrue(drivetrain.pidToPoint(TUNE_POSE));
 
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
@@ -100,13 +115,27 @@ public class RobotContainer {
     joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
-    operator.rightBumper().whileTrue(intake.extend(10.6));
-    operator.leftBumper().whileTrue(intake.extend(0.0));
-    operator.a().whileTrue(shooter.setShooterState(0.04, 50));
-    operator.b().whileTrue(shooter.setShooterState(0.08, 50));
+    operator.b().whileTrue(shooter.setShooterState(0.08, 70));
+    operator.a().whileTrue(shooter.setShooterState(() -> {
+      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "angle", 0);
+    }, () -> {
+      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "speed", 0);
+    }));
 
-    operator.x().whileTrue(loader.loadBoth(20));
-    operator.y().whileTrue(hopper.agitate(20, 20));
+    operator.rightBumper().whileTrue(shooter.setVoltage(() -> {
+      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "angle", 0);
+    }, () -> {
+      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "speed", 0);
+    }));
+
+    operator.x().whileTrue(loader.loadBoth(30));
+
+    operator.y().whileTrue(hopper.agitate(42, 25));
+    operator.povLeft().whileTrue(intake.zeroExtension());
+    operator.povRight().whileTrue(shooter.zeroHood());
+
+    operator.leftTrigger().whileTrue(
+        drivetrain.pidThroughTrench());
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -128,6 +157,9 @@ public class RobotContainer {
     // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE PATHPLANNER AUTO", /*mirror*/false))
     autoChooser.setDefaultOption("Test", new PathPlannerAuto("Test", false));
 
+  public void intiElastic() {
+    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0);
+    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "speed", 50);
   }
 
   public Command getAutonomousCommand() {

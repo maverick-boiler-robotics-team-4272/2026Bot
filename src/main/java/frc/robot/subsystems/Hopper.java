@@ -5,8 +5,10 @@ import static frc.robot.constants.SubsystemConstants.HopperConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -32,11 +34,12 @@ public class Hopper extends SubsystemBase {
     lowerMotor = KrakenBuilder.create(HOPPER_LOWER_MOTOR_ID, CAN_BUS, "Hopper", "Left Lower Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(40)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimitEnable(true)
+                .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(2, 0, 0, 0, 0, 0, 0.12413)
-        .withInversion(InvertedValue.Clockwise_Positive)
+        .withSlot0PIDSGAV(10, 00, 0.1, 10, 0, 0, 01)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
     lowerMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
@@ -44,14 +47,14 @@ public class Hopper extends SubsystemBase {
     lowerMotor2 = KrakenBuilder.create(HOPPER_LOWER_MOTOR_2_ID, CAN_BUS, "Hopper", "Right Lower Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(40)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimitEnable(true)
+                .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(2, 0, 0, 0, 0, 0, 0.12413 * 24.0 / 11.0)
-        .withInversion(InvertedValue.CounterClockwise_Positive)
+        .withSlot0PIDSGAV(10, 00, 0.0, 10, 0, 0, 01)
+        // .withSlot0PIDSGAV(0, 00, 0.1, 0, 0, 0, 0.12413 * 5)// * 24.0 / 11.0)
+        .withInversion(InvertedValue.Clockwise_Positive)
         .build();
-
-    lowerMotor2.setControl(new Follower(HOPPER_LOWER_MOTOR_ID, MotorAlignmentValue.Opposed));
 
     lowerMotor2.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
@@ -62,7 +65,7 @@ public class Hopper extends SubsystemBase {
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
         .withSlot0PIDSGAV(0.4, 0, 0.0, 0, 0, 0, 0.12413 * 24.0 / 11.0)
-        .withInversion(InvertedValue.Clockwise_Positive)
+        .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
     upperMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
@@ -79,6 +82,7 @@ public class Hopper extends SubsystemBase {
           this.desiredUpperSpeed = upperSpeed;
           this.desiredLowerSpeed = lowerSpeed;
           lowerMotor.setControl(new VelocityVoltage(lowerSpeed).withEnableFOC(true));
+          lowerMotor2.setControl(new VelocityVoltage(lowerSpeed).withEnableFOC(true));
           upperMotor.setControl(new VelocityVoltage(upperSpeed).withEnableFOC(true));
         });
   }
@@ -94,9 +98,34 @@ public class Hopper extends SubsystemBase {
           this.desiredUpperSpeed = upperSpeed.getAsDouble();
           this.desiredLowerSpeed = lowerSpeed.getAsDouble();
           lowerMotor.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
+          lowerMotor2.setControl(new VelocityVoltage(lowerSpeed.getAsDouble()).withEnableFOC(true));
           upperMotor.setControl(new VelocityVoltage(upperSpeed.getAsDouble()).withEnableFOC(true));
         });
   }
+
+  public Command stop() {
+    return run(
+        () -> {
+          desiredLowerSpeed = 0;
+          desiredUpperSpeed = 0;
+          lowerMotor.setControl(new VoltageOut(0).withEnableFOC(true));
+          lowerMotor2.setControl(new VoltageOut(0).withEnableFOC(true));
+          upperMotor.setControl(new VoltageOut(0).withEnableFOC(true));
+        });
+  }
+
+  // public void appliPIDSAVG(DoubleSupplier p, DoubleSupplier i, DoubleSupplier
+  // d, DoubleSupplier s, DoubleSupplier a, DoubleSupplier v, DoubleSupplier g) {
+  // Slot0Configs configs = new Slot0Configs();
+  // configs.kP = p;
+  // configs.kI = i;
+  // configs.kD = d;
+  // configs.kS = s;
+  // configs.kA = a;
+  // configs.kV = v;
+  // configs.kG = g;
+  // lowerMotor.getConfigurator().
+  // }
 
   @Override
   public void periodic() {

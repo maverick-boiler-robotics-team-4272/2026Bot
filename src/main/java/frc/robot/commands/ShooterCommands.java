@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Loader;
 import frc.robot.subsystems.Shooter;
 
@@ -23,6 +24,7 @@ public class ShooterCommands {
       Shooter shooter,
       Hopper hopper,
       Loader loader,
+      Intake intake,
       CommandSwerveDrivetrain drive,
       DoubleSupplier joystickX,
       DoubleSupplier joystickY,
@@ -33,11 +35,11 @@ public class ShooterCommands {
         setDesiredShooterStates(shooter, drive),
         Commands.repeatingSequence(
             new ConditionalCommand(
-                loader.loadBoth(70),
+                new ParallelCommandGroup(
+                    intake.agitateIntake(),
+                    loader.loadBoth(70)),
                 loader.loadBoth(0),
-                () -> {
-                  return isReady.getAsBoolean() && shooter.isAtDesiredSpeed();
-                })));
+                shooter::isAtDesiredSpeed)));
   }
 
   public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {

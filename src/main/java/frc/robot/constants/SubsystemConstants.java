@@ -17,7 +17,7 @@ public class SubsystemConstants {
     public static final int HOPPER_LOWER_MOTOR_2_ID = 62;
     public static final int HOPPER_UPPER_MOTOR_ID = 60;
 
-    public static final String HOPPER_KEY = "Subststems/Hopper/";
+    public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
     public static final int HOPPER_LOWER_SPEED = 60;
     public static final int HOPPER_UPPER_SPEED = 40;
@@ -73,9 +73,9 @@ public class SubsystemConstants {
     public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF,
         DCMotor.getKrakenX60Foc(4), 80, 4);
 
-    public static final double DRIVE_P = 5.0;
+    public static final double DRIVE_P = 4.0;
     public static final double DRIVE_I = 0.0;
-    public static final double DRIVE_D = 0.0;
+    public static final double DRIVE_D = 0.01;
 
     public static final double ROTATION_P = 10.0;
     public static final double ROTATION_I = 0.0;

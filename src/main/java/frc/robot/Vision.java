@@ -31,6 +31,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
@@ -45,6 +46,8 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
+
+import dev.doglog.DogLog;
 
 public class Vision {
   private final PhotonCamera camera;
@@ -118,7 +121,21 @@ public class Vision {
             // Change our trust in the measurement based on the tags we can see
             var estStdDevs = getEstimationStdDevs();
 
-            estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+            Pose3d estPose = est.estimatedPose;
+            DogLog.log("Vision/3DRaw/" + camera.getName(), est.estimatedPose);
+            DogLog.log("Vision/Raw/" + camera.getName(), est.estimatedPose.toPose2d());
+
+            if (Math.abs(estPose.getZ()) < 0.2
+                && estPose.getX() > 0
+                && estPose.getX() < 16.5
+                && estPose.getY() > 0
+                && estPose.getY() < 8.5
+                && estPose.getRotation().getX() < 0.2
+                && estPose.getRotation().getY() < 0.2) {
+              estConsumer.accept(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+              DogLog.log("Vision/3DAccepted/" + camera.getName(), est.estimatedPose);
+              DogLog.log("Vision/Accepted/" + camera.getName(), est.estimatedPose.toPose2d());
+            }
           });
     }
   }
