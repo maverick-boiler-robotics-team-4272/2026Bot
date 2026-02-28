@@ -82,7 +82,7 @@ public class RobotContainer {
     // neutral mode is applied to the drive motors while disabled.
     final var idle = new SwerveRequest.Idle();
     RobotModeTriggers.disabled()
-        .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+        .whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true).withName("Idle"));
   }
 
   private void configureBindings() {
@@ -148,19 +148,19 @@ public class RobotContainer {
   public void registerNamedCommands() {
     // NamedCommands.registerCommand("EXAMPLE", command);
     NamedCommands.registerCommand(
-      "Intake",
-      intake.setIntakeState(EXTEND_DISTANCE,INTAKE_SPEED)
-    );
+        "Intake",
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));
   }
-  
+
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
 
-    autoTab =  Shuffleboard.getTab("Auto");
+    autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("AutoChooser", autoChooser);
 
-    // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE PATHPLANNER AUTO", /*mirror*/false))
-    autoChooser.setDefaultOption("Test", new PathPlannerAuto("Test", false));
+    // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE
+    // PATHPLANNER AUTO", /*mirror*/false))
+    autoChooser.setDefaultOption("New Auto", new PathPlannerAuto("New Auto", false));
   }
 
   public void intiElastic() {
@@ -169,13 +169,15 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    try{
-      PathPlannerPath path = PathPlannerPath.fromPathFile("Test");
-
-      return AutoBuilder.followPath(path);
+    // var auto = new PathPlannerAuto("New Auto", false).withName("auto command");
+    PathPlannerPath path;
+    try {
+      path = PathPlannerPath.fromChoreoTrajectory("test");
     } catch (Exception e) {
-      DriverStation.reportError("Failed to load auto path: " + e.getMessage(), e.getStackTrace());
-      return Commands.none();
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
+
+    var auto = AutoBuilder.followPath(path);
+    return auto;
   }
 }
