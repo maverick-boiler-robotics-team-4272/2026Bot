@@ -114,6 +114,16 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command outZeroExtension() {
+    return run(
+        () -> {
+          desiredExtensionRotations = EXTEND_DISTANCE;
+          extensionMotor.setControl(new VoltageOut(6).withEnableFOC(true));
+          extensionMotor.setPosition(EXTEND_DISTANCE);
+          intakeMotor.setControl(new VoltageOut(0));
+        });
+  }
+
   public Command setDefaultCommand() {
     return run(
         () -> {
@@ -127,8 +137,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(6, 35).withTimeout(0.5),
-        setIntakeState(EXTEND_DISTANCE, 35).withTimeout(0.5)).repeatedly();
+        setIntakeState(6, 35).withTimeout(0.14),
+        setIntakeState(EXTEND_DISTANCE, 35).withTimeout(0.14)).repeatedly();
   }
 
   @Override
