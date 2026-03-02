@@ -391,6 +391,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // mine
     DogLog.log("Subsystems/Drive/Pose", getState().Pose);
     DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
+    DogLog.log("Subsystems/Drive/HubDistance", getState().Pose.getTranslation().getDistance(HUB_LOCATION));
     if (getCurrentCommand() != null) {
       DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
     } else {
