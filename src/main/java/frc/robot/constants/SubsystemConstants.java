@@ -20,7 +20,7 @@ public class SubsystemConstants {
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
     public static final int HOPPER_LOWER_SPEED = 60;
-    public static final int HOPPER_UPPER_SPEED = 40;
+    public static final int HOPPER_UPPER_SPEED = 20;
   }
 
   public static class LoaderConstants {
@@ -39,7 +39,10 @@ public class SubsystemConstants {
     public static final double SHOOTER_WHEEL_RADIUS = 1.5;
     public static final double SHOOTER_WHEEL_CIRCUMFERENCE = Math.PI * SHOOTER_WHEEL_RADIUS;
     public static final double SHOOTER_HEIGHT_M = Meters.convertFrom(16.784, Inches);
-    public static final double IDLE_SPEED = 0; // TODO: ask aobut this value
+    public static final double IDLE_SPEED = 0;
+
+    public static final double AUTO_SHOOTER_HOOD = 0.02;
+    public static final double AUTO_SHOOTER_VELOCITY = 55;
 
     public static final double SHOOTER_VELOCITY = 50; // TODO: tune
     public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
