@@ -1,8 +1,6 @@
 package frc.robot.commands;
 
-import static frc.robot.constants.FieldConstants.FIELD_LENGTH_M;
-import static frc.robot.constants.FieldConstants.HUB_LOCATION;
-import static frc.robot.constants.FieldConstants.isRedSide;
+import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.*;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 
@@ -20,7 +18,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class ShooterCommands {
-  public static Command fullShooterCommand(
+  public static Command teleFullShooterCommand(
       Shooter shooter,
       Hopper hopper,
       Loader loader,
@@ -40,6 +38,19 @@ public class ShooterCommands {
                     loader.loadBoth(70)),
                 loader.loadBoth(0),
                 shooter::isAtDesiredSpeed)));
+  }
+
+  public static Command autoShooCommand(
+      Shooter shooter, Hopper hopper, Loader loader, Intake intake) {
+    return new ParallelCommandGroup(
+        hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
+        shooter.setShooterState(AUTO_SHOOTER_HOOD, AUTO_SHOOTER_VELOCITY),
+        Commands.repeatingSequence(
+            new ConditionalCommand(
+                new ParallelCommandGroup(
+                    intake.agitateIntake(),
+                    loader.loadBoth(70)),
+                loader.loadBoth(0), shooter::isAtDesiredSpeed)));
   }
 
   public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {
