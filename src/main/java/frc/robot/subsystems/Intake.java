@@ -61,36 +61,12 @@ public class Intake extends SubsystemBase {
     // extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
   }
 
-  /**
-   * @param speed in rotations per second
-   * @return
-   */
-  public Command intake(double speed) {
-    return run(() -> {
-      this.desiredIntakeSpeed = speed;
-      intakeMotor.setControl(
-          new VelocityVoltage(speed).withEnableFOC(true));
-    });
-  }
-
-  /**
-   * @param speed in rotations per second
-   * @return
-   */
-  public Command intake(DoubleSupplier speed) {
-    return run(
-        () -> {
-          this.desiredIntakeSpeed = speed.getAsDouble();
-          intakeMotor.setControl(new VelocityVoltage(speed.getAsDouble()).withEnableFOC(true));
-        });
-  }
-
   public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
     return run(
         () -> {
           desiredExtensionRotations = rotationsDistance;
           desiredIntakeSpeed = rotationsPerSecond;
-          extensionMotor.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true));
+          extensionMotor.setControl(new PositionVoltage(rotationsDistance - 0.1).withEnableFOC(true));
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         });
   }
@@ -100,7 +76,7 @@ public class Intake extends SubsystemBase {
         () -> {
           desiredExtensionRotations = rotationsDistance.getAsDouble();
           desiredIntakeSpeed = rotationsPerSecond.getAsDouble();
-          extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble()).withEnableFOC(true));
+          extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withEnableFOC(true));
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
         });
   }

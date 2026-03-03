@@ -14,31 +14,32 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 
-public class Climber extends SubsystemBase {
-  Kraken motor;
-  double rotations;
+public class Climber /* extends SubsystemBase */ {
+  // Kraken motor;
+  // double rotations;
 
-  public Climber() {
-    motor = KrakenBuilder.create(CLIMBER_MOTOR_ID, CAN_BUS, "Climber", "Climber Motor")
-        .withCurrentLimit(
-            new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(40)
-                .withSupplyCurrentLimitEnable(true))
-        .withIdleMode(NeutralModeValue.Brake)
-        .withInversion(InvertedValue.CounterClockwise_Positive)
-        .withSlot0PID(0, 0, 0)
-        .build();
-  }
+  // public Climber() {
+  // motor = KrakenBuilder.create(CLIMBER_MOTOR_ID, CAN_BUS, "Climber", "Climber
+  // Motor")
+  // .withCurrentLimit(
+  // new CurrentLimitsConfigs()
+  // .withSupplyCurrentLimit(40)
+  // .withSupplyCurrentLimitEnable(true))
+  // .withIdleMode(NeutralModeValue.Brake)
+  // .withInversion(InvertedValue.CounterClockwise_Positive)
+  // .withSlot0PID(0, 0, 0)
+  // .build();
+  // }
 
-  public Command climb(double rotations) {
-    return run(() -> {
-      this.rotations = rotations;
-      motor.setControl(new PositionVoltage(rotations).withEnableFOC(true));
-    });
-  }
+  // public Command climb(double rotations) {
+  // return run(() -> {
+  // this.rotations = rotations;
+  // motor.setControl(new PositionVoltage(rotations).withEnableFOC(true));
+  // });
+  // }
 
-  @Override
-  public void periodic() {
-    DogLog.log(CLIMBER_KEY + "Rotations", rotations);
-  }
+  // @Override
+  // public void periodic() {
+  // DogLog.log(CLIMBER_KEY + "Rotations", rotations);
+  // }
 }

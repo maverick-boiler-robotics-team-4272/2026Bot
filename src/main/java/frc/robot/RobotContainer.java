@@ -74,7 +74,7 @@ public class RobotContainer {
           return Math.pow(joystick.getRightX(), 3);
         }));
 
-    climber.setDefaultCommand(climber.climb(0));
+    // climber.setDefaultCommand(climber.climb(0));
     hopper.setDefaultCommand(hopper.stop());
     intake.setDefaultCommand(intake.setDefaultCommand());
     loader.setDefaultCommand(loader.loadBoth(0));
@@ -88,10 +88,10 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 45));// checkmark
-    joystick.rightTrigger().whileTrue(hopper.agitate(42, 30));
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
+    joystick.rightTrigger().whileTrue(intake.setIntakeState(0, 0));
 
-    joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
+    joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
     joystick.a().whileTrue(
         ShooterCommands.teleHalfShooterCommand(shooter, hopper,
@@ -113,24 +113,22 @@ public class RobotContainer {
 
     joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));// not me
 
-    joystick.leftStick().whileTrue(drivetrain.pidToPoint(TUNE_POSE));
-
     // Run SysId routines when holding back/start and X/Y.
     // Note that each routine should be run exactly once in a single log.
-    joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-    joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-    joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-    joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+    // joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    // joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+    // joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+    // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
-    operator.b().whileTrue(shooter.setShooterState(0.08, 70));
+    // operator.b().whileTrue(shooter.setShooterState(0.08, 70));
     operator.a().whileTrue(shooter.setShooterState(() -> {
       return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "angle", 0);
     }, () -> {
       return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "speed", 0);
     }));
 
-    operator.x().whileTrue(loader.loadBoth(30));
+    operator.x().whileTrue(loader.loadBoth(70));
 
     operator.y().whileTrue(hopper.agitate(() -> 42, () -> {
       return SmartDashboard.getNumber("Hopper", 20);
@@ -139,7 +137,7 @@ public class RobotContainer {
     operator.povRight().whileTrue(shooter.zeroHood());
 
     operator.leftTrigger().whileTrue(
-        drivetrain.pidThroughTrench());
+        drivetrain.doTrenches());
     operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
