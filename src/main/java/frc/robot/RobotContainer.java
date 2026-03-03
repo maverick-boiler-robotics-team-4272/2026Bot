@@ -73,7 +73,9 @@ public class RobotContainer {
 
   private void setDefaultCommands() {
     drivetrain.setDefaultCommand(
-        drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
+        drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, () -> {
+          return Math.pow(joystick.getRightX(), 3);
+        }));
 
     climber.setDefaultCommand(climber.climb(0));
     hopper.setDefaultCommand(hopper.stop());
@@ -95,9 +97,11 @@ public class RobotContainer {
     joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
 
     joystick.a().whileTrue(
-        ShooterCommands.fullShooterCommand(shooter, hopper, loader, intake,
+        ShooterCommands.teleHalfShooterCommand(shooter, hopper,
             drivetrain, joystick::getLeftX,
-            joystick::getLeftY, () -> joystick.getHID().getXButton())); // IT WORKS!!!!
+            joystick::getLeftY)); // IT WORKS!!!!
+    joystick.a().whileTrue(
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake));
 
     // joystick.povDown()
     // .whileTrue(
@@ -129,21 +133,17 @@ public class RobotContainer {
       return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "speed", 0);
     }));
 
-    operator.rightBumper().whileTrue(shooter.setVoltage(() -> {
-      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "angle", 0);
-    }, () -> {
-      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "speed", 0);
-    }));
-
     operator.x().whileTrue(loader.loadBoth(30));
 
-    operator.y().whileTrue(hopper.agitate(42, 25));
-    operator.povLeft().whileTrue(intake.zeroExtension());
+    operator.y().whileTrue(hopper.agitate(() -> 42, () -> {
+      return SmartDashboard.getNumber("Hopper", 20);
+    }));
+    operator.povLeft().whileTrue(intake.outZeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
 
     operator.leftTrigger().whileTrue(
         drivetrain.pidThroughTrench());
-    operator.rightTrigger().whileTrue(new PathPlannerAuto("Test",false));
+    operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -241,8 +241,9 @@ public class RobotContainer {
   }
 
   public void intiElastic() {
-    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0);
+    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0.02);
     SmartDashboard.putNumber(SHOOTER_LOG_KEY + "speed", 50);
+    SmartDashboard.putNumber("Hopper", 10);
   }
 
   public Command getAutonomousCommand() {
