@@ -11,6 +11,8 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEE
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.IDLE_SPEED;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_LOG_KEY;
 
+import java.nio.file.Path;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -158,9 +161,83 @@ public class RobotContainer {
     autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("AutoChooser", autoChooser);
 
-    // autoChooser.addOption("Example", new PathPlannerAuto("EXACT NAME OF THE
-    // PATHPLANNER AUTO", /*mirror*/false))
-    autoChooser.setDefaultOption("New Auto", new PathPlannerAuto("New Auto", false));
+    // PathPlannerPath ExamplePath;
+    // try {
+    //   ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
+    // } catch (Exception e) {
+    //   throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    // }
+
+    PathPlannerPath startRight;
+    try {
+      startRight = PathPlannerPath.fromChoreoTrajectory("Start_To_Mid_Right");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath intakeRight;
+    try {
+      intakeRight = PathPlannerPath.fromChoreoTrajectory("Mid_Right_Intake");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath midRightShoot;
+    try {
+      midRightShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Right_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath RightShootToOutpost;
+    try {
+      RightShootToOutpost = PathPlannerPath.fromChoreoTrajectory("Right_Shoot_To_Outpost");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath OutpostToRightShoot;
+    try {
+      OutpostToRightShoot = PathPlannerPath.fromChoreoTrajectory("Outpost_To_Right_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    // Command exampleAuto = new SequentialCommandGroup(
+    //   AutoBuilder.followPath(startRight),
+    //   new ParallelCommandGroup(
+    //     AutoBuilder.followPath(intakeRight),
+    //     intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)
+    //   ),
+    // );
+
+    Command rightSideOneAuto = new SequentialCommandGroup(
+      AutoBuilder.followPath(startRight),
+      new ParallelCommandGroup(
+        AutoBuilder.followPath(intakeRight),
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)
+      ),
+      AutoBuilder.followPath(midRightShoot),
+      shooter.setShooterState(.05, 50).withTimeout(5)
+    );
+
+    Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
+      AutoBuilder.followPath(startRight),
+      new ParallelCommandGroup(
+        AutoBuilder.followPath(intakeRight),
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)
+      ),
+      AutoBuilder.followPath(midRightShoot),
+      shooter.setShooterState(.05, 50).withTimeout(5),
+      AutoBuilder.followPath(RightShootToOutpost),
+      shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
+      AutoBuilder.followPath(OutpostToRightShoot)
+    );
+
+    //autoChooser.setDefaultOption("Example", exampleAuto);
+    autoChooser.setDefaultOption("Right one Cycle", rightSideOneAuto);
+    autoChooser.addOption("Right one and Outpost Cycle", rightSideOneAndOutpostAuto);
+    
   }
 
   public void intiElastic() {
@@ -169,15 +246,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    // var auto = new PathPlannerAuto("New Auto", false).withName("auto command");
-    PathPlannerPath path;
-    try {
-      path = PathPlannerPath.fromChoreoTrajectory("test");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    var auto = AutoBuilder.followPath(path);
-    return auto;
+    return autoChooser.getSelected();
   }
 }
