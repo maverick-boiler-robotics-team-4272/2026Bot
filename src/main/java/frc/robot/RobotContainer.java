@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.constants.FieldConstants.FIELD_LENGTH_M;
+import static frc.robot.constants.FieldConstants.FIELD_WIDTH_M;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
@@ -13,6 +15,8 @@ import java.nio.file.Path;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -204,25 +209,42 @@ public class RobotContainer {
     // );
 
     Command rightSideOneAuto = new SequentialCommandGroup(
-
-        AutoBuilder.followPath(startRight),
+      drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 0.45, Rotation2d.kCCW_90deg)),
         new ParallelCommandGroup(
+          AutoBuilder.followPath(startRight), 
+          intake.outZeroExtension().withTimeout(1)
+        ),
+        new ParallelRaceGroup(
             AutoBuilder.followPath(intakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
         AutoBuilder.followPath(midRightShoot),
-        shooter.setShooterState(.05, 50).withTimeout(5));
+        new ParallelCommandGroup(
+          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
+          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
+        ).withTimeout(4)
+      );
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
-        AutoBuilder.followPath(startRight),
+      drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 0.45, Rotation2d.kCCW_90deg)),
+        new ParallelCommandGroup(
+          AutoBuilder.followPath(startRight), 
+          intake.outZeroExtension().withTimeout(1)
+        ),
         new ParallelCommandGroup(
             AutoBuilder.followPath(intakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)).withTimeout(10),
         AutoBuilder.followPath(midRightShoot),
-        shooter.setShooterState(.05, 50).withTimeout(5),
+        new ParallelCommandGroup(
+          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
+          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
+        ).withTimeout(7),
         AutoBuilder.followPath(RightShootToOutpost),
-        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
         AutoBuilder.followPath(OutpostToRightShoot),
-        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3));
+        new ParallelCommandGroup(
+          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
+          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
+        ).withTimeout(7)
+      );
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     autoChooser.setDefaultOption("Right one Cycle", rightSideOneAuto);

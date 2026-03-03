@@ -62,7 +62,7 @@ public class Intake extends SubsystemBase {
         () -> {
           desiredExtensionRotations = rotationsDistance;
           desiredIntakeSpeed = rotationsPerSecond;
-          extensionMotor.setControl(new PositionVoltage(rotationsDistance - 0.1).withEnableFOC(true));
+          extensionMotor.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true));
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         });
   }
@@ -109,7 +109,7 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(8, 35).withTimeout(0.1),
+        setIntakeState(6, 35).withTimeout(0.1),
         setIntakeState(EXTEND_DISTANCE - 0.075, 35).withTimeout(0.1)).repeatedly();
   }
 

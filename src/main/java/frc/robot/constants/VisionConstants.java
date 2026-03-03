@@ -15,7 +15,7 @@ public class VisionConstants {
         public static final String CAMERA_D = "Camera_D";
 
         public static final Transform3d CAMERA_A_TRANSFORM = new Transform3d(
-                        Units.inchesToMeters(12.313), // x
+                        Units.inchesToMeters(11.75), // x
                         Units.inchesToMeters(12.667), // y
                         Units.inchesToMeters(16.5), // z
                         new Rotation3d(Math.PI /* roll */, 0 /* pitch */, Math.PI / 2 /* yaw */)); // Right side
@@ -25,10 +25,10 @@ public class VisionConstants {
                         Units.inchesToMeters(15.125),
                         new Rotation3d(Math.PI / 2, -Math.PI / 9, 0)); // Right side shooter // 20 degrees
         public static final Transform3d CAMERA_C_TRANSFORM = new Transform3d(
-                        Units.inchesToMeters(12.313),
-                        Units.inchesToMeters(12.667),
+                        Units.inchesToMeters(11.75),
+                        Units.inchesToMeters(-12.626),
                         Units.inchesToMeters(16.5),
-                        new Rotation3d(Math.PI, 0, -Math.PI / 2)); // left side
+                        new Rotation3d(0, 0, -Math.PI / 2)); // left side
         public static final Transform3d CAMERA_D_TRANSFORM = new Transform3d(
                         Units.inchesToMeters(12.920),
                         Units.inchesToMeters(-12.252),

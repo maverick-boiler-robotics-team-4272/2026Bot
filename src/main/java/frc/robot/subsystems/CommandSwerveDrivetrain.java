@@ -409,6 +409,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return m_sysIdRoutineToApply.quasistatic(direction);
   }
 
+  public Command resetThePose(Pose2d resetPose) {
+    return runOnce(() -> {
+     resetPose(resetPose);
+    });
+  }
+
   /**
    * Runs the SysId Dynamic test in the given direction for the routine specified
    * by {@link
