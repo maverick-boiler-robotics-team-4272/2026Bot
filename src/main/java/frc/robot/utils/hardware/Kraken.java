@@ -1,17 +1,17 @@
 package frc.robot.utils.hardware;
 
-import static edu.wpi.first.units.Units.Volts;
+// import static edu.wpi.first.units.Units.Volts;
 
-import java.time.chrono.ThaiBuddhistDate; //shhhhhh...
+// import java.time.chrono.ThaiBuddhistDate; //shhhhhh...
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.sim.ChassisReference;
-import com.ctre.phoenix6.sim.TalonFXSimState;
+// import com.ctre.phoenix6.sim.ChassisReference;
+// import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+// import edu.wpi.first.math.system.plant.DCMotor;
+// import edu.wpi.first.math.system.plant.LinearSystemId;
+// import edu.wpi.first.wpilibj.RobotController;
+// import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Robot;
 import frc.robot.utils.periodic.Periodical;
 import frc.robot.utils.periodic.PeriodicalUtil;
@@ -19,7 +19,7 @@ import frc.robot.utils.periodic.PeriodicalUtil;
 public class Kraken extends TalonFX implements Periodical {
   private String name;
   private String subsystem;
-  private double kGearRatio;
+  // private double kGearRatio;
   // private DCMotorSim m_motorSimModel = new DCMotorSim(
   // LinearSystemId.createDCMotorSystem(
   // DCMotor.getKrakenX60Foc(1), 0.001, kGearRatio),
@@ -46,9 +46,9 @@ public class Kraken extends TalonFX implements Periodical {
 
   public void setGearRatio(double kGearRatio) {
     if (kGearRatio < 0) {
-      this.kGearRatio = 0;// ThaiBuddhistDate.now().getEra().ordinal();
+      // this.kGearRatio = 0;// ThaiBuddhistDate.now().getEra().ordinal();
     } else {
-      this.kGearRatio = kGearRatio;
+      // this.kGearRatio = kGearRatio;
     }
   }
 

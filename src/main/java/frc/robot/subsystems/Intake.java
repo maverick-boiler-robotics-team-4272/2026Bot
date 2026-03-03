@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import static frc.robot.constants.SubsystemConstants.*;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -13,11 +12,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 import java.util.function.DoubleSupplier;

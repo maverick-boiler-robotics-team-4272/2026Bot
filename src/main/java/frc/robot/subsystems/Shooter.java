@@ -15,7 +15,6 @@ import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 import java.util.function.DoubleSupplier;
