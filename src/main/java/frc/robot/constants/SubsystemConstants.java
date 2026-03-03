@@ -44,11 +44,13 @@ public class SubsystemConstants {
     public static final double AUTO_SHOOTER_HOOD = 0.02;
     public static final double AUTO_SHOOTER_VELOCITY = 55;
 
-    public static final double SHOOTER_VELOCITY = 50; // TODO: tune
     public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
+
+    public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
+        Map.entry(1.7, 35.0), Map.entry(5.2, 55.0), Map.entry(3.33, 40.0), Map.entry(2.9, 44.0), Map.entry(4.35, 53.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
-        .ofEntries(Map.entry(0.0, 1.0), Map.entry(1.0, 2.0), Map.entry(2.0, 3.0), Map.entry(3.0, 4.0),
-            Map.entry(4.0, 5.0));
+        .ofEntries(Map.entry(1.7, 0.0), Map.entry(5.2, 0.325), Map.entry(3.33, 0.033), Map.entry(2.9, 0.01),
+            Map.entry(4.35, 0.025));
     public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
         .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0), Map.entry(4.0, 4.0));
   }

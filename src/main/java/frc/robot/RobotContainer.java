@@ -94,9 +94,11 @@ public class RobotContainer {
     joystick.leftBumper().whileTrue(intake.setIntakeState(0, 0));
 
     joystick.a().whileTrue(
-        ShooterCommands.teleFullShooterCommand(shooter, hopper, loader, intake,
+        ShooterCommands.teleHalfShooterCommand(shooter, hopper,
             drivetrain, joystick::getLeftX,
-            joystick::getLeftY, () -> joystick.getHID().getXButton())); // IT WORKS!!!!
+            joystick::getLeftY)); // IT WORKS!!!!
+    joystick.a().whileTrue(
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake));
 
     // joystick.povDown()
     // .whileTrue(
@@ -162,9 +164,9 @@ public class RobotContainer {
   }
 
   public void intiElastic() {
-    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0);
+    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0.02);
     SmartDashboard.putNumber(SHOOTER_LOG_KEY + "speed", 50);
-    SmartDashboard.putNumber("Hopper", 25);
+    SmartDashboard.putNumber("Hopper", 10);
   }
 
   public Command getAutonomousCommand() {
