@@ -143,7 +143,6 @@ public class RobotContainer {
 
     operator.leftTrigger().whileTrue(
         drivetrain.pidThroughTrench());
-    operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
   }
@@ -212,6 +211,7 @@ public class RobotContainer {
     // );
 
     Command rightSideOneAuto = new SequentialCommandGroup(
+    
       AutoBuilder.followPath(startRight),
       new ParallelCommandGroup(
         AutoBuilder.followPath(intakeRight),
@@ -231,7 +231,8 @@ public class RobotContainer {
       shooter.setShooterState(.05, 50).withTimeout(5),
       AutoBuilder.followPath(RightShootToOutpost),
       shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
-      AutoBuilder.followPath(OutpostToRightShoot)
+      AutoBuilder.followPath(OutpostToRightShoot),
+      shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3)
     );
 
     //autoChooser.setDefaultOption("Example", exampleAuto);
