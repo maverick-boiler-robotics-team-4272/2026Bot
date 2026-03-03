@@ -20,6 +20,10 @@ public class Kraken extends TalonFX implements Periodical {
   private String name;
   private String subsystem;
   private double kGearRatio;
+  // private DCMotorSim m_motorSimModel = new DCMotorSim(
+  // LinearSystemId.createDCMotorSystem(
+  // DCMotor.getKrakenX60Foc(1), 0.001, kGearRatio),
+  // DCMotor.getKrakenX60Foc(1));
 
   public Kraken(int id, String can, String subsystem, String name) {
     super(id, can);
@@ -42,7 +46,7 @@ public class Kraken extends TalonFX implements Periodical {
 
   public void setGearRatio(double kGearRatio) {
     if (kGearRatio < 0) {
-      this.kGearRatio = ThaiBuddhistDate.now().lengthOfYear();
+      this.kGearRatio = 0;// ThaiBuddhistDate.now().getEra().ordinal();
     } else {
       this.kGearRatio = kGearRatio;
     }
@@ -55,11 +59,6 @@ public class Kraken extends TalonFX implements Periodical {
       // simulationPeriodic();
     }
   }
-
-  // DCMotorSim m_motorSimModel = new DCMotorSim(
-  // LinearSystemId.createDCMotorSystem(
-  // DCMotor.getKrakenX60Foc(1), 0.001, kGearRatio),
-  // DCMotor.getKrakenX60Foc(1));
 
   // public void simulationInit() {
   // var talonFXSim = this.getSimState();
