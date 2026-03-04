@@ -4,14 +4,10 @@
 
 package frc.robot;
 
-import static frc.robot.constants.FieldConstants.FIELD_LENGTH_M;
-import static frc.robot.constants.FieldConstants.FIELD_WIDTH_M;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_LOG_KEY;
-
-import java.nio.file.Path;
+import static frc.robot.constants.FieldConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -20,21 +16,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
@@ -66,7 +58,6 @@ public class RobotContainer {
     configureBindings();
 
     setupAutos();
-    intiElastic();
   }
 
   private void setDefaultCommands() {
@@ -122,26 +113,19 @@ public class RobotContainer {
     // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
-    // operator.b().whileTrue(shooter.setShooterState(0.08, 70));
-    operator.a().whileTrue(shooter.setShooterState(() -> {
-      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "angle", 0);
-    }, () -> {
-      return SmartDashboard.getNumber(SHOOTER_LOG_KEY + "speed", 0);
-    }));
-
-    operator.x().whileTrue(loader.loadBoth(70));
-
-    operator.y().whileTrue(hopper.agitate(() -> 42, () -> {
-      return SmartDashboard.getNumber("Hopper", 20);
-    }));
     operator.povLeft().whileTrue(intake.outZeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
 
-    operator.leftTrigger().whileTrue(
-        drivetrain.doTrenches());
     operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
+
+    operator.a().whileTrue(shooter.setShooterState(() -> SmartDashboard.getNumber("ANGLE", 0),
+        () -> SmartDashboard.getNumber("SPEED", 0)));
+    operator.x().whileTrue(new ParallelCommandGroup(
+        intake.agitateIntake(),
+        hopper.agitate(50, 10),
+        loader.loadBoth(70)).repeatedly());
   }
 
   public void registerNamedCommands() {
@@ -153,7 +137,8 @@ public class RobotContainer {
 
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
-
+    SmartDashboard.putNumber("ANGLE", 0.02);
+    SmartDashboard.putNumber("SPEED", 50);
     autoTab = Shuffleboard.getTab("Auto");
     autoTab.add("AutoChooser", autoChooser);
 
@@ -172,9 +157,9 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
-    PathPlannerPath IntakeRight;
+    PathPlannerPath intakeRight;
     try {
-      IntakeRight = PathPlannerPath.fromChoreoTrajectory("Mid_Right_Intake");
+      intakeRight = PathPlannerPath.fromChoreoTrajectory("Mid_Right_Intake");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -230,41 +215,39 @@ public class RobotContainer {
     // );
 
     Command rightSideOneAuto = new SequentialCommandGroup(
-      drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 0.45, Rotation2d.kCCW_90deg)),
+
+        AutoBuilder.followPath(startRight),
         new ParallelCommandGroup(
-          AutoBuilder.followPath(startRight), 
-          intake.outZeroExtension().withTimeout(1)
-        ),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(IntakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            AutoBuilder.followPath(intakeRight),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
         AutoBuilder.followPath(MidRightShoot),
         new ParallelCommandGroup(
           ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
           ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(4)
-      );
+        ).withTimeout(10)
+        );
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
-      drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 0.45, Rotation2d.kCCW_90deg)),
+        AutoBuilder.followPath(startRight),
         new ParallelCommandGroup(
-          AutoBuilder.followPath(startRight), 
-          intake.outZeroExtension().withTimeout(1)
-        ),
-        new ParallelCommandGroup(
-            AutoBuilder.followPath(IntakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)).withTimeout(10),
+            AutoBuilder.followPath(intakeRight),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+        AutoBuilder.followPath(MidRightShoot),
+        shooter.setShooterState(.05, 50).withTimeout(5),
+            AutoBuilder.followPath(intakeRight),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10),
         AutoBuilder.followPath(MidRightShoot),
         new ParallelCommandGroup(
           ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
           ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(7),
+        ).withTimeout(10),
         AutoBuilder.followPath(RightShootToOutpost),
+        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
         AutoBuilder.followPath(OutpostToRightShoot),
         new ParallelCommandGroup(
           ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
           ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(7)
+        ).withTimeout(10)
       );
 
       Command LeftSideOneAuto = new SequentialCommandGroup(
@@ -280,7 +263,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
           ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
           ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(4)
+        ).withTimeout(10)
       );
 
     // autoChooser.addOption("Example", exampleAuto);
@@ -288,12 +271,6 @@ public class RobotContainer {
     autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
     autoChooser.addOption("Left One Cycle", LeftSideOneAuto);
 
-  }
-
-  public void intiElastic() {
-    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "angle", 0.02);
-    SmartDashboard.putNumber(SHOOTER_LOG_KEY + "speed", 50);
-    SmartDashboard.putNumber("Hopper", 10);
   }
 
   public Command getAutonomousCommand() {

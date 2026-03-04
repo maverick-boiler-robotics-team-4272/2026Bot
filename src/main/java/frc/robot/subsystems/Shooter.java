@@ -35,7 +35,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.2, 0.0, 0.00, 0.35, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.4, 0.0, 0.00, 0.35, 0, 0, 0.123)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build(); // p = 0.1, d = 0.001, s = 0.2
 
@@ -45,7 +45,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.20, 0.0, 0.00, 0.32, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.4, 0.0, 0.00, 0.32, 0, 0, 0.123)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 

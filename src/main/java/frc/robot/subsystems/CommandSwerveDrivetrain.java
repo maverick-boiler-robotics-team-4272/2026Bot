@@ -320,8 +320,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public Command pidToPoint(Pose2d pose) {
     FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
-        .withDeadband(MAX_DRIVE_SPEED * 0.01)
-        .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01)
         .withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D);
 
     return run(
@@ -411,7 +409,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
   public Command resetThePose(Pose2d resetPose) {
     return runOnce(() -> {
-     resetPose(resetPose);
+      resetPose(resetPose);
     });
   }
 
@@ -446,6 +444,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     for (Vision camera : cameras) {
       camera.periodic();
+    }
+
+    for (int i = 0; i < 4; i++) {
+      DogLog.log("Subsystems/Drive/Current" + i,
+          getModule(i).getDriveMotor().getTorqueCurrent(true).getValueAsDouble());
     }
     // not mine
     /*
