@@ -30,10 +30,10 @@ public class Intake extends SubsystemBase {
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withStatorCurrentLimitEnable(false)
-                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true)
                 .withSupplyCurrentLowerLimit(60)
-                .withSupplyCurrentLowerTime(5.0))
+                .withSupplyCurrentLowerTime(3.0))
         .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 12, 0, 0, 0)// 0.12413 * 24.0 * 2.8 / 11.0)

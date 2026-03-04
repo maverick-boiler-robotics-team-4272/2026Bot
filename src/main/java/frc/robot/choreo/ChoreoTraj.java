@@ -47,5 +47,5 @@ public record ChoreoTraj(
         }
         return traj;
     }
-    
+
 }
