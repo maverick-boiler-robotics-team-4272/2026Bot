@@ -172,16 +172,16 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
-    PathPlannerPath intakeRight;
+    PathPlannerPath IntakeRight;
     try {
-      intakeRight = PathPlannerPath.fromChoreoTrajectory("Mid_Right_Intake");
+      IntakeRight = PathPlannerPath.fromChoreoTrajectory("Mid_Right_Intake");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
-    PathPlannerPath midRightShoot;
+    PathPlannerPath MidRightShoot;
     try {
-      midRightShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Right_Shoot");
+      MidRightShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Right_Shoot");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -196,6 +196,27 @@ public class RobotContainer {
     PathPlannerPath OutpostToRightShoot;
     try {
       OutpostToRightShoot = PathPlannerPath.fromChoreoTrajectory("Outpost_To_Right_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath StartLeft;
+    try {
+      StartLeft = PathPlannerPath.fromChoreoTrajectory("Start_To_Mid_Left");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath IntakeLeft;
+    try {
+      IntakeLeft = PathPlannerPath.fromChoreoTrajectory("Mid_Left_Intake");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath MidLeftShoot;
+    try {
+      MidLeftShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Left_Shoot");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -215,9 +236,9 @@ public class RobotContainer {
           intake.outZeroExtension().withTimeout(1)
         ),
         new ParallelRaceGroup(
-            AutoBuilder.followPath(intakeRight),
+            AutoBuilder.followPath(IntakeRight),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        AutoBuilder.followPath(midRightShoot),
+        AutoBuilder.followPath(MidRightShoot),
         new ParallelCommandGroup(
           ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
           ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
@@ -231,9 +252,9 @@ public class RobotContainer {
           intake.outZeroExtension().withTimeout(1)
         ),
         new ParallelCommandGroup(
-            AutoBuilder.followPath(intakeRight),
+            AutoBuilder.followPath(IntakeRight),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)).withTimeout(10),
-        AutoBuilder.followPath(midRightShoot),
+        AutoBuilder.followPath(MidRightShoot),
         new ParallelCommandGroup(
           ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
           ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
@@ -246,9 +267,26 @@ public class RobotContainer {
         ).withTimeout(7)
       );
 
-    // autoChooser.setDefaultOption("Example", exampleAuto);
-    autoChooser.setDefaultOption("Right one Cycle", rightSideOneAuto);
-    autoChooser.addOption("Right one and Outpost Cycle", rightSideOneAndOutpostAuto);
+      Command LeftSideOneAuto = new SequentialCommandGroup(
+      drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 7.64, Rotation2d.kCW_Pi_2)),
+        new ParallelCommandGroup(
+          AutoBuilder.followPath(StartLeft), 
+          intake.outZeroExtension().withTimeout(1)
+        ),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(IntakeLeft),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        AutoBuilder.followPath(MidLeftShoot),
+        new ParallelCommandGroup(
+          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
+          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
+        ).withTimeout(4)
+      );
+
+    // autoChooser.addOption("Example", exampleAuto);
+    autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
+    autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
+    autoChooser.addOption("Left One Cycle", LeftSideOneAuto);
 
   }
 
