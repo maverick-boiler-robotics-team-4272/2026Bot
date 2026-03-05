@@ -46,11 +46,9 @@ public class SubsystemConstants {
 
     public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
 
-    public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(1.7, 35.0), Map.entry(5.2, 55.0), Map.entry(3.33, 40.0), Map.entry(2.9, 44.0), Map.entry(4.35, 53.0));
+    public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(Map.entry(3.11, 50.0), Map.entry(3.32, 52.0), Map.entry(4.21, 57.0), Map.entry(2.22, 45.0), Map.entry(5.09, 70.0), Map.entry(3.85, 55.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
-        .ofEntries(Map.entry(1.7, 0.0), Map.entry(5.2, 0.325), Map.entry(3.33, 0.033), Map.entry(2.9, 0.01),
-            Map.entry(4.35, 0.025));
+        .ofEntries(Map.entry(3.11, 0.015), Map.entry(3.32, 0.0175), Map.entry(4.21, 0.025), Map.entry(2.22, 0.005), Map.entry(5.09, 0.0325), Map.entry(3.85, 0.022));
     public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
         .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0), Map.entry(4.0, 4.0));
   }
