@@ -25,7 +25,27 @@ public class Intake extends SubsystemBase {
   double desiredIntakeSpeed;
   double desiredExtensionRotations;
 
+  CurrentLimitsConfigs regularLimits = new CurrentLimitsConfigs();
+  CurrentLimitsConfigs safeLimits = new CurrentLimitsConfigs();
+
+  double prevDesDistance;
+  boolean disableSafety;
+
   public Intake() {
+    regularLimits.StatorCurrentLimit = 40;
+    regularLimits.StatorCurrentLimitEnable = true;
+    regularLimits.SupplyCurrentLimit = 40;
+    regularLimits.SupplyCurrentLimitEnable = true;
+    regularLimits.SupplyCurrentLowerLimit = 20;
+
+    safeLimits.StatorCurrentLimit = 5;
+    safeLimits.StatorCurrentLimitEnable = true;
+    safeLimits.SupplyCurrentLimit = 5;
+    safeLimits.SupplyCurrentLimitEnable = true;
+    safeLimits.SupplyCurrentLowerLimit = 0;
+
+    disableSafety = false;
+
     intakeMotor = KrakenBuilder.create(INTAKE_MOTOR_ID, "rio", "Intake", "Intake Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
@@ -50,6 +70,7 @@ public class Intake extends SubsystemBase {
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
+    prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
 
     // extensionMotor.getConfigurator()
     // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
@@ -87,13 +108,15 @@ public class Intake extends SubsystemBase {
   }
 
   public Command outZeroExtension() {
-    return run(
+    return startEnd(
         () -> {
+          disableSafety = true;
+          runOnce(() -> extensionMotor.getConfigurator().apply(regularLimits));
           desiredExtensionRotations = EXTEND_DISTANCE;
           extensionMotor.setControl(new VoltageOut(6).withEnableFOC(true));
           extensionMotor.setPosition(EXTEND_DISTANCE);
           intakeMotor.setControl(new VoltageOut(0));
-        });
+        }, () -> disableSafety = false);
   }
 
   public Command setDefaultCommand() {
@@ -110,12 +133,36 @@ public class Intake extends SubsystemBase {
   public Command agitateIntake() {
     return new SequentialCommandGroup(
         setIntakeState(6, 35).withTimeout(0.1),
-        setIntakeState(EXTEND_DISTANCE - 0.075, 35).withTimeout(0.1)).repeatedly();
+        setIntakeState(EXTEND_DISTANCE - 0.075, 35).withTimeout(0.1)).repeatedly()
+        .beforeStarting(() -> {
+          disableSafety = true;
+          extensionMotor.getConfigurator().apply(regularLimits);
+        }).finallyDo(() -> disableSafety = false);
+  }
+
+  public Command disableSafteyWhileCalled() {
+    return startEnd(
+        () -> {
+          disableSafety = true;
+          extensionMotor.getConfigurator().apply(regularLimits);
+        }, () -> disableSafety = false);
+  }
+
+  public void safetyLogic() {
+    if (disableSafety) {
+      return;
+    }
+    if (prevDesDistance == desiredExtensionRotations) {
+      extensionMotor.getConfigurator().apply(safeLimits);
+    } else {
+      extensionMotor.getConfigurator().apply(regularLimits);
+    }
   }
 
   @Override
   public void periodic() {
     DogLog.log(INTAKE_KEY + "desired distance", desiredExtensionRotations);
     DogLog.log(INTAKE_KEY + "desired speed", desiredIntakeSpeed);
+    safetyLogic();
   }
 }
