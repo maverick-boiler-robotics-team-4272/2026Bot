@@ -253,7 +253,7 @@ public class RobotContainer {
       Command LeftSideOneAuto = new SequentialCommandGroup(
       drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 7.64, Rotation2d.kCW_Pi_2)),
         new ParallelCommandGroup(
-          AutoBuilder.followPath(StartLeft), 
+          AutoBuilder.followPath(StartLeft),
           intake.outZeroExtension().withTimeout(1)
         ),
         new ParallelRaceGroup(
