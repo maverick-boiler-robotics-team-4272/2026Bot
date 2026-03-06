@@ -2,6 +2,7 @@ package frc.robot.constants;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 
 import java.util.ArrayList;
@@ -18,8 +19,10 @@ public class FieldConstants {
         public static ArrayList<Pose2d> CLIMB_POSES = new ArrayList<>(2);
 
         public static final Pose2d HUB_LOCATION = new Pose2d(
-                        isRedSide() ? 11.922 : FIELD_LENGTH_M - 11.922, 4.035, Rotation2d.kZero); // yup, I added the
-                                                                                                  // extra distance :)
+                        !isRedSide() ? 4.75 : FIELD_LENGTH_M - 4.75, 4.035, Rotation2d.kZero);// new Pose2d(
+        // isRedSide() ? 11.922 : FIELD_LENGTH_M - 11.922, 4.035, Rotation2d.kZero); //
+        // yup, I added the
+        // extra distance :)
         public static final Pose2d LEFT_SHUTTLE = new Pose2d(
                         isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? 1.155 : FIELD_WIDTH_M - 1.155,
                         Rotation2d.kZero);
