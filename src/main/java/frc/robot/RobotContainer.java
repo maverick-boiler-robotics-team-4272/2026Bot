@@ -7,25 +7,18 @@ package frc.robot;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.constants.FieldConstants.*;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -45,7 +38,6 @@ public class RobotContainer {
   // private final Climber climber = new Climber();
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-  private ShuffleboardTab autoTab;
   private SendableChooser<Command> autoChooser;
 
   private final CommandXboxController joystick = new CommandXboxController(0);
@@ -92,6 +84,12 @@ public class RobotContainer {
     joystick.a().whileTrue(
         ShooterCommands.tele2ndHalfShooterCommand(loader, intake));
 
+    joystick.povLeft().whileTrue(
+        intake.outZeroExtension());
+
+    joystick.povRight().whileTrue(
+        shooter.zeroHood());
+
     // joystick.povDown()
     // .whileTrue(
     // ClimbCommands.driveThenClimbCommand(drivetrain, climber, intake, () ->
@@ -113,19 +111,20 @@ public class RobotContainer {
     // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
-    operator.povLeft().whileTrue(intake.outZeroExtension());
+    operator.povLeft().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
 
-    operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
+    // operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operator.a().whileTrue(shooter.setShooterState(() -> SmartDashboard.getNumber("ANGLE", 0),
-        () -> SmartDashboard.getNumber("SPEED", 0)));
-    operator.x().whileTrue(new ParallelCommandGroup(
-        intake.agitateIntake(),
-        hopper.agitate(50, 10),
-        loader.loadBoth(70)).repeatedly());
+    // operator.a().whileTrue(shooter.setShooterState(() ->
+    // SmartDashboard.getNumber("ANGLE", 0),
+    // () -> SmartDashboard.getNumber("SPEED", 0)));
+    // operator.x().whileTrue(new ParallelCommandGroup(
+    // intake.agitateIntake(),
+    // hopper.agitate(50, 10),
+    // loader.loadBoth(70)).repeatedly());
   }
 
   public void registerNamedCommands() {
@@ -137,10 +136,7 @@ public class RobotContainer {
 
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
-    SmartDashboard.putNumber("ANGLE", 0.02);
-    SmartDashboard.putNumber("SPEED", 50);
-    autoTab = Shuffleboard.getTab("Auto");
-    autoTab.add("AutoChooser", autoChooser);
+    SmartDashboard.putData("Auto chooser", autoChooser);
 
     // PathPlannerPath ExamplePath;
     // try {
@@ -164,9 +160,9 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
-    PathPlannerPath MidRightShoot;
+    PathPlannerPath midRightShoot;
     try {
-      MidRightShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Right_Shoot");
+      midRightShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Right_Shoot");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -185,27 +181,6 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
-    PathPlannerPath StartLeft;
-    try {
-      StartLeft = PathPlannerPath.fromChoreoTrajectory("Start_To_Mid_Left");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath IntakeLeft;
-    try {
-      IntakeLeft = PathPlannerPath.fromChoreoTrajectory("Mid_Left_Intake");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath MidLeftShoot;
-    try {
-      MidLeftShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Left_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -220,56 +195,24 @@ public class RobotContainer {
         new ParallelCommandGroup(
             AutoBuilder.followPath(intakeRight),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-        AutoBuilder.followPath(MidRightShoot),
-        new ParallelCommandGroup(
-          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
-          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(10)
-        );
+        AutoBuilder.followPath(midRightShoot),
+        shooter.setShooterState(.05, 50).withTimeout(5));
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
         AutoBuilder.followPath(startRight),
         new ParallelCommandGroup(
             AutoBuilder.followPath(intakeRight),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-        AutoBuilder.followPath(MidRightShoot),
+        AutoBuilder.followPath(midRightShoot),
         shooter.setShooterState(.05, 50).withTimeout(5),
-            AutoBuilder.followPath(intakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10),
-        AutoBuilder.followPath(MidRightShoot),
-        new ParallelCommandGroup(
-          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
-          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(10),
         AutoBuilder.followPath(RightShootToOutpost),
         shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
         AutoBuilder.followPath(OutpostToRightShoot),
-        new ParallelCommandGroup(
-          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
-          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(10)
-      );
+        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10));
 
-      Command LeftSideOneAuto = new SequentialCommandGroup(
-      drivetrain.resetThePose(new Pose2d(FIELD_LENGTH_M - 4.4, FIELD_WIDTH_M - 7.64, Rotation2d.kCW_Pi_2)),
-        new ParallelCommandGroup(
-          AutoBuilder.followPath(StartLeft),
-          intake.outZeroExtension().withTimeout(1)
-        ),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(IntakeLeft),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        AutoBuilder.followPath(MidLeftShoot),
-        new ParallelCommandGroup(
-          ShooterCommands.teleHalfShooterCommand(shooter, hopper, drivetrain, () -> 0, () -> 0),
-          ShooterCommands.tele2ndHalfShooterCommand(loader, intake)
-        ).withTimeout(10)
-      );
-
-    // autoChooser.addOption("Example", exampleAuto);
-    autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
-    autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
-    autoChooser.addOption("Left One Cycle", LeftSideOneAuto);
+    // autoChooser.setDefaultOption("Example", exampleAuto);
+    autoChooser.setDefaultOption("Right one Cycle", rightSideOneAuto);
+    autoChooser.addOption("Right one and Outpost Cycle", rightSideOneAndOutpostAuto);
 
   }
 
