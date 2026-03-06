@@ -132,8 +132,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(6, 35).withTimeout(0.1),
-        setIntakeState(EXTEND_DISTANCE - 0.075, 35).withTimeout(0.1)).repeatedly()
+        setIntakeState(6, 35).withTimeout(0.15),
+        setIntakeState(EXTEND_DISTANCE - 0.1, 35).withTimeout(0.15)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
           extensionMotor.getConfigurator().apply(regularLimits);
