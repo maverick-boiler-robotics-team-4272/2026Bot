@@ -96,9 +96,6 @@ public class RobotContainer {
     // joystick.getHID().getXButton())
     // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // Yup
 
-    operator.leftBumper().whileTrue(
-        intake.agitateIntake());
-
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
     joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));// not me
@@ -114,6 +111,14 @@ public class RobotContainer {
     operator.povLeft().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
 
+    operator.leftTrigger().whileTrue(
+        hopper.agitate(50, 10));
+
+    operator.rightTrigger().whileTrue(
+        intake.agitateIntake());
+
+    operator.a().whileTrue(
+        shooter.setShooterState(0.015, 50));
     // operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
