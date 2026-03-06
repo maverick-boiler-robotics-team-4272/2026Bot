@@ -10,6 +10,8 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEE
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -141,8 +143,6 @@ public class RobotContainer {
 
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
-    SmartDashboard.putData("Auto chooser", autoChooser);
-
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
@@ -186,6 +186,27 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
+    PathPlannerPath startLeft;
+    try {
+      startLeft = PathPlannerPath.fromChoreoTrajectory("Start_To_Mid_Left");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath intakeLeft;
+    try {
+      intakeLeft = PathPlannerPath.fromChoreoTrajectory("Mid_Left_Intake");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath midLeftShoot;
+    try {
+      midLeftShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Left_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -195,29 +216,45 @@ public class RobotContainer {
     // );
 
     Command rightSideOneAuto = new SequentialCommandGroup(
-
-        AutoBuilder.followPath(startRight),
-        new ParallelCommandGroup(
-            AutoBuilder.followPath(intakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-        AutoBuilder.followPath(midRightShoot),
-        shooter.setShooterState(.05, 50).withTimeout(5));
+      //drivetrain.resetThePose(new Pose2d(.45,4.4,Rotation2d.kCCW_90deg)),
+      AutoBuilder.followPath(startRight),
+      new ParallelCommandGroup(
+        AutoBuilder.followPath(intakeRight),
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+      AutoBuilder.followPath(midRightShoot),
+      shooter.setShooterState(.05, 50).withTimeout(5)
+    );
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
-        AutoBuilder.followPath(startRight),
-        new ParallelCommandGroup(
-            AutoBuilder.followPath(intakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-        AutoBuilder.followPath(midRightShoot),
-        shooter.setShooterState(.05, 50).withTimeout(5),
-        AutoBuilder.followPath(RightShootToOutpost),
-        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
-        AutoBuilder.followPath(OutpostToRightShoot),
-        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10));
+      //drivetrain.resetThePose(new Pose2d(4.4,0.45,Rotation2d.kCCW_90deg)),
+      AutoBuilder.followPath(startRight),
+      new ParallelCommandGroup(
+        AutoBuilder.followPath(intakeRight),
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+      AutoBuilder.followPath(midRightShoot),
+      shooter.setShooterState(.05, 50).withTimeout(5),
+      AutoBuilder.followPath(RightShootToOutpost),
+      shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
+      AutoBuilder.followPath(OutpostToRightShoot),
+      shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10)
+    );
+
+    Command leftSideOneAuto = new SequentialCommandGroup(
+      //drivetrain.resetThePose(new Pose2d(4.4,7.64,Rotation2d.kCW_90deg)),
+      AutoBuilder.followPath(startLeft),
+      new ParallelCommandGroup(
+        AutoBuilder.followPath(intakeLeft),
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+      AutoBuilder.followPath(midLeftShoot),
+      shooter.setShooterState(.05, 50).withTimeout(5)
+    );
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
-    autoChooser.setDefaultOption("Right one Cycle", rightSideOneAuto);
-    autoChooser.addOption("Right one and Outpost Cycle", rightSideOneAndOutpostAuto);
+    autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
+    autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
+    autoChooser.addOption("Left One Cycle", leftSideOneAuto);
+
+    SmartDashboard.putData("Auto chooser", autoChooser);
 
   }
 
