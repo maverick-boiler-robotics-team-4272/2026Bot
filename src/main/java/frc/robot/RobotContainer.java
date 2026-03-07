@@ -83,7 +83,7 @@ public class RobotContainer {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
     joystick.rightTrigger().whileTrue(intake.setIntakeState(0, 0));
 
-    joystick.leftBumper().whileTrue(drivetrain.doTrenches());
+    // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
     joystick.a().whileTrue(
         ShooterCommands.teleHalfShooterCommand(shooter,
@@ -134,8 +134,9 @@ public class RobotContainer {
     // operator.x().whileTrue(
     // hopper.agitate(-50, -30));
 
-    operator.a().whileTrue(shooter.setShooterState(() -> SmartDashboard.getNumber("ANGLE", 0.02),
-        () -> SmartDashboard.getNumber("SPEED", 50)));
+    // operator.a().whileTrue(shooter.setShooterState(() ->
+    // SmartDashboard.getNumber("ANGLE", 0.02),
+    // () -> SmartDashboard.getNumber("SPEED", 50)));
     operator.x().whileTrue(new ParallelCommandGroup(
         intake.agitateIntake(),
         hopper.agitate(50, 10),
@@ -238,7 +239,8 @@ public class RobotContainer {
         drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
             !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ? Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
         new ParallelRaceGroup(
-            AutoBuilder.followPath(startRight), intake.outZeroExtension()),
+            AutoBuilder.followPath(startRight),
+            intake.outZeroExtension()),
         new ParallelRaceGroup(
             AutoBuilder.followPath(intakeRight),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),

@@ -57,7 +57,7 @@ import java.util.function.Supplier;
  */
 public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Subsystem {
   PIDController drivePID = new PIDController(DRIVE_P, DRIVE_I, DRIVE_D);
-  Pose2d[] trenchPoses = LEFT_OUT;
+  // Pose2d[] trenchPoses = LEFT_OUT;
   private static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
@@ -340,73 +340,101 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public Pose2d whereShoot() {
     if (getState().Pose.getY() > Units.inchesToMeters(158.5)
         && getState().Pose.getY() < FIELD_LENGTH_M - Units.inchesToMeters(158.5)) {
-      return getState().Pose.nearest(SHUTTLE_POSES);
+      return getState().Pose.nearest(getShuttlePoses());
     } else {
-      return HUB_LOCATION;
+      return getHubLocation();
     }
   }
 
-  public BooleanSupplier whichTrench(Pose2d pose) {
-    return () -> {
-      return getState().Pose.nearest(TRENCH_POSES).equals(pose);
-    };
-  }
+  // public BooleanSupplier whichTrench(Pose2d pose) {
+  // return () -> {
+  // return getState().Pose.nearest(TRENCH_POSES).equals(pose);
+  // };
+  // }
 
-  public Command doTrenches() {
-    double transition1 = 0.1;
-    double transition = 0.4;
-    return new SequentialCommandGroup(
-        new ConditionalCommand(new SequentialCommandGroup(
-            pidToPoint(LEFT_OUT[0])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_OUT[0].getTranslation()) < transition1),
-            pidToPoint(LEFT_OUT[1])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_OUT[1].getTranslation()) < transition),
-            pidToPoint(LEFT_OUT[2])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_OUT[2].getTranslation()) < transition),
-            pidToPoint(LEFT_OUT[3])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_OUT[3].getTranslation()) < transition)),
-            new InstantCommand(() -> {
-            }), whichTrench(LEFT_OUT[0])),
-        new ConditionalCommand(new SequentialCommandGroup(
-            pidToPoint(LEFT_IN[0])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_IN[0].getTranslation()) < transition1),
-            pidToPoint(LEFT_IN[1])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_IN[1].getTranslation()) < transition),
-            pidToPoint(LEFT_IN[2])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_IN[2].getTranslation()) < transition),
-            pidToPoint(LEFT_IN[3])
-                .until(() -> getState().Pose.getTranslation().getDistance(LEFT_IN[3].getTranslation()) < transition)),
-            new InstantCommand(() -> {
-            }), whichTrench(LEFT_IN[0])),
-        new ConditionalCommand(
-            new SequentialCommandGroup(
-                pidToPoint(RIGHT_OUT[0])
-                    .until(
-                        () -> getState().Pose.getTranslation()
-                            .getDistance(RIGHT_OUT[0].getTranslation()) < transition1),
-                pidToPoint(RIGHT_OUT[1])
-                    .until(
-                        () -> getState().Pose.getTranslation().getDistance(RIGHT_OUT[1].getTranslation()) < transition),
-                pidToPoint(RIGHT_OUT[2])
-                    .until(
-                        () -> getState().Pose.getTranslation().getDistance(RIGHT_OUT[2].getTranslation()) < transition),
-                pidToPoint(RIGHT_OUT[3])
-                    .until(() -> getState().Pose.getTranslation()
-                        .getDistance(RIGHT_OUT[3].getTranslation()) < transition)),
-            new InstantCommand(() -> {
-            }), whichTrench(RIGHT_OUT[0])),
-        new ConditionalCommand(new SequentialCommandGroup(
-            pidToPoint(RIGHT_IN[0])
-                .until(() -> getState().Pose.getTranslation().getDistance(RIGHT_IN[0].getTranslation()) < transition1),
-            pidToPoint(RIGHT_IN[1])
-                .until(() -> getState().Pose.getTranslation().getDistance(RIGHT_IN[1].getTranslation()) < transition),
-            pidToPoint(RIGHT_IN[2])
-                .until(() -> getState().Pose.getTranslation().getDistance(RIGHT_IN[2].getTranslation()) < transition),
-            pidToPoint(RIGHT_IN[3])
-                .until(() -> getState().Pose.getTranslation().getDistance(RIGHT_IN[3].getTranslation()) < transition)),
-            new InstantCommand(() -> {
-            }), whichTrench(RIGHT_IN[0])));
-  }
+  // public Command doTrenches() {
+  // double transition1 = 0.1;
+  // double transition = 0.4;
+  // return new SequentialCommandGroup(
+  // new ConditionalCommand(new SequentialCommandGroup(
+  // pidToPoint(LEFT_OUT[0])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_OUT[0].getTranslation()) <
+  // transition1),
+  // pidToPoint(LEFT_OUT[1])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_OUT[1].getTranslation()) <
+  // transition),
+  // pidToPoint(LEFT_OUT[2])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_OUT[2].getTranslation()) <
+  // transition),
+  // pidToPoint(LEFT_OUT[3])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_OUT[3].getTranslation()) <
+  // transition)),
+  // new InstantCommand(() -> {
+  // }), whichTrench(LEFT_OUT[0])),
+  // new ConditionalCommand(new SequentialCommandGroup(
+  // pidToPoint(LEFT_IN[0])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_IN[0].getTranslation()) <
+  // transition1),
+  // pidToPoint(LEFT_IN[1])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_IN[1].getTranslation()) <
+  // transition),
+  // pidToPoint(LEFT_IN[2])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_IN[2].getTranslation()) <
+  // transition),
+  // pidToPoint(LEFT_IN[3])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(LEFT_IN[3].getTranslation()) <
+  // transition)),
+  // new InstantCommand(() -> {
+  // }), whichTrench(LEFT_IN[0])),
+  // new ConditionalCommand(
+  // new SequentialCommandGroup(
+  // pidToPoint(RIGHT_OUT[0])
+  // .until(
+  // () -> getState().Pose.getTranslation()
+  // .getDistance(RIGHT_OUT[0].getTranslation()) < transition1),
+  // pidToPoint(RIGHT_OUT[1])
+  // .until(
+  // () ->
+  // getState().Pose.getTranslation().getDistance(RIGHT_OUT[1].getTranslation()) <
+  // transition),
+  // pidToPoint(RIGHT_OUT[2])
+  // .until(
+  // () ->
+  // getState().Pose.getTranslation().getDistance(RIGHT_OUT[2].getTranslation()) <
+  // transition),
+  // pidToPoint(RIGHT_OUT[3])
+  // .until(() -> getState().Pose.getTranslation()
+  // .getDistance(RIGHT_OUT[3].getTranslation()) < transition)),
+  // new InstantCommand(() -> {
+  // }), whichTrench(RIGHT_OUT[0])),
+  // new ConditionalCommand(new SequentialCommandGroup(
+  // pidToPoint(RIGHT_IN[0])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(RIGHT_IN[0].getTranslation()) <
+  // transition1),
+  // pidToPoint(RIGHT_IN[1])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(RIGHT_IN[1].getTranslation()) <
+  // transition),
+  // pidToPoint(RIGHT_IN[2])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(RIGHT_IN[2].getTranslation()) <
+  // transition),
+  // pidToPoint(RIGHT_IN[3])
+  // .until(() ->
+  // getState().Pose.getTranslation().getDistance(RIGHT_IN[3].getTranslation()) <
+  // transition)),
+  // new InstantCommand(() -> {
+  // }), whichTrench(RIGHT_IN[0])));
+  // }
 
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine
@@ -442,9 +470,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public void periodic() {
     // mine
     DogLog.log("Subsystems/Drive/Pose", getState().Pose);
-    DogLog.log("Subsystems/Drive/HubPose", HUB_LOCATION);
+    DogLog.log("Subsystems/Drive/HubPose", getHubLocation());
     DogLog.log("Subsystems/Drive/HubDistance",
-        getState().Pose.getTranslation().getDistance(HUB_LOCATION.getTranslation()));
+        getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()));
     if (getCurrentCommand() != null) {
       DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
     } else {
