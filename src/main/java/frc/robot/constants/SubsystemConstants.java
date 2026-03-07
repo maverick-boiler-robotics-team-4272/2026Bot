@@ -19,7 +19,7 @@ public class SubsystemConstants {
 
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
-    public static final int HOPPER_LOWER_SPEED = 60;
+    public static final int HOPPER_LOWER_SPEED = 50;
     public static final int HOPPER_UPPER_SPEED = 20;
   }
 
@@ -47,13 +47,13 @@ public class SubsystemConstants {
     public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
 
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(3.11, 50.0), Map.entry(3.32, 52.0), Map.entry(3.85, 55.0), Map.entry(4.21, 57.0),
-        Map.entry(5.09, 70.0));
+        Map.entry(3.19, 45.0), Map.entry(5.03, 57.0), Map.entry(3.35, 47.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
-        .ofEntries(Map.entry(3.11, 0.015), Map.entry(3.32, 0.0175), Map.entry(3.85, 0.022), Map.entry(4.21, 0.025),
-            Map.entry(5.09, 0.0325));
-    public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap
-        .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0), Map.entry(4.0, 4.0));
+        .ofEntries(Map.entry(3.19, 0.016), Map.entry(5.03, 0.032), Map.entry(3.35, 0.018));
+    // public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP =
+    // InterpolatingDoubleTreeMap
+    // .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0),
+    // Map.entry(4.0, 4.0));
   }
 
   public static class IntakeConstants {
