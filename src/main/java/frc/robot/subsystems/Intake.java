@@ -66,7 +66,7 @@ public class Intake extends SubsystemBase {
                 .withSupplyCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true)
                 .withSupplyCurrentLowerLimit(10))
-        .withIdleMode(NeutralModeValue.Brake)
+        .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
@@ -113,7 +113,7 @@ public class Intake extends SubsystemBase {
           disableSafety = true;
           runOnce(() -> extensionMotor.getConfigurator().apply(regularLimits));
           desiredExtensionRotations = EXTEND_DISTANCE;
-          extensionMotor.setControl(new VoltageOut(6).withEnableFOC(true));
+          extensionMotor.setControl(new VoltageOut(8).withEnableFOC(true));
           extensionMotor.setPosition(EXTEND_DISTANCE);
           extensionMotor.setPosition(16.4);
           intakeMotor.setControl(new VoltageOut(0));
