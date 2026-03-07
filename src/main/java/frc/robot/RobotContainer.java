@@ -219,6 +219,13 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
+    PathPlannerPath PutItInReverseTerry;
+    try {
+      PutItInReverseTerry = PathPlannerPath.fromChoreoTrajectory("Put_It_In_Reverse_Terry");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -283,10 +290,15 @@ public class RobotContainer {
                 new WaitCommand(0.75),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
+    Command terry = new SequentialCommandGroup(
+      AutoBuilder.followPath(PutItInReverseTerry)
+    )
+
     // autoChooser.setDefaultOption("Example", exampleAuto);
     autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
     autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
     autoChooser.addOption("Left One Cycle", leftSideOneAuto);
+    autoChooser.addOption("Put It In Reverse Terry", terry);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
 
