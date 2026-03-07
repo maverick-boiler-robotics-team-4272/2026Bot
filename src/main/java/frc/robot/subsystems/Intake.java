@@ -72,6 +72,7 @@ public class Intake extends SubsystemBase {
         .build();
     prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
 
+    extensionMotor.setPosition(0);
     // extensionMotor.getConfigurator()
     // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
 
@@ -113,11 +114,12 @@ public class Intake extends SubsystemBase {
           disableSafety = true;
           runOnce(() -> extensionMotor.getConfigurator().apply(regularLimits));
           desiredExtensionRotations = EXTEND_DISTANCE;
-          extensionMotor.setControl(new VoltageOut(8).withEnableFOC(true));
-          extensionMotor.setPosition(EXTEND_DISTANCE);
-          extensionMotor.setPosition(16.4);
+          extensionMotor.setControl(new VoltageOut(12).withEnableFOC(true));
           intakeMotor.setControl(new VoltageOut(0));
-        }, () -> disableSafety = false);
+        }, () -> {
+          disableSafety = false;
+          extensionMotor.setPosition(EXTEND_DISTANCE);
+        });
   }
 
   public Command setDefaultCommand() {

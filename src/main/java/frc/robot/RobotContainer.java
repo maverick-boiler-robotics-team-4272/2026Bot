@@ -236,8 +236,9 @@ public class RobotContainer {
     // );
 
     Command rightSideOneAuto = new SequentialCommandGroup(
-        drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-            !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ? Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
+        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
         new ParallelRaceGroup(
             AutoBuilder.followPath(startRight),
             intake.outZeroExtension()),
@@ -252,8 +253,9 @@ public class RobotContainer {
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
-        drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-            !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ? Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
+        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
         new ParallelRaceGroup(
             AutoBuilder.followPath(startRight),
             intake.outZeroExtension()),
@@ -277,8 +279,9 @@ public class RobotContainer {
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
     Command leftSideOneAuto = new SequentialCommandGroup(
-        drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-            !isRedSide() ? 7.64 : FIELD_WIDTH_M - 7.64, !isRedSide() ? Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg)),
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 7.64 : FIELD_WIDTH_M - 7.64, !isRedSide() ?
+        // Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg)),
         new ParallelRaceGroup(
             AutoBuilder.followPath(startLeft),
             intake.outZeroExtension()),

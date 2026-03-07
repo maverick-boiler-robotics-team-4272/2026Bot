@@ -298,7 +298,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public Command pointTowardsPoint(
-      Translation2d desiredPoint, DoubleSupplier joystickX, DoubleSupplier joystickY) {
+      Supplier<Translation2d> desiredPoint, DoubleSupplier joystickX, DoubleSupplier joystickY) {
     FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
         .withDeadband(MAX_DRIVE_SPEED * 0.01)
@@ -307,9 +307,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     return run(
         () -> {
-          Translation2d delta = desiredPoint.minus(getState().Pose.getTranslation());
+          Translation2d delta = desiredPoint.get().minus(getState().Pose.getTranslation());
 
-          Rotation2d targetAngle = delta.getAngle().plus(Rotation2d.k180deg);
+          Rotation2d targetAngle = delta.getAngle();
 
           this.setControl(
               request

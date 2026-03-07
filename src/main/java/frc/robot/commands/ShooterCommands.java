@@ -27,7 +27,7 @@ public class ShooterCommands {
             DoubleSupplier joystickY) {
         return new ParallelCommandGroup(
                 drive.defer(() -> Commands.repeatingSequence(
-                        drive.pointTowardsPoint(getHubLocation().getTranslation(), joystickX,
+                        drive.pointTowardsPoint(() -> getHubLocation().getTranslation(), joystickX,
                                 joystickY)
                                 .until(() -> {
                                     return ((drive.getState().Pose.getX() > Units
@@ -38,7 +38,7 @@ public class ShooterCommands {
                                                                     158.5)));
                                 }),
                         drive.pointTowardsPoint(
-                                drive.getState().Pose.nearest(getShuttlePoses())
+                                () -> drive.getState().Pose.nearest(getShuttlePoses())
                                         .getTranslation(),
                                 joystickX, joystickY)
                                 .until(
