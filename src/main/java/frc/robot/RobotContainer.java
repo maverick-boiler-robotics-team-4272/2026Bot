@@ -291,8 +291,8 @@ public class RobotContainer {
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
     Command terry = new SequentialCommandGroup(
-      AutoBuilder.followPath(PutItInReverseTerry)
-    )
+        AutoBuilder.followPath(PutItInReverseTerry),
+        drivetrain.applyRequest(() -> brake));
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
