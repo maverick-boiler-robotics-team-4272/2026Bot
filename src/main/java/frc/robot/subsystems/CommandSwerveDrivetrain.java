@@ -305,18 +305,18 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         .withRotationalDeadband(MAX_ROTATIONAL_SPEED * 0.01);
     request.withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D);
 
-    return run(
-        () -> {
+    return defer(
+        () -> run(() -> {
           Translation2d delta = desiredPoint.get().minus(getState().Pose.getTranslation());
 
-          Rotation2d targetAngle = delta.getAngle();
+          Rotation2d targetAngle = delta.getAngle().plus(isRedSide() ? Rotation2d.k180deg : Rotation2d.kZero);
 
           this.setControl(
               request
                   .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
                   .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
                   .withTargetDirection(targetAngle));
-        });
+        }));
   }
 
   public Command pidToPoint(Pose2d pose) {
