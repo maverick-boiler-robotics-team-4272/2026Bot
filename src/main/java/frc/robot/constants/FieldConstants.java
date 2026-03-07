@@ -23,11 +23,11 @@ public class FieldConstants {
         // yup, I added the
         // extra distance :)
         public static final Pose2d LEFT_SHUTTLE = new Pose2d(
-                        isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? 1.155 : FIELD_WIDTH_M - 1.155,
+                        isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? 2.5 : FIELD_WIDTH_M - 2.5,
                         Rotation2d.kZero);
 
         public static final Pose2d RIGHT_SHUTTLE = new Pose2d(
-                        isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? FIELD_WIDTH_M - 1.155 : 1.155,
+                        isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? FIELD_WIDTH_M - 2.5 : 2.5,
                         Rotation2d.kZero);
 
         public static ArrayList<Pose2d> SHUTTLE_POSES = new ArrayList<Pose2d>();
