@@ -47,7 +47,7 @@ public class SubsystemConstants {
     public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
 
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(2.26, 36.0), Map.entry(5.03, 57.0));// Map.entry(3.19, 45.0), Map.entry(5.03, 57.0), Map.entry(3.35,
+        Map.entry(2.26, 38.0), Map.entry(5.03, 57.0));// Map.entry(3.19, 45.0), Map.entry(5.03, 57.0), Map.entry(3.35,
                                                       // 47.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(2.26, 0.0084), Map.entry(5.03, 0.032));// Map.entry(3.19, 0.016), Map.entry(5.03, 0.032),
@@ -77,7 +77,7 @@ public class SubsystemConstants {
   public static class DrivetrainConstants {
     public static final double WHEEL_COF = 1.1;
     public static final double MAX_DRIVE_SPEED = 10; // TODO: this needs to be tested
-    public static final double MAX_ROTATIONAL_SPEED = 5; // TODO: this needs to be tested
+    public static final double MAX_ROTATIONAL_SPEED = 7.5; // TODO: this needs to be tested
     public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF,
         DCMotor.getKrakenX60Foc(4), 80, 4);
 
