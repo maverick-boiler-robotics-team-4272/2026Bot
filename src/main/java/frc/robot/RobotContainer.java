@@ -80,11 +80,11 @@ public class RobotContainer {
     joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
     joystick.a().whileTrue(
-        ShooterCommands.teleHalfShooterCommand(shooter, hopper,
+        ShooterCommands.teleHalfShooterCommand(shooter,
             drivetrain, joystick::getLeftX,
             joystick::getLeftY)); // IT WORKS!!!!
     joystick.a().whileTrue(
-        ShooterCommands.tele2ndHalfShooterCommand(loader, intake));
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper));
 
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
@@ -125,13 +125,15 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    // operator.a().whileTrue(shooter.setShooterState(() ->
-    // SmartDashboard.getNumber("ANGLE", 0),
-    // () -> SmartDashboard.getNumber("SPEED", 0)));
-    // operator.x().whileTrue(new ParallelCommandGroup(
-    // intake.agitateIntake(),
-    // hopper.agitate(50, 10),
-    // loader.loadBoth(70)).repeatedly());
+    // operator.x().whileTrue(
+    // hopper.agitate(-50, -30));
+
+    operator.a().whileTrue(shooter.setShooterState(() -> SmartDashboard.getNumber("ANGLE", 0.02),
+        () -> SmartDashboard.getNumber("SPEED", 50)));
+    operator.x().whileTrue(new ParallelCommandGroup(
+        intake.agitateIntake(),
+        hopper.agitate(50, 10),
+        loader.loadBoth(70)).repeatedly());
   }
 
   public void registerNamedCommands() {
@@ -143,6 +145,10 @@ public class RobotContainer {
 
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
+    SmartDashboard.putData("Auto chooser", autoChooser);
+
+    SmartDashboard.putNumber("ANGLE", 0.02);
+    SmartDashboard.putNumber("SPEED", 50);
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
@@ -223,38 +229,35 @@ public class RobotContainer {
     // );
 
     Command rightSideOneAuto = new SequentialCommandGroup(
-      //drivetrain.resetThePose(new Pose2d(.45,4.4,Rotation2d.kCCW_90deg)),
-      AutoBuilder.followPath(startRight),
-      new ParallelCommandGroup(
-        AutoBuilder.followPath(intakeRight),
-        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-      AutoBuilder.followPath(midRightShoot),
-      shooter.setShooterState(.05, 50).withTimeout(5)
-    );
+        // drivetrain.resetThePose(new Pose2d(.45,4.4,Rotation2d.kCCW_90deg)),
+        AutoBuilder.followPath(startRight),
+        new ParallelCommandGroup(
+            AutoBuilder.followPath(intakeRight),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+        AutoBuilder.followPath(midRightShoot),
+        shooter.setShooterState(.05, 50).withTimeout(5));
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
-      //drivetrain.resetThePose(new Pose2d(4.4,0.45,Rotation2d.kCCW_90deg)),
-      AutoBuilder.followPath(startRight),
-      new ParallelCommandGroup(
-        AutoBuilder.followPath(intakeRight),
-        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-      AutoBuilder.followPath(midRightShoot),
-      shooter.setShooterState(.05, 50).withTimeout(5),
-      AutoBuilder.followPath(RightShootToOutpost),
-      shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
-      AutoBuilder.followPath(OutpostToRightShoot),
-      shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10)
-    );
+        // drivetrain.resetThePose(new Pose2d(4.4,0.45,Rotation2d.kCCW_90deg)),
+        AutoBuilder.followPath(startRight),
+        new ParallelCommandGroup(
+            AutoBuilder.followPath(intakeRight),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+        AutoBuilder.followPath(midRightShoot),
+        shooter.setShooterState(.05, 50).withTimeout(5),
+        AutoBuilder.followPath(RightShootToOutpost),
+        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
+        AutoBuilder.followPath(OutpostToRightShoot),
+        shooter.setShooterState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(10));
 
     Command leftSideOneAuto = new SequentialCommandGroup(
-      //drivetrain.resetThePose(new Pose2d(4.4,7.64,Rotation2d.kCW_90deg)),
-      AutoBuilder.followPath(startLeft),
-      new ParallelCommandGroup(
-        AutoBuilder.followPath(intakeLeft),
-        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
-      AutoBuilder.followPath(midLeftShoot),
-      shooter.setShooterState(.05, 50).withTimeout(5)
-    );
+        // drivetrain.resetThePose(new Pose2d(4.4,7.64,Rotation2d.kCW_90deg)),
+        AutoBuilder.followPath(startLeft),
+        new ParallelCommandGroup(
+            AutoBuilder.followPath(intakeLeft),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)),
+        AutoBuilder.followPath(midLeftShoot),
+        shooter.setShooterState(.05, 50).withTimeout(5));
 
     Command terry = new SequentialCommandGroup(
       AutoBuilder.followPath(PutItInReverseTerry)

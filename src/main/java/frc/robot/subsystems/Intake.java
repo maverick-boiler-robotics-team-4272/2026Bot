@@ -32,9 +32,9 @@ public class Intake extends SubsystemBase {
   boolean disableSafety;
 
   public Intake() {
-    regularLimits.StatorCurrentLimit = 40;
+    regularLimits.StatorCurrentLimit = 50;
     regularLimits.StatorCurrentLimitEnable = true;
-    regularLimits.SupplyCurrentLimit = 40;
+    regularLimits.SupplyCurrentLimit = 50;
     regularLimits.SupplyCurrentLimitEnable = true;
     regularLimits.SupplyCurrentLowerLimit = 20;
 
@@ -115,6 +115,7 @@ public class Intake extends SubsystemBase {
           desiredExtensionRotations = EXTEND_DISTANCE;
           extensionMotor.setControl(new VoltageOut(6).withEnableFOC(true));
           extensionMotor.setPosition(EXTEND_DISTANCE);
+          extensionMotor.setPosition(16.4);
           intakeMotor.setControl(new VoltageOut(0));
         }, () -> disableSafety = false);
   }
@@ -132,8 +133,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(6, 35).withTimeout(0.15),
-        setIntakeState(EXTEND_DISTANCE - 0.1, 35).withTimeout(0.15)).repeatedly()
+        setIntakeState(7, 45).withTimeout(0.25),
+        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.25)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
           extensionMotor.getConfigurator().apply(regularLimits);

@@ -22,37 +22,46 @@ import java.util.function.DoubleSupplier;
 public class ShooterCommands {
     public static Command teleHalfShooterCommand(
             Shooter shooter,
-            Hopper hopper,
             CommandSwerveDrivetrain drive,
             DoubleSupplier joystickX,
             DoubleSupplier joystickY) {
         return new ParallelCommandGroup(
-                hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
                 drive.defer(() -> Commands.repeatingSequence(
-                        drive.pointTowardsPoint(HUB_LOCATION.getTranslation(), joystickX, joystickY)
+                        drive.pointTowardsPoint(HUB_LOCATION.getTranslation(), joystickX,
+                                joystickY)
                                 .until(() -> {
-                                    return ((drive.getState().Pose.getX() > Units.inchesToMeters(158.5)
-                                            && drive.getState().Pose.getX() < FIELD_LENGTH_M
-                                                    - Units.inchesToMeters(158.5)));
+                                    return ((drive.getState().Pose.getX() > Units
+                                            .inchesToMeters(158.5)
+                                            && drive.getState().Pose
+                                                    .getX() < FIELD_LENGTH_M
+                                                            - Units.inchesToMeters(
+                                                                    158.5)));
                                 }),
-                        drive.pointTowardsPoint(drive.getState().Pose.nearest(SHUTTLE_POSES).getTranslation(),
+                        drive.pointTowardsPoint(
+                                drive.getState().Pose.nearest(SHUTTLE_POSES)
+                                        .getTranslation(),
                                 joystickX, joystickY)
                                 .until(
                                         () -> {
-                                            return !(drive.getState().Pose.getX() > Units.inchesToMeters(158.5)
-                                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M
-                                                            - Units.inchesToMeters(158.5));
+                                            return !(drive.getState().Pose
+                                                    .getX() > Units.inchesToMeters(
+                                                            158.5)
+                                                    && drive.getState().Pose
+                                                            .getX() < FIELD_LENGTH_M
+                                                                    - Units.inchesToMeters(
+                                                                            158.5));
                                         }))),
                 setDesiredShooterStates(shooter, drive));
     }
 
     public static Command tele2ndHalfShooterCommand(
-            Loader loader, Intake intake) {
+            Loader loader, Intake intake, Hopper hopper) {
         return new SequentialCommandGroup(
                 new WaitCommand(1),
                 new ParallelCommandGroup(
                         loader.loadBoth(70),
-                        intake.agitateIntake()).repeatedly());
+                        intake.agitateIntake(),
+                        hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)).repeatedly());
     }
 
     public static Command autoShooCommand(
@@ -75,17 +84,22 @@ public class ShooterCommands {
                                 .getDistance(HUB_LOCATION.getTranslation())),
                         () -> SHOOTER_VELOCITY_LOOKUP
                                 .get(drive.getState().Pose.getTranslation()
-                                        .getDistance(HUB_LOCATION.getTranslation())))
+                                        .getDistance(HUB_LOCATION
+                                                .getTranslation())))
                         .until(() -> {
-                            return ((drive.getState().Pose.getX() > Units.inchesToMeters(158.5)
-                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M - Units.inchesToMeters(158.5)));
+                            return ((drive.getState().Pose.getX() > Units
+                                    .inchesToMeters(158.5)
+                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M
+                                            - Units.inchesToMeters(158.5)));
                         }), // (isRedSide ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03
                             // :
                             // drive.getState().Pose.getX() < 4.03)
-                shooter.setShooterState(0.01, 45).until(
+                shooter.setShooterState(0.07, 60).until(
                         () -> {
-                            return !(drive.getState().Pose.getX() > Units.inchesToMeters(158.5)
-                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M - Units.inchesToMeters(158.5));
+                            return !(drive.getState().Pose.getX() > Units
+                                    .inchesToMeters(158.5)
+                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M
+                                            - Units.inchesToMeters(158.5));
                         })));
     }
 }
