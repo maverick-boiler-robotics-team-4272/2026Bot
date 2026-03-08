@@ -125,14 +125,14 @@ public class RobotContainer {
     operator.rightTrigger().whileTrue(
         intake.agitateIntake());
 
-    operator.a().whileTrue(
+    operator.y().whileTrue(
         shooter.setShooterState(0.015, 50));
     // operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
     // shuttle button since auto shuttling no work question mark
-    operator.y().whileTrue(
+    operator.a().whileTrue(
         shooter.setShooterState(0.07, 60));
 
     // operator.x().whileTrue(
@@ -355,13 +355,16 @@ public class RobotContainer {
                 new WaitCommand(0.5),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
             .withTimeout(5),
-        AutoBuilder.followPath(rightOutpostShootToOutpost),
+        new ParallelRaceGroup(AutoBuilder.followPath(rightOutpostShootToOutpost), shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop()),
         intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(2),
         AutoBuilder.followPath(outpostToOutpostShoot),
+        new WaitCommand(.3),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                new WaitCommand(0.5),
+                new WaitCommand(1),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
     Command leftSideOneAuto = new SequentialCommandGroup(
