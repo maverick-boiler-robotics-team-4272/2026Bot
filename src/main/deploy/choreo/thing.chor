@@ -5,6 +5,62 @@
  "variables":{
   "expressions":{},
   "poses":{
+   "Depot":{
+    "x":{
+     "exp":"0.75 m",
+     "val":0.75
+    },
+    "y":{
+     "exp":"6 m",
+     "val":6.0
+    },
+    "heading":{
+     "exp":"-0 deg",
+     "val":0.0
+    }
+   },
+   "Depot_Shoot":{
+    "x":{
+     "exp":"1.8 m",
+     "val":1.8
+    },
+    "y":{
+     "exp":"5.8 m",
+     "val":5.8
+    },
+    "heading":{
+     "exp":"-30 deg",
+     "val":-0.5235987755982988
+    }
+   },
+   "Left_Intake":{
+    "x":{
+     "exp":"7.75 m",
+     "val":7.75
+    },
+    "y":{
+     "exp":"7.25 m",
+     "val":7.25
+    },
+    "heading":{
+     "exp":"90 deg",
+     "val":1.5707963267948966
+    }
+   },
+   "Mid_Left_End":{
+    "x":{
+     "exp":"7.75 m",
+     "val":7.75
+    },
+    "y":{
+     "exp":"4.8 m",
+     "val":4.8
+    },
+    "heading":{
+     "exp":"90 deg",
+     "val":1.5707963267948966
+    }
+   },
    "Mid_Right_End":{
     "x":{
      "exp":"7.75 m",
@@ -25,8 +81,8 @@
      "val":0.75
     },
     "y":{
-     "exp":"0.65 m",
-     "val":0.65
+     "exp":"0.75 m",
+     "val":0.75
     },
     "heading":{
      "exp":"0 deg",
@@ -45,6 +101,34 @@
     "heading":{
      "exp":"35 deg",
      "val":0.6108652381980153
+    }
+   },
+   "Right_Intake":{
+    "x":{
+     "exp":"7.75 m",
+     "val":7.75
+    },
+    "y":{
+     "exp":"0.9 m",
+     "val":0.9
+    },
+    "heading":{
+     "exp":"-90 deg",
+     "val":-1.5707963267948966
+    }
+   },
+   "Trench_Mid_Left":{
+    "x":{
+     "exp":"6.2 m",
+     "val":6.2
+    },
+    "y":{
+     "exp":"7.4 m",
+     "val":7.4
+    },
+    "heading":{
+     "exp":"180 deg",
+     "val":3.141592653589793
     }
    },
    "Trench_Mid_Right":{
@@ -85,8 +169,8 @@
    }
   },
   "mass":{
-   "exp":"150 lbs",
-   "val":68.0388555
+   "exp":"145 lbs",
+   "val":65.77089365
   },
   "inertia":{
    "exp":"6 kg m ^ 2",
@@ -101,12 +185,12 @@
    "val":0.0508
   },
   "vmax":{
-   "exp":"6000 RPM",
-   "val":628.3185307179587
+   "exp":"5800 RPM",
+   "val":607.3745796940267
   },
   "tmax":{
-   "exp":"1.2 N * m",
-   "val":1.2
+   "exp":"1 N * m",
+   "val":1.0
   },
   "cof":{
    "exp":"1.5",

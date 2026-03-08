@@ -43,10 +43,12 @@ public class FieldConstants {
         public static ArrayList<Pose2d> getShuttlePoses() {
                 ArrayList<Pose2d> shuttlePoses = new ArrayList<Pose2d>();
                 shuttlePoses.add(new Pose2d(
-                                isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? 2.5 : FIELD_WIDTH_M - 2.5,
+                                isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821,
+                                isRedSide() ? 2.25 : FIELD_WIDTH_M - 2.25,
                                 Rotation2d.kZero));
                 shuttlePoses.add(new Pose2d(
-                                isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? FIELD_WIDTH_M - 2.5 : 2.5,
+                                isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821,
+                                isRedSide() ? FIELD_WIDTH_M - 2.25 : 22.5,
                                 Rotation2d.kZero));
                 return shuttlePoses;
         }

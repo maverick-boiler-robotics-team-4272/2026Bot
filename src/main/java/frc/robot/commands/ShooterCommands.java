@@ -27,7 +27,8 @@ public class ShooterCommands {
             DoubleSupplier joystickY) {
         return new ParallelCommandGroup(
                 drive.defer(() -> Commands.repeatingSequence(
-                        drive.pointTowardsPoint(() -> getHubLocation().getTranslation(), joystickX,
+                        drive.pointTowardsPoint(() -> getHubLocation().getTranslation(),
+                                joystickX,
                                 joystickY)
                                 .until(() -> {
                                     return ((drive.getState().Pose.getX() > Units
@@ -86,20 +87,21 @@ public class ShooterCommands {
                                 .get(drive.getState().Pose.getTranslation()
                                         .getDistance(getHubLocation()
                                                 .getTranslation())))
-                        .until(() -> {
-                            return ((drive.getState().Pose.getX() > Units
-                                    .inchesToMeters(158.5)
-                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M
-                                            - Units.inchesToMeters(158.5)));
-                        }), // (isRedSide ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03
-                            // :
-                            // drive.getState().Pose.getX() < 4.03)
-                shooter.setShooterState(0.07, 60).until(
-                        () -> {
-                            return !(drive.getState().Pose.getX() > Units
-                                    .inchesToMeters(158.5)
-                                    && drive.getState().Pose.getX() < FIELD_LENGTH_M
-                                            - Units.inchesToMeters(158.5));
-                        })));
+        // .until(() -> {
+        // return ((drive.getState().Pose.getX() > Units
+        // .inchesToMeters(158.5)
+        // && drive.getState().Pose.getX() < FIELD_LENGTH_M
+        // - Units.inchesToMeters(158.5)));
+        // }), // (isRedSide ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03
+        // :
+        // drive.getState().Pose.getX() < 4.03)
+        // shooter.setShooterState(0.07, 60).until(
+        // () -> {
+        // return !(drive.getState().Pose.getX() > Units
+        // .inchesToMeters(158.5)
+        // && drive.getState().Pose.getX() < FIELD_LENGTH_M
+        // - Units.inchesToMeters(158.5));
+        // })
+        ));
     }
 }

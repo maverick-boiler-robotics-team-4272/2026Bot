@@ -131,6 +131,10 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
+    // shuttle button since auto shuttling no work question mark
+    operator.y().whileTrue(
+        shooter.setShooterState(0.07, 60));
+
     // operator.x().whileTrue(
     // hopper.agitate(-50, -30));
 
@@ -241,9 +245,44 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
+    PathPlannerPath MidleftToDepotShoot;
+    try {
+      MidleftToDepotShoot = PathPlannerPath.fromChoreoTrajectory("Left_Mid_To_Depot_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath DepotShootToDepot;
+    try {
+      DepotShootToDepot = PathPlannerPath.fromChoreoTrajectory("Left_Shoot_To_Depot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trjectory: " + e.getMessage());
+    }
+
     PathPlannerPath PutItInReverseTerry;
     try {
       PutItInReverseTerry = PathPlannerPath.fromChoreoTrajectory("Put_It_In_Reverse_Terry");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath DepotToShoot;
+    try {
+      DepotToShoot = PathPlannerPath.fromChoreoTrajectory("Depot_To_Depot_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath AirplaneTakeDownRight;
+    try {
+      AirplaneTakeDownRight = PathPlannerPath.fromChoreoTrajectory("Boeing_Door");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath AirplaneTakeDownLeft;
+    try {
+      AirplaneTakeDownLeft = PathPlannerPath.fromChoreoTrajectory("Boeing_Cockpit");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -313,7 +352,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                new WaitCommand(0.75),
+                new WaitCommand(0.5),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
             .withTimeout(5),
         AutoBuilder.followPath(rightOutpostShootToOutpost),
@@ -322,7 +361,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                new WaitCommand(0.75),
+                new WaitCommand(0.5),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
     Command leftSideOneAuto = new SequentialCommandGroup(
@@ -342,16 +381,53 @@ public class RobotContainer {
                 new WaitCommand(0.75),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
+    Command leftDepotAuto = new SequentialCommandGroup(
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 7.64 : FIELD_WIDTH_M - 7.64, !isRedSide() ?
+        // Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg)),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(startLeft),
+            intake.outZeroExtension()),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(intakeLeft),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        AutoBuilder.followPath(MidleftToDepotShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            new SequentialCommandGroup(
+                new WaitCommand(0.75),
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+            .withTimeout(5),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(DepotShootToDepot),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        AutoBuilder.followPath(DepotToShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            new SequentialCommandGroup(
+                new WaitCommand(0.5),
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+
     Command terry = new SequentialCommandGroup(
         AutoBuilder.followPath(PutItInReverseTerry),
         drivetrain.applyRequest(() -> brake));
 
+    Command BoeingRight = new SequentialCommandGroup(
+        AutoBuilder.followPath(AirplaneTakeDownRight));
+
+    Command BoeingLeft = new SequentialCommandGroup(
+        AutoBuilder.followPath(AirplaneTakeDownLeft));
+
     // autoChooser.setDefaultOption("Example", exampleAuto);
     autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
-    autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
+    // autoChooser.addOption("Right One and Outpost Cycle",
+    // rightSideOneAndOutpostAuto);
     autoChooser.addOption("Left One Cycle", leftSideOneAuto);
     autoChooser.addOption("Put It In Reverse Terry", terry);
     autoChooser.addOption("outpost cycle dif", rightSideOneAndOutpostAutoDif);
+    autoChooser.addOption("De-Pot", leftDepotAuto);
+    autoChooser.addOption("Boeing Door", BoeingRight);
+    autoChooser.addOption("Boeing Cockpit", BoeingLeft);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
 
