@@ -62,9 +62,7 @@ public class RobotContainer {
 
   private void setDefaultCommands() {
     drivetrain.setDefaultCommand(
-        drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, () -> {
-          return Math.pow(joystick.getRightX(), 3);
-        }));
+        drivetrain.joystickDrive(joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
 
     // climber.setDefaultCommand(climber.climb(0));
     hopper.setDefaultCommand(hopper.stop());
@@ -222,6 +220,27 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
+    PathPlannerPath midRightOutpostShoot;
+    try {
+      midRightOutpostShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_OutPost_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath rightOutpostShootToOutpost;
+    try {
+      rightOutpostShootToOutpost = PathPlannerPath.fromChoreoTrajectory("Outpost_Shoot_to_Outpost");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath outpostToOutpostShoot;
+    try {
+      outpostToOutpostShoot = PathPlannerPath.fromChoreoTrajectory("Outpost_to_Outpost_Shoot");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
     PathPlannerPath PutItInReverseTerry;
     try {
       PutItInReverseTerry = PathPlannerPath.fromChoreoTrajectory("Put_It_In_Reverse_Terry");
@@ -280,6 +299,32 @@ public class RobotContainer {
                 new WaitCommand(0.75),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
+    Command rightSideOneAndOutpostAutoDif = new SequentialCommandGroup(
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
+        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(startRight),
+            intake.outZeroExtension()),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(intakeRight),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        AutoBuilder.followPath(midRightOutpostShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            new SequentialCommandGroup(
+                new WaitCommand(0.75),
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+            .withTimeout(5),
+        AutoBuilder.followPath(rightOutpostShootToOutpost),
+        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(2),
+        AutoBuilder.followPath(outpostToOutpostShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            new SequentialCommandGroup(
+                new WaitCommand(0.75),
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+
     Command leftSideOneAuto = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
         // !isRedSide() ? 7.64 : FIELD_WIDTH_M - 7.64, !isRedSide() ?
@@ -306,6 +351,7 @@ public class RobotContainer {
     autoChooser.addOption("Right One and Outpost Cycle", rightSideOneAndOutpostAuto);
     autoChooser.addOption("Left One Cycle", leftSideOneAuto);
     autoChooser.addOption("Put It In Reverse Terry", terry);
+    autoChooser.addOption("outpost cycle dif", rightSideOneAndOutpostAutoDif);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
 
