@@ -19,6 +19,8 @@ import frc.robot.subsystems.Shooter;
 
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 public class ShooterCommands {
         public static Command teleHalfShooterCommand(
                         Shooter shooter,
@@ -30,29 +32,14 @@ public class ShooterCommands {
                                                 drive.pointTowardsPoint(() -> getHubLocation().getTranslation(),
                                                                 joystickX,
                                                                 joystickY)
-                                                                .until(() -> {
-                                                                        return ((drive.getState().Pose.getX() > Units
-                                                                                        .inchesToMeters(158.5)
-                                                                                        && drive.getState().Pose
-                                                                                                        .getX() < FIELD_LENGTH_M
-                                                                                                                        - Units.inchesToMeters(
-                                                                                                                                        158.5)));
-                                                                }),
+                                        .until(drive.isNotInAllianceZone()),
                                                 drive.pointTowardsPoint(
                                                                 () -> drive.getState().Pose.nearest(getShuttlePoses())
                                                                                 .getTranslation(),
                                                                 joystickX, joystickY)
-                                                                .until(
-                                                                                () -> {
-                                                                                        return !(drive.getState().Pose
-                                                                                                        .getX() > Units.inchesToMeters(
-                                                                                                                        158.5)
-                                                                                                        && drive.getState().Pose
-                                                                                                                        .getX() < FIELD_LENGTH_M
-                                                                                                                                        - Units.inchesToMeters(
-                                                                                                                                                        158.5));
-                                                                                }))),
-                                setDesiredShooterStates(shooter, drive));
+                                        .until(drive.isInAllianceZone()))),
+                        setDesiredShooterStates(shooter, drive))
+                        .andThen(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
         }
 
         public static Command tele2ndHalfShooterCommand(
@@ -65,43 +52,35 @@ public class ShooterCommands {
                                                 hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)).repeatedly());
         }
 
-        public static Command autoShooCommand(
-                        Shooter shooter, Hopper hopper, Loader loader, Intake intake) {
-                return new ParallelCommandGroup(
-                                hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
-                                shooter.setShooterState(AUTO_SHOOTER_HOOD, AUTO_SHOOTER_VELOCITY),
-                                Commands.repeatingSequence(
-                                                new ConditionalCommand(
-                                                                new ParallelCommandGroup(
-                                                                                intake.agitateIntake(),
-                                                                                loader.loadBoth(70)),
-                                                                loader.loadBoth(0), shooter::isAtDesiredSpeed)));
-        }
-
         public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {
-                return shooter.defer(() -> Commands.repeatingSequence(
-                                shooter.setShooterState(
-                                                () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose.getTranslation()
-                                                                .getDistance(getHubLocation().getTranslation())),
-                                                () -> SHOOTER_VELOCITY_LOOKUP
-                                                                .get(drive.getState().Pose.getTranslation()
-                                                                                .getDistance(getHubLocation()
-                                                                                                .getTranslation())))
-                // .until(() -> {
-                // return ((drive.getState().Pose.getX() > Units
-                // .inchesToMeters(158.5)
-                // && drive.getState().Pose.getX() < FIELD_LENGTH_M
-                // - Units.inchesToMeters(158.5)));
-                // }), // (isRedSide ? drive.getState().Pose.getX() > FIELD_LENGTH_M - 4.03
-                // :
-                // drive.getState().Pose.getX() < 4.03)
-                // shooter.setShooterState(0.07, 60).until(
-                // () -> {
-                // return !(drive.getState().Pose.getX() > Units
-                // .inchesToMeters(158.5)
-                // && drive.getState().Pose.getX() < FIELD_LENGTH_M
-                // - Units.inchesToMeters(158.5));
-                // })
-                ));
+            return new ParallelCommandGroup(
+                    shooter.defer(() -> Commands.repeatingSequence(
+                            shooter.setShooterState(
+                                    () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose
+                                            .getTranslation()
+                                            .getDistance(getHubLocation()
+                                                    .getTranslation())),
+                                    () -> SHOOTER_VELOCITY_LOOKUP
+                                            .get(drive.getState().Pose.getTranslation()
+                                                    .getDistance(getHubLocation()
+                                                            .getTranslation())))
+                                    .until(drive.isNotInAllianceZone()),
+                            shooter.defer(
+                                    () -> Commands.repeatingSequence(shooter.setShooterState(
+                                            () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                                                    && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
+                                                            .inchesToMeters(135) ? 0 : 0.7,
+                                            () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                                                    && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
+                                                            .inchesToMeters(135) ? 0 : 70))
+                            // () -> Commands.repeatingSequence(new ConditionalCommand(
+                            // shooter.setShooterState(
+                            // 0, 0),
+                            // shooter.setShooterState(0.7, 70),
+                            // () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                            // && drive.getState().Pose.getY() < FIELD_LENGTH_M - Units
+                            // .inchesToMeters(135)))
+                            )
+                                    .until(drive.isInAllianceZone()))));
         }
 }
