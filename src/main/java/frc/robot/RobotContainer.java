@@ -352,7 +352,6 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                new WaitCommand(0.5),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
             .withTimeout(5),
         new ParallelRaceGroup(AutoBuilder.followPath(rightOutpostShootToOutpost), shooter.defaultCommand(),
@@ -360,11 +359,9 @@ public class RobotContainer {
             hopper.stop()),
         intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(2),
         AutoBuilder.followPath(outpostToOutpostShoot),
-        new WaitCommand(.3),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                new WaitCommand(1),
                 ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
 
     Command leftSideOneAuto = new SequentialCommandGroup(
