@@ -7,7 +7,6 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -43,13 +42,18 @@ public class ShooterCommands {
         }
 
         public static Command tele2ndHalfShooterCommand(
-                        Loader loader, Intake intake, Hopper hopper) {
+                Loader loader, Intake intake, Hopper hopper, CommandSwerveDrivetrain drive) {
                 return new SequentialCommandGroup(
                                 new WaitCommand(0.5),
+                        Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
                                                 intake.agitateIntake(),
-                                                hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)).repeatedly());
+                                        hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED))
+                                        .unless(() -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                                                && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
+                                                        .inchesToMeters(135)))
+                                .repeatedly());
         }
 
         public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {
@@ -72,15 +76,7 @@ public class ShooterCommands {
                                                             .inchesToMeters(135) ? 0 : 0.7,
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 70))
-                            // () -> Commands.repeatingSequence(new ConditionalCommand(
-                            // shooter.setShooterState(
-                            // 0, 0),
-                            // shooter.setShooterState(0.7, 70),
-                            // () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
-                            // && drive.getState().Pose.getY() < FIELD_LENGTH_M - Units
-                            // .inchesToMeters(135)))
-                            )
+                                                            .inchesToMeters(135) ? 0 : 70)))
                                     .until(drive.isInAllianceZone()))));
         }
 }
