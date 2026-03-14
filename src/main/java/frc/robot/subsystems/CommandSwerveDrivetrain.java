@@ -283,6 +283,26 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(() -> this.setControl(request.get()));
   }
 
+  public BooleanSupplier isInAllianceZone() {
+    return (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red
+        ? () -> {
+          return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5);
+        }
+        : () -> {
+          return getState().Pose.getX() < Units.inchesToMeters(158.5);
+        });
+  }
+
+  public BooleanSupplier isNotInAllianceZone() {
+    return (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red
+        ? () -> {
+          return !(getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5));
+        }
+        : () -> {
+          return !(getState().Pose.getX() < Units.inchesToMeters(158.5));
+        });
+  }
+
   public Command joystickDrive(
       DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joystickThetaX) {
     FieldCentric request = new SwerveRequest.FieldCentric()
@@ -483,6 +503,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     } else {
       DogLog.log("Subsystems/Drive/CurrentCommand", "None");
     }
+    DogLog.log("Subsystems/Drive/isInAllianceZone", isInAllianceZone().getAsBoolean());
 
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {

@@ -78,8 +78,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
-    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 100));// checkmark
+    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 100));// checkmark
 
     joystick.rightTrigger().whileTrue(intake.setIntakeState(0, 0));
 
