@@ -23,7 +23,7 @@ public class FieldConstants {
 
         public static Pose2d getHubLocation() {
                 return new Pose2d(
-                                !isRedSide() ? 4.75 : FIELD_LENGTH_M - 4.75, 4.035, Rotation2d.kZero);
+                                !isRedSide() ? 4.6 : FIELD_LENGTH_M - 4.6, 4.035, Rotation2d.kZero);
         }
         // public static final Pose2d HUB_LOCATION = new Pose2d(
         // !isRedSide() ? 4.75 : FIELD_LENGTH_M - 4.75, 4.035, Rotation2d.kZero);// new
