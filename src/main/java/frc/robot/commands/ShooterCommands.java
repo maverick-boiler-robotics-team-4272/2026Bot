@@ -1,12 +1,10 @@
 package frc.robot.commands;
 
-import static frc.robot.constants.FieldConstants.FIELD_LENGTH_M;
+import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.FieldConstants.getHubLocation;
 import static frc.robot.constants.FieldConstants.getShuttlePoses;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.AUTO_SHOOTER_HOOD;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.AUTO_SHOOTER_VELOCITY;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.SCORE_ANGLE_LOOKUP;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_VELOCITY_LOOKUP;
 
@@ -24,7 +22,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Loader;
 import frc.robot.subsystems.Shooter;
 
-import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
