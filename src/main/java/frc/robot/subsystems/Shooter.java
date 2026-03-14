@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
+
+import java.security.PublicKey;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class Shooter extends SubsystemBase {
@@ -131,5 +134,13 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     DogLog.log(SHOOTER_LOG_KEY + "/recomended speed", desiredSpeed);
     DogLog.log(SHOOTER_LOG_KEY + "/recomended rotations", desiredAngle);
+  }
+    
+  public boolean isAtDesiredAngle() {
+    if (hoodedMotor.getPosition().getValueAsDouble() > desiredAngle-0.001 && 
+      hoodedMotor.getPosition().getValueAsDouble() < desiredAngle+0.001) {
+      return true;
+    }
+    return false; 
   }
 }

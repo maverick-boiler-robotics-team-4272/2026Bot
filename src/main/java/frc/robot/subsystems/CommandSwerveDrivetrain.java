@@ -66,6 +66,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   Vision cameraC = new Vision(this::addVisionMeasurement, CAMERA_C, CAMERA_C_TRANSFORM);
   Vision cameraD = new Vision(this::addVisionMeasurement, CAMERA_D, CAMERA_D_TRANSFORM);
   Vision[] cameras = { cameraA, cameraB, cameraC, cameraD };
+  Rotation2d desriedAngle = Rotation2d.kZero;
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -330,7 +331,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
           Translation2d delta = desiredPoint.get().minus(getState().Pose.getTranslation());
 
           Rotation2d targetAngle = delta.getAngle().plus(isRedSide() ? Rotation2d.k180deg : Rotation2d.kZero);
-
+          desriedAngle = targetAngle;
           this.setControl(
               request
                   .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
@@ -464,6 +465,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    * @param direction Direction of the SysId Quasistatic test
    * @return Command to run
    */
+
+   public boolean isAtDesiredAngle() {
+    return (getState().Pose.getRotation().minus(desriedAngle).getDegrees() < 3.6);
+   }
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineToApply.quasistatic(direction);
   }

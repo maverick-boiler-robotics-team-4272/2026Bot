@@ -1,15 +1,23 @@
 package frc.robot.commands;
 
-import static frc.robot.constants.FieldConstants.*;
-import static frc.robot.constants.SubsystemConstants.HopperConstants.*;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
+import static frc.robot.constants.FieldConstants.FIELD_LENGTH_M;
+import static frc.robot.constants.FieldConstants.getHubLocation;
+import static frc.robot.constants.FieldConstants.getShuttlePoses;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.AUTO_SHOOTER_HOOD;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.AUTO_SHOOTER_VELOCITY;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.SCORE_ANGLE_LOOKUP;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_VELOCITY_LOOKUP;
+
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
 import frc.robot.subsystems.Intake;
@@ -42,10 +50,12 @@ public class ShooterCommands {
         }
 
         public static Command tele2ndHalfShooterCommand(
-                Loader loader, Intake intake, Hopper hopper, CommandSwerveDrivetrain drive) {
+                        Loader loader, Intake intake, Hopper hopper, Shooter shooter, CommandSwerveDrivetrain drive) {
                 return new SequentialCommandGroup(
-                                new WaitCommand(0.5),
-                        Commands.repeatingSequence(
+                                new WaitUntilCommand(shooter::isAtDesiredSpeed),
+                                new WaitUntilCommand(shooter::isAtDesiredAngle),
+                                new WaitUntilCommand(drive::isAtDesiredAngle),
+                                Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
                                                 intake.agitateIntake(),
