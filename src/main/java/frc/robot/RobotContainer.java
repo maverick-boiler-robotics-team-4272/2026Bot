@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
+import frc.robot.commands.ShooterCommandsCopy;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -78,8 +79,9 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 100));// checkmark
-    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 100));// checkmark
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.rightTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, -INTAKE_SPEED));
 
     joystick.rightTrigger().whileTrue(intake.setIntakeState(0, 0));
 
@@ -89,14 +91,16 @@ public class RobotContainer {
         ShooterCommands.teleHalfShooterCommand(shooter,
             drivetrain, joystick::getLeftX,
             joystick::getLeftY)); // IT WORKS!!!!
-    joystick.a().whileTrue(
+    joystick.a().whileTrue( 
         ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
 
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
 
     joystick.povRight().whileTrue(
-        shooter.zeroHood());
+        shooter.zeroHood()); 
+    joystick.rightBumper().whileTrue(ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
+    // joystick.y().whileTrue(ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
 
     // joystick.povDown()
     // .whileTrue(
@@ -138,9 +142,10 @@ public class RobotContainer {
     // operator.x().whileTrue(
     // hopper.agitate(-50, -30));
 
-    // operator.a().whileTrue(shooter.setShooterState(() ->
-    // SmartDashboard.getNumber("ANGLE", 0.02),
-    // () -> SmartDashboard.getNumber("SPEED", 50)));
+    operator.b().whileTrue(shooter.setShooterState(() ->
+    SmartDashboard.getNumber("ANGLE", 0.02),
+    () -> SmartDashboard.getNumber("SPEED", 50)));
+    
     operator.x().whileTrue(new ParallelCommandGroup(
         intake.agitateIntake(),
         hopper.agitate(50, 10),

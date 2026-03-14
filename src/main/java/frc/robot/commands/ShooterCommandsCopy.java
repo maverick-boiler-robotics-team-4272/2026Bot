@@ -7,9 +7,11 @@ import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWE
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.SCORE_ANGLE_LOOKUP;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_VELOCITY_LOOKUP;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.TufF_TABLE;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,7 +27,7 @@ import frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-public class ShooterCommands {
+public class ShooterCommandsCopy{
         public static Command teleHalfShooterCommand(
                         Shooter shooter,
                         CommandSwerveDrivetrain drive,
@@ -33,7 +35,15 @@ public class ShooterCommands {
                         DoubleSupplier joystickY) {
                 return new ParallelCommandGroup(
                                 drive.defer(() -> Commands.repeatingSequence(
-                                                drive.pointTowardsPoint(() -> getHubLocation().getTranslation(),
+                                                drive.pointTowardsPoint(() -> new Translation2d(
+                                                        getHubLocation().getTranslation().getX(), 
+                                                        getHubLocation().getTranslation().getY() + 
+                                                                drive.getVelocityY().getAsDouble() * TufF_TABLE.get(   
+                                                                        drive.getState().Pose.getTranslation().getDistance(
+                                                                                getHubLocation().getTranslation()
+                                                                        )
+                                                                )
+                                                        ),
                                                                 joystickX,
                                                                 joystickY)
                                         .until(drive.isNotInAllianceZone()),
@@ -42,8 +52,8 @@ public class ShooterCommands {
                                                                                 .getTranslation(),
                                                                 joystickX, joystickY)
                                         .until(drive.isInAllianceZone()))),
-                        setDesiredShooterStates(shooter, drive))
-                        .andThen(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+                        setDesiredShooterStates(shooter, drive));
+                        // .andThen(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
         }
 
         public static Command tele2ndHalfShooterCommand(
@@ -73,7 +83,7 @@ public class ShooterCommands {
                                     () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose
                                             .getTranslation()
                                             .getDistance(getHubLocation()
-                                                    .getTranslation())),
+                                                    .getTranslation()) + drive.getChangeInHubDistance().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()))),
                                     () -> SHOOTER_VELOCITY_LOOKUP
                                             .get(drive.getState().Pose.getTranslation()
                                                     .getDistance(getHubLocation()
@@ -87,31 +97,6 @@ public class ShooterCommands {
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
                                                             .inchesToMeters(135) ? 0 : 70)))
-                                    .until(() -> drive.isInAllianceZone().getAsBoolean()
-                                            || drive.isInOpposingAllianceZone()
-                                                    .getAsBoolean()),
-                            shooter.defer(
-                                    () -> Commands.repeatingSequence(
-                                            shooter.setShooterState(
-                                                    () -> drive.getState().Pose
-                                                            .getY() > Units.inchesToMeters(
-                                                                    135)
-                                                            && drive.getState().Pose
-                                                                    .getY() < FIELD_WIDTH_M
-                                                                            - Units
-                                                                                    .inchesToMeters(135)
-                                                                                            ? 0
-                                                                                            : 0.85,
-                                                    () -> drive.getState().Pose
-                                                            .getY() > Units.inchesToMeters(
-                                                                    135)
-                                                            && drive.getState().Pose
-                                                                    .getY() < FIELD_WIDTH_M
-                                                                            - Units
-                                                                                    .inchesToMeters(135)
-                                                                                            ? 0
-                                                                                            : 90)))
-                                    .until(() -> !drive.isInOpposingAllianceZone()
-                                            .getAsBoolean()))));
+                                    .until(drive.isInAllianceZone()))));
         }
 }

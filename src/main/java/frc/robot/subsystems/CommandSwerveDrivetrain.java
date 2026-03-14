@@ -61,6 +61,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   private static final double kSimLoopPeriod = 0.004; // 4 ms
   private Notifier m_simNotifier = null;
   private double m_lastSimTime;
+  private double hubDistance = 0;
   Vision cameraA = new Vision(this::addVisionMeasurement, CAMERA_A, CAMERA_A_TRANSFORM);
   Vision cameraB = new Vision(this::addVisionMeasurement, CAMERA_B, CAMERA_B_TRANSFORM);
   Vision cameraC = new Vision(this::addVisionMeasurement, CAMERA_C, CAMERA_C_TRANSFORM);
@@ -303,6 +304,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         });
   }
 
+  public BooleanSupplier isInOpposingAllianceZone() {
+    return (!(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
+    ? () -> {
+      return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5);
+    }
+    : () -> {
+      return getState().Pose.getX() < Units.inchesToMeters(158.5);
+    });
+  }
+
   public Command joystickDrive(
       DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joystickThetaX) {
     FieldCentric request = new SwerveRequest.FieldCentric()
@@ -367,96 +378,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
-  // public BooleanSupplier whichTrench(Pose2d pose) {
-  // return () -> {
-  // return getState().Pose.nearest(TRENCH_POSES).equals(pose);
-  // };
-  // }
-
-  // public Command doTrenches() {
-  // double transition1 = 0.1;
-  // double transition = 0.4;
-  // return new SequentialCommandGroup(
-  // new ConditionalCommand(new SequentialCommandGroup(
-  // pidToPoint(LEFT_OUT[0])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_OUT[0].getTranslation()) <
-  // transition1),
-  // pidToPoint(LEFT_OUT[1])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_OUT[1].getTranslation()) <
-  // transition),
-  // pidToPoint(LEFT_OUT[2])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_OUT[2].getTranslation()) <
-  // transition),
-  // pidToPoint(LEFT_OUT[3])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_OUT[3].getTranslation()) <
-  // transition)),
-  // new InstantCommand(() -> {
-  // }), whichTrench(LEFT_OUT[0])),
-  // new ConditionalCommand(new SequentialCommandGroup(
-  // pidToPoint(LEFT_IN[0])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_IN[0].getTranslation()) <
-  // transition1),
-  // pidToPoint(LEFT_IN[1])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_IN[1].getTranslation()) <
-  // transition),
-  // pidToPoint(LEFT_IN[2])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_IN[2].getTranslation()) <
-  // transition),
-  // pidToPoint(LEFT_IN[3])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(LEFT_IN[3].getTranslation()) <
-  // transition)),
-  // new InstantCommand(() -> {
-  // }), whichTrench(LEFT_IN[0])),
-  // new ConditionalCommand(
-  // new SequentialCommandGroup(
-  // pidToPoint(RIGHT_OUT[0])
-  // .until(
-  // () -> getState().Pose.getTranslation()
-  // .getDistance(RIGHT_OUT[0].getTranslation()) < transition1),
-  // pidToPoint(RIGHT_OUT[1])
-  // .until(
-  // () ->
-  // getState().Pose.getTranslation().getDistance(RIGHT_OUT[1].getTranslation()) <
-  // transition),
-  // pidToPoint(RIGHT_OUT[2])
-  // .until(
-  // () ->
-  // getState().Pose.getTranslation().getDistance(RIGHT_OUT[2].getTranslation()) <
-  // transition),
-  // pidToPoint(RIGHT_OUT[3])
-  // .until(() -> getState().Pose.getTranslation()
-  // .getDistance(RIGHT_OUT[3].getTranslation()) < transition)),
-  // new InstantCommand(() -> {
-  // }), whichTrench(RIGHT_OUT[0])),
-  // new ConditionalCommand(new SequentialCommandGroup(
-  // pidToPoint(RIGHT_IN[0])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(RIGHT_IN[0].getTranslation()) <
-  // transition1),
-  // pidToPoint(RIGHT_IN[1])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(RIGHT_IN[1].getTranslation()) <
-  // transition),
-  // pidToPoint(RIGHT_IN[2])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(RIGHT_IN[2].getTranslation()) <
-  // transition),
-  // pidToPoint(RIGHT_IN[3])
-  // .until(() ->
-  // getState().Pose.getTranslation().getDistance(RIGHT_IN[3].getTranslation()) <
-  // transition)),
-  // new InstantCommand(() -> {
-  // }), whichTrench(RIGHT_IN[0])));
-  // }
-
   /**
    * Runs the SysId Quasistatic test in the given direction for the routine
    * specified by {@link
@@ -491,13 +412,22 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return m_sysIdRoutineToApply.dynamic(direction);
   }
 
+  public DoubleSupplier getChangeInHubDistance() {
+    return () -> getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()) - hubDistance;
+  }
+
+  public DoubleSupplier getVelocityY() {
+    return () -> getState().Speeds.vyMetersPerSecond;
+  }
+
   @Override
   public void periodic() {
     // mine
+    hubDistance = getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation());
     DogLog.log("Subsystems/Drive/Pose", getState().Pose);
     DogLog.log("Subsystems/Drive/HubPose", getHubLocation());
     DogLog.log("Subsystems/Drive/HubDistance",
-        getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()));
+        hubDistance);
     if (getCurrentCommand() != null) {
       DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
     } else {
@@ -507,11 +437,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {
-        camera.simulationPeriodic(getState().Pose);
+        // camera.simulationPeriodic(getState().Pose);
       }
     }
     for (Vision camera : cameras) {
-      camera.periodic();
+      // camera.periodic();
     }
 
     for (int i = 0; i < 4; i++) {
