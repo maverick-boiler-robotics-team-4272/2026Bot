@@ -90,7 +90,7 @@ public class RobotContainer {
             drivetrain, joystick::getLeftX,
             joystick::getLeftY)); // IT WORKS!!!!
     joystick.a().whileTrue(
-        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper));
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
 
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
@@ -310,7 +310,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -327,7 +327,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)))
             .withTimeout(5),
         AutoBuilder.followPath(RightShootToOutpost),
         intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
@@ -336,7 +336,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command rightSideOneAndOutpostAutoDif = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -352,7 +352,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)))
             .withTimeout(5),
         new ParallelRaceGroup(AutoBuilder.followPath(rightOutpostShootToOutpost), shooter.defaultCommand(),
             loader.loadBoth(0),
@@ -362,7 +362,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command leftSideOneAuto = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -379,7 +379,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command leftDepotAuto = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -396,7 +396,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)))
             .withTimeout(5),
         new ParallelRaceGroup(
             AutoBuilder.followPath(DepotShootToDepot),
@@ -406,7 +406,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.5),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command terry = new SequentialCommandGroup(
         AutoBuilder.followPath(PutItInReverseTerry),
