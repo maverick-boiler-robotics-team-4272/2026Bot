@@ -110,7 +110,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 90)))
+                                                                                            : 100)))
                                     .until(() -> !drive.isInOpposingAllianceZone()
                                             .getAsBoolean()))));
         }
