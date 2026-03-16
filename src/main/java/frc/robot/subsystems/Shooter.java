@@ -100,13 +100,6 @@ public class Shooter extends SubsystemBase {
         });
   }
 
-  public boolean isAtDesiredSpeed() {
-    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed) {
-      return true;
-    }
-    return false; // sim is always at the right velocity
-  }
-
   public Command defaultCommand() {
     return run(
         () -> {
@@ -134,6 +127,8 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     DogLog.log(SHOOTER_LOG_KEY + "/recomended speed", desiredSpeed);
     DogLog.log(SHOOTER_LOG_KEY + "/recomended rotations", desiredAngle);
+    DogLog.log(SHOOTER_LOG_KEY + "/Checks/speed", isAtDesiredSpeedCheck().getAsBoolean());
+    DogLog.log(SHOOTER_LOG_KEY + "/Checks/angle", isAtDesiredAngleCheck().getAsBoolean());
   }
     
   public boolean isAtDesiredAngle() {
@@ -142,5 +137,20 @@ public class Shooter extends SubsystemBase {
       return true;
     }
     return false; 
+  }
+
+  public boolean isAtDesiredSpeed() {
+    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed) {
+      return true;
+    }
+    return false; // sim is always at the right velocity
+  }
+
+  public BooleanSupplier isAtDesiredSpeedCheck() {
+    return () -> isAtDesiredSpeed();
+  }
+
+  public BooleanSupplier isAtDesiredAngleCheck() {
+    return () -> isAtDesiredAngle();
   }
 }

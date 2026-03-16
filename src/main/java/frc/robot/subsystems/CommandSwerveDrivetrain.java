@@ -390,6 +390,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    public boolean isAtDesiredAngle() {
     return (getState().Pose.getRotation().minus(desriedAngle).getDegrees() < 3.6);
    }
+
+   public BooleanSupplier isAtDesiredAngleCheck() {
+    return () -> isAtDesiredAngle();
+   }
+
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineToApply.quasistatic(direction);
   }
@@ -437,17 +442,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {
-        // camera.simulationPeriodic(getState().Pose);
+        camera.simulationPeriodic(getState().Pose);
       }
     }
+
     for (Vision camera : cameras) {
-      // camera.periodic();
+      camera.periodic();
     }
 
     for (int i = 0; i < 4; i++) {
       DogLog.log("Subsystems/Drive/Current" + i,
           getModule(i).getDriveMotor().getTorqueCurrent(true).getValueAsDouble());
     }
+    DogLog.log("Subsystems/Drive/Checks", isAtDesiredAngleCheck().getAsBoolean());
     // not mine
     /*
      * Periodically try to apply the operator perspective.
