@@ -78,10 +78,9 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
-    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
-
-    joystick.rightTrigger().whileTrue(intake.setIntakeState(0, 0));
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.rightTrigger().whileTrue(intake.barf());
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
@@ -143,7 +142,7 @@ public class RobotContainer {
     // () -> SmartDashboard.getNumber("SPEED", 50)));
     operator.x().whileTrue(new ParallelCommandGroup(
         intake.agitateIntake(),
-        hopper.agitate(50, 10),
+        hopper.agitate(50, -10),
         loader.loadBoth(70)).repeatedly());
   }
 
