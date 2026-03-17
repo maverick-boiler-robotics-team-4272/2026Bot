@@ -424,6 +424,9 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public DoubleSupplier getVelocityY() {
     return () -> getState().Speeds.vyMetersPerSecond;
   }
+  public DoubleSupplier getVelocityX() {
+    return () -> getState().Speeds.vxMetersPerSecond;
+  }
 
   @Override
   public void periodic() {

@@ -24,9 +24,6 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Loader;
 import frc.robot.subsystems.Shooter;
 
-
-import com.ctre.phoenix6.swerve.SwerveRequest;
-
 public class ShooterCommandsCopy{
         public static Command teleHalfShooterCommand(
                         Shooter shooter,
@@ -36,7 +33,13 @@ public class ShooterCommandsCopy{
                 return new ParallelCommandGroup(
                                 drive.defer(() -> Commands.repeatingSequence(
                                                 drive.pointTowardsPoint(() -> new Translation2d(
-                                                        getHubLocation().getTranslation().getX(), 
+                                                                getHubLocation().getTranslation().getX() +
+                                                                                drive.getVelocityX().getAsDouble()
+                                                                                                * TufF_TABLE.get(
+                                                                                                                drive.getState().Pose
+                                                                                                                                .getTranslation()
+                                                                                                                                .getDistance(
+                                                                                                                                                getHubLocation().getTranslation())),
                                                         getHubLocation().getTranslation().getY() + 
                                                                 drive.getVelocityY().getAsDouble() * TufF_TABLE.get(   
                                                                         drive.getState().Pose.getTranslation().getDistance(
@@ -52,8 +55,7 @@ public class ShooterCommandsCopy{
                                                                                 .getTranslation(),
                                                                 joystickX, joystickY)
                                         .until(drive.isInAllianceZone()))),
-                        setDesiredShooterStates(shooter, drive));
-                        // .andThen(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+                                setDesiredShooterStates(shooter, drive));
         }
 
         public static Command tele2ndHalfShooterCommand(
@@ -87,7 +89,7 @@ public class ShooterCommandsCopy{
                                     () -> SHOOTER_VELOCITY_LOOKUP
                                             .get(drive.getState().Pose.getTranslation()
                                                     .getDistance(getHubLocation()
-                                                            .getTranslation())))
+                                                    .getTranslation()) + drive.getChangeInHubDistance().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()))))
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
                                     () -> Commands.repeatingSequence(shooter.setShooterState(
