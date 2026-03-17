@@ -56,7 +56,8 @@ public class ShooterCommands {
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
                                                 intake.agitateIntake(),
-                                        hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED))
+                                                                hopper.agitate(HOPPER_LOWER_SPEED,
+                                                                                HOPPER_UPPER_SPEED))
                                         .unless(() -> {
                                             return drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                 && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
