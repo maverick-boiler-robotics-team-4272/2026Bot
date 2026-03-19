@@ -21,10 +21,17 @@ public class FieldConstants {
         // Rotation2d.fromDegrees(-90));
         // public static ArrayList<Pose2d> CLIMB_POSES = new ArrayList<>(2);
 
+        public static final Pose2d RED_HUB_POSE = new Pose2d(FIELD_LENGTH_M - 4.6, 4.035, Rotation2d.kZero);
+        public static final Pose2d BLUE_HUB_POSE = new Pose2d(4.6, 4.035, Rotation2d.kZero);
+
         public static Pose2d getHubLocation() {
-                return new Pose2d(
-                                !isRedSide() ? 4.6 : FIELD_LENGTH_M - 4.6, 4.035, Rotation2d.kZero);
+                return isRedSide() ? RED_HUB_POSE : BLUE_HUB_POSE;
         }
+
+        // public static Pose2d getHubLocation() {
+        // return new Pose2d(
+        // !isRedSide() ? 4.6 : FIELD_LENGTH_M - 4.6, 4.035, Rotation2d.kZero);
+        // }
         // public static final Pose2d HUB_LOCATION = new Pose2d(
         // !isRedSide() ? 4.75 : FIELD_LENGTH_M - 4.75, 4.035, Rotation2d.kZero);// new
         // Pose2d(
@@ -32,27 +39,48 @@ public class FieldConstants {
         // yup, I added the
         // extra distance :)
 
-        // public static final Pose2d LEFT_SHUTTLE = new Pose2d(
-        // isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? 2.5 :
-        // FIELD_WIDTH_M - 2.5,
-        // Rotation2d.kZero);
+        public static final Pose2d LEFT_SHUTTLE = new Pose2d(
+        isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? 2.5 :
+        FIELD_WIDTH_M - 2.5,
+        Rotation2d.kZero);
 
-        // public static final Pose2d RIGHT_SHUTTLE = new Pose2d(
-        // isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? FIELD_WIDTH_M -
-        // 2.5 : 2.5,
-        // Rotation2d.kZero);
+        public static final Pose2d RIGHT_SHUTTLE = new Pose2d(
+        isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821, isRedSide() ? FIELD_WIDTH_M -
+        2.5 : 2.5,
+        Rotation2d.kZero);
+
+        public static final Pose2d RED_LEFT_SHUTTLE = new Pose2d(
+                15.821, 2.5, Rotation2d.kZero
+        );
+
+        public static final Pose2d RED_RIGHT_SHUTTLE = new Pose2d(
+                15.821, FIELD_WIDTH_M - 2.5, Rotation2d.kZero
+        );
+
+        public static final Pose2d BLUE_LEFT_SHUTTLE = new Pose2d(
+                FIELD_LENGTH_M - 15.821, FIELD_WIDTH_M - 2.5, Rotation2d.kZero
+        );
+
+        public static final Pose2d BLUE_RIGHT_SHUTTLE = new Pose2d(
+                FIELD_LENGTH_M - 15.821, 2.5, Rotation2d.kZero
+        );
+
+        
+
+        public static final ArrayList<Pose2d> RED_SHUTTLE_POSES = new ArrayList<Pose2d>();
+        static {
+                RED_SHUTTLE_POSES.add(RED_LEFT_SHUTTLE);
+                RED_SHUTTLE_POSES.add(RED_RIGHT_SHUTTLE);
+        }
+
+        public static final ArrayList<Pose2d> BLUE_SHUTTLE_POSES = new ArrayList<Pose2d>();
+        static {
+                RED_SHUTTLE_POSES.add(BLUE_LEFT_SHUTTLE);
+                RED_SHUTTLE_POSES.add(BLUE_RIGHT_SHUTTLE);
+        }
 
         public static ArrayList<Pose2d> getShuttlePoses() {
-                ArrayList<Pose2d> shuttlePoses = new ArrayList<Pose2d>();
-                shuttlePoses.add(new Pose2d(
-                                isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821,
-                                isRedSide() ? 2.25 : FIELD_WIDTH_M - 2.25,
-                                Rotation2d.kZero));
-                shuttlePoses.add(new Pose2d(
-                                isRedSide() ? 15.821 : FIELD_LENGTH_M - 15.821,
-                                isRedSide() ? FIELD_WIDTH_M - 2.25 : 22.5,
-                                Rotation2d.kZero));
-                return shuttlePoses;
+                return isRedSide() ? RED_SHUTTLE_POSES : BLUE_SHUTTLE_POSES;
         }
 
         // public static final Pose2d TRENCH_LEFT_OUT_APPROACH = new Pose2d(isRedSide()
