@@ -20,7 +20,7 @@ public class SubsystemConstants {
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
     public static final int HOPPER_LOWER_SPEED = 50;
-    public static final double HOPPER_UPPER_SPEED = -17.5;
+    public static final double HOPPER_UPPER_SPEED = 17.5;
   }
 
   public static class LoaderConstants {

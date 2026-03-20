@@ -6,6 +6,8 @@ package frc.robot;
 
 import static frc.robot.constants.FieldConstants.isRedSide;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.constants.FieldConstants.*;
@@ -148,7 +150,7 @@ public class RobotContainer {
     
     operator.x().whileTrue(new ParallelCommandGroup(
         intake.agitateIntake(),
-        hopper.agitate(50, 10),
+        hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         loader.loadBoth(70)).repeatedly());
   }
 
