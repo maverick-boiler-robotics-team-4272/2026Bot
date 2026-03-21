@@ -5,8 +5,9 @@ import static frc.robot.constants.FieldConstants.getHubLocation;
 import static frc.robot.constants.FieldConstants.getShuttlePoses;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SCORE_ANGLE_LOOKUP;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_VELOCITY_LOOKUP;
+import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
+import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 
 import java.util.function.DoubleSupplier;
 
@@ -67,18 +68,57 @@ public class ShooterCommands {
                                 .repeatedly());
         }
 
+        public static Command tele2ndHalfShooterCommandWithIntake(Loader loader, Intake intake, Hopper hopper, Shooter shooter, CommandSwerveDrivetrain drive) {
+            return new SequentialCommandGroup(
+                new WaitUntilCommand(shooter::isAtDesiredSpeed),
+                new WaitUntilCommand(shooter::isAtDesiredAngle),
+                new WaitUntilCommand(drive::isAtDesiredAngle),
+                Commands.repeatingSequence(
+                new ParallelCommandGroup(
+                                loader.loadBoth(70),
+                                intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED),
+                                                hopper.agitate(HOPPER_LOWER_SPEED,
+                                                                HOPPER_UPPER_SPEED))
+                        .unless(() -> {
+                            return drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                                && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
+                                            .inchesToMeters(135)
+                                    && drive.isNotInAllianceZone().getAsBoolean();
+                        }))
+                .repeatedly());
+        }
+
         public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {
             return new ParallelCommandGroup(
                     shooter.defer(() -> Commands.repeatingSequence(
                             shooter.setShooterState(
-                                    () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose
-                                            .getTranslation()
-                                            .getDistance(getHubLocation()
-                                                    .getTranslation())),
-                                    () -> SHOOTER_VELOCITY_LOOKUP
-                                            .get(drive.getState().Pose.getTranslation()
-                                                    .getDistance(getHubLocation()
-                                                            .getTranslation())))
+                                    () -> {
+                                        return (drive.getState().Pose.getTranslation()
+                                                .getDistance(getHubLocation()
+                                                        .getTranslation()) < 3.146)
+                                                                ? 0
+                                                                : SCORE_ANGLE_LOOKUP_FAR
+                                                                        .get(
+                                                                                drive.getState().Pose
+                                                                                        .getTranslation()
+                                                                                        .getDistance(getHubLocation()
+                                                                                                .getTranslation()));
+                                    },
+                                    () -> {
+                                        return (drive.getState().Pose.getTranslation()
+                                                .getDistance(getHubLocation()
+                                                        .getTranslation()) < 3.146)
+                                                                ? SHOOTER_VELOCITY_LOOKUP_CLOSE
+                                                                        .get(drive.getState().Pose
+                                                                                .getTranslation()
+                                                                                .getDistance(getHubLocation()
+                                                                                        .getTranslation()))
+                                                                : SHOOTER_VELOCITY_LOOKUP_FAR.get(
+                                                                        drive.getState().Pose
+                                                                                .getTranslation()
+                                                                                .getDistance(getHubLocation()
+                                                                                        .getTranslation()));
+                                    })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
                                     () -> Commands.repeatingSequence(shooter.setShooterState(
