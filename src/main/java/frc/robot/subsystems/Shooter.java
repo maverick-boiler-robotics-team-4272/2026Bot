@@ -140,7 +140,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public boolean isAtDesiredSpeed() {
-    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed) {
+    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed - 1.5) {
       return true;
     }
     return false; // sim is always at the right velocity
