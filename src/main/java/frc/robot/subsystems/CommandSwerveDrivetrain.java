@@ -388,7 +388,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
    */
 
    public boolean isAtDesiredAngle() {
-    return (getState().Pose.getRotation().minus(desriedAngle).getDegrees() < 3.6);
+    return (getState().Pose.getRotation().minus(desriedAngle).getDegrees() < 10);
    }
 
    public BooleanSupplier isAtDesiredAngleCheck() {
