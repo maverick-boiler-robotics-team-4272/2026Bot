@@ -5,8 +5,7 @@ import static frc.robot.constants.FieldConstants.getHubLocation;
 import static frc.robot.constants.FieldConstants.getShuttlePoses;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SCORE_ANGLE_LOOKUP;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.SHOOTER_VELOCITY_LOOKUP;
+import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.TufF_TABLE;
 
 import java.util.function.DoubleSupplier;
@@ -80,25 +79,26 @@ public class ShooterCommandsCopy{
 
         public static Command setDesiredShooterStates(Shooter shooter, CommandSwerveDrivetrain drive) {
             return new ParallelCommandGroup(
-                    shooter.defer(() -> Commands.repeatingSequence(
-                            shooter.setShooterState(
-                                    () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose
-                                            .getTranslation()
-                                            .getDistance(getHubLocation()
-                                                    .getTranslation()) + drive.getChangeInHubDistance().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()))),
-                                    () -> SHOOTER_VELOCITY_LOOKUP
-                                            .get(drive.getState().Pose.getTranslation()
-                                                    .getDistance(getHubLocation()
-                                                    .getTranslation()) + drive.getChangeInHubDistance().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()))))
-                                    .until(drive.isNotInAllianceZone()),
-                            shooter.defer(
-                                    () -> Commands.repeatingSequence(shooter.setShooterState(
-                                            () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
-                                                    && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 0.7,
-                                            () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
-                                                    && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 70)))
-                                    .until(drive.isInAllianceZone()))));
+                //     shooter.defer(() -> Commands.repeatingSequence(
+                //             shooter.setShooterState(
+                //                     () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose
+                //                             .getTranslation()
+                //                             .getDistance(getHubLocation()
+                //                                     .getTranslation()) + drive.getChangeInHubDistance().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()))),
+                //                     () -> SHOOTER_VELOCITY_LOOKUP
+                //                             .get(drive.getState().Pose.getTranslation()
+                //                                     .getDistance(getHubLocation()
+                //                                     .getTranslation()) + drive.getChangeInHubDistance().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation()))))
+                //                     .until(drive.isNotInAllianceZone()),
+                //             shooter.defer(
+                //                     () -> Commands.repeatingSequence(shooter.setShooterState(
+                //                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                //                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
+                //                                             .inchesToMeters(135) ? 0 : 0.7,
+                //                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
+                //                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
+                //                                             .inchesToMeters(135) ? 0 : 70)))
+                //                     .until(drive.isInAllianceZone())))
+                                    );
         }
 }
