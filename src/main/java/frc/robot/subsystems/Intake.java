@@ -160,11 +160,34 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(7, 45).withTimeout(0.25),
+        setIntakeState(6, 45).withTimeout(0.25),
         setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.25)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);
+  }
+
+  public Command barf() {
+    return setIntakeState(EXTEND_DISTANCE, -INTAKE_SPEED);
+  }
+
+  public Command disableSafteyWhileCalled() {
+    return startEnd(
+        () -> {
+          disableSafety = true;
+          extensionMotor.getConfigurator().apply(regularLimits);
+        }, () -> disableSafety = false);
+  }
+
+  public void safetyLogic() {
+    if (disableSafety) {
+      return;
+    }
+    if (prevDesDistance == desiredExtensionRotations) {
+      extensionMotor.getConfigurator().apply(safeLimits);
+    } else {
+      extensionMotor.getConfigurator().apply(regularLimits);
+    }
   }
 
   @Override
