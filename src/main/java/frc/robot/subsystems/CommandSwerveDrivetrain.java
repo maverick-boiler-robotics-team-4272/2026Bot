@@ -443,6 +443,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
     DogLog.log("Subsystems/Drive/isInAllianceZone", isInAllianceZone().getAsBoolean());
 
+    DogLog.log("Subsystems/Drive/Speeds", getState().Speeds);
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {
         camera.simulationPeriodic(getState().Pose);
