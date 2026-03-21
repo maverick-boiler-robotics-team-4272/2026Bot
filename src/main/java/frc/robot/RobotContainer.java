@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
@@ -49,8 +50,8 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private final CommandXboxController joystick = new CommandXboxController(0);
-  private final CommandXboxController operator = new CommandXboxController(1);
+  public static final CommandXboxController joystick = new CommandXboxController(0);
+  public static final CommandXboxController operator = new CommandXboxController(1);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final Telemetry logger = new Telemetry(MAX_DRIVE_SPEED);
 
@@ -87,12 +88,19 @@ public class RobotContainer {
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
+    // shoot rev
     joystick.a().whileTrue(
         ShooterCommands.teleHalfShooterCommand(shooter,
             drivetrain, joystick::getLeftX,
-            joystick::getLeftY)); // IT WORKS!!!!
+            joystick::getLeftY).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // IT WORKS!!!!
+    // shoot with intake agitation
     joystick.a().whileTrue( 
-        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)
+            .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    // shoot and intake fuel
+    joystick.a().and(joystick.leftTrigger()).whileTrue(
+        ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
+            .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
