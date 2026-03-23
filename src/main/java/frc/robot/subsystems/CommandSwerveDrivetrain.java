@@ -23,6 +23,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -378,23 +379,23 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
   }
 
-  /**
-   * Runs the SysId Quasistatic test in the given direction for the routine
-   * specified by {@link
-   * #m_sysIdRoutineToApply}.
-   *
-   * @param direction Direction of the SysId Quasistatic test
-   * @return Command to run
-   */
-
    public boolean isAtDesiredAngle() {
-    return (getState().Pose.getRotation().minus(desriedAngle).getDegrees() < 10);
+    return (Math.abs(getState().Pose.getRotation().minus(desriedAngle).getDegrees()) < 10);
    }
 
    public BooleanSupplier isAtDesiredAngleCheck() {
     return () -> isAtDesiredAngle();
    }
 
+   /**
+    * Runs the SysId Quasistatic test in the given direction for the routine
+    * specified by {@link
+    * #m_sysIdRoutineToApply}.
+    *
+    * @param direction Direction of the SysId Quasistatic test
+    * @return Command to run
+    */
+    
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutineToApply.quasistatic(direction);
   }
@@ -422,10 +423,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
   public DoubleSupplier getVelocityY() {
-    return () -> getState().Speeds.vyMetersPerSecond;
+    return () -> ChassisSpeeds.fromRobotRelativeSpeeds(getState().Speeds, getState().Pose.getRotation()).vyMetersPerSecond;
   }
   public DoubleSupplier getVelocityX() {
-    return () -> getState().Speeds.vxMetersPerSecond;
+    return () -> ChassisSpeeds.fromRobotRelativeSpeeds(getState().Speeds, getState().Pose.getRotation()).vxMetersPerSecond;
   }
 
   @Override
