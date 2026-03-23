@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
+
+import java.security.PublicKey;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 public class Shooter extends SubsystemBase {
@@ -78,7 +81,7 @@ public class Shooter extends SubsystemBase {
         () -> {
           desiredAngle = anglePosition.getAsDouble();
           hoodedMotor.setControl(
-              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .000, 0, 0.07)).withEnableFOC(true));
+              new PositionVoltage(MathUtil.clamp(anglePosition.getAsDouble() + .000, 0, 0.085)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond.getAsDouble();
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
@@ -90,18 +93,11 @@ public class Shooter extends SubsystemBase {
         () -> {
           desiredAngle = anglePosition;
           hoodedMotor
-              .setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .000, 0, 0.07)).withEnableFOC(true));
+              .setControl(new PositionVoltage(MathUtil.clamp(anglePosition + .000, 0, 0.085)).withEnableFOC(true));
           desiredSpeed = rotationsPerSecond;
           shooterMotorLeft.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
           shooterMotorRight.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         });
-  }
-
-  public boolean isAtDesiredSpeed() {
-    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed) {
-      return true;
-    }
-    return false; // sim is always at the right velocity
   }
 
   public Command defaultCommand() {
@@ -131,5 +127,30 @@ public class Shooter extends SubsystemBase {
   public void periodic() {
     DogLog.log(SHOOTER_LOG_KEY + "/recomended speed", desiredSpeed);
     DogLog.log(SHOOTER_LOG_KEY + "/recomended rotations", desiredAngle);
+    DogLog.log(SHOOTER_LOG_KEY + "/Checks/speed", isAtDesiredSpeedCheck().getAsBoolean());
+    DogLog.log(SHOOTER_LOG_KEY + "/Checks/angle", isAtDesiredAngleCheck().getAsBoolean());
+  }
+    
+  public boolean isAtDesiredAngle() {
+    if (hoodedMotor.getPosition().getValueAsDouble() > desiredAngle-0.001 && 
+      hoodedMotor.getPosition().getValueAsDouble() < desiredAngle+0.001) {
+      return true;
+    }
+    return false; 
+  }
+
+  public boolean isAtDesiredSpeed() {
+    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed - 1.5) {
+      return true;
+    }
+    return false; // sim is always at the right velocity
+  }
+
+  public BooleanSupplier isAtDesiredSpeedCheck() {
+    return () -> isAtDesiredSpeed();
+  }
+
+  public BooleanSupplier isAtDesiredAngleCheck() {
+    return () -> isAtDesiredAngle();
   }
 }

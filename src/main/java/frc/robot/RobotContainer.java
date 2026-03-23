@@ -6,6 +6,8 @@ package frc.robot;
 
 import static frc.robot.constants.FieldConstants.isRedSide;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.MAX_DRIVE_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
+import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.constants.FieldConstants.*;
@@ -28,9 +30,11 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
+import frc.robot.commands.ShooterCommandsCopy;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -48,8 +52,8 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
 
-  private final CommandXboxController joystick = new CommandXboxController(0);
-  private final CommandXboxController operator = new CommandXboxController(1);
+  public static final CommandXboxController joystick = new CommandXboxController(0);
+  public static final CommandXboxController operator = new CommandXboxController(1);
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final Telemetry logger = new Telemetry(MAX_DRIVE_SPEED);
 
@@ -78,25 +82,31 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
-    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, 50));// checkmark
-
-    joystick.rightTrigger().whileTrue(intake.setIntakeState(0, 0));
+    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.rightTrigger().whileTrue(intake.barf());
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
+    // shoot rev
     joystick.a().whileTrue(
         ShooterCommands.teleHalfShooterCommand(shooter,
             drivetrain, joystick::getLeftX,
-            joystick::getLeftY)); // IT WORKS!!!!
-    joystick.a().whileTrue(
-        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper));
+            joystick::getLeftY).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // IT WORKS!!!!
+    // shoot with intake agitation
+    joystick.a().whileTrue( 
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
+    // shoot and intake fuel
+    joystick.a().and(joystick.leftTrigger()).whileTrue(
+        ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain));
 
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
 
     joystick.povRight().whileTrue(
-        shooter.zeroHood());
+        shooter.zeroHood()); 
+    joystick.rightBumper().whileTrue(ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
+    // joystick.y().whileTrue(ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
 
     // joystick.povDown()
     // .whileTrue(
@@ -138,12 +148,13 @@ public class RobotContainer {
     // operator.x().whileTrue(
     // hopper.agitate(-50, -30));
 
-    // operator.a().whileTrue(shooter.setShooterState(() ->
-    // SmartDashboard.getNumber("ANGLE", 0.02),
-    // () -> SmartDashboard.getNumber("SPEED", 50)));
+    operator.b().whileTrue(shooter.setShooterState(() ->
+    SmartDashboard.getNumber("ANGLE", 0.02),
+    () -> SmartDashboard.getNumber("SPEED", 50)));
+    
     operator.x().whileTrue(new ParallelCommandGroup(
         intake.agitateIntake(),
-        hopper.agitate(50, 10),
+        hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         loader.loadBoth(70)).repeatedly());
   }
 
@@ -324,7 +335,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -341,7 +352,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)))
             .withTimeout(5),
         AutoBuilder.followPath(RightShootToOutpost),
         intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
@@ -350,7 +361,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command rightSideOneAndOutpostAutoDif = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -394,7 +405,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
                 new WaitCommand(0.75),
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command leftDepotAuto = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,

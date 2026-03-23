@@ -28,7 +28,7 @@ public class Loader extends SubsystemBase {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
-        .withIdleMode(NeutralModeValue.Coast)
+        .withIdleMode(NeutralModeValue.Brake)
         .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
@@ -38,7 +38,7 @@ public class Loader extends SubsystemBase {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
-        .withIdleMode(NeutralModeValue.Coast)
+        .withIdleMode(NeutralModeValue.Brake)
         .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
