@@ -105,15 +105,7 @@ public class ShooterCommands {
                                                                                                 .getTranslation()));
                                     },
                                     () -> {
-                                        return (drive.getState().Pose.getTranslation()
-                                                .getDistance(getHubLocation()
-                                                        .getTranslation()) < 3.146)
-                                                                ? SHOOTER_VELOCITY_LOOKUP_CLOSE
-                                                                        .get(drive.getState().Pose
-                                                                                .getTranslation()
-                                                                                .getDistance(getHubLocation()
-                                                                                        .getTranslation()))
-                                                                : SHOOTER_VELOCITY_LOOKUP_FAR.get(
+                                        return SHOOTER_VELOCITY_LOOKUP.get(
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
@@ -124,7 +116,7 @@ public class ShooterCommands {
                                     () -> Commands.repeatingSequence(shooter.setShooterState(
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 0.7,
+                                                            .inchesToMeters(135) ? 0 : 0.07,
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
                                                             .inchesToMeters(135) ? 0 : 70)))
@@ -142,7 +134,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 0.85,
+                                                                                            : 0.075,
                                                     () -> drive.getState().Pose
                                                             .getY() > Units.inchesToMeters(
                                                                     135)
@@ -151,7 +143,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 100)))
+                                                                                            : 85)))
                                     .until(() -> !drive.isInOpposingAllianceZone()
                                             .getAsBoolean()))));
         }

@@ -46,14 +46,12 @@ public class SubsystemConstants {
 
     public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
 
-    public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP_CLOSE = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(1.575, 33.0), Map.entry(3.068, 45.0), Map.entry(3.145, 47.0));
-    public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(42.48777796, 3.146), Map.entry(43.0, 3.337), Map.entry(45.0, 3.748), Map.entry(49.0, 4.913));
+    public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
+        Map.entry(2.9, 41.0), Map.entry(3.7, 43.0), Map.entry(5.2, 47.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
-      Map.entry(3.146, 0.0032196238), Map.entry(3.337, 0.005), Map.entry(3.748, 0.01), Map.entry(4.913, 0.022));
+        Map.entry(2.9, 0.01), Map.entry(3.7, 0.0175), Map.entry(5.2, 0.0325));
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(0.0, 1.0), Map.entry(1.0, 1.0));
+        Map.entry(0.0, 0.0), Map.entry(10.0, 10.0));
     // public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP =
     // InterpolatingDoubleTreeMap
     // .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0),
@@ -87,7 +85,7 @@ public class SubsystemConstants {
     public static final double DRIVE_I = 0.0;
     public static final double DRIVE_D = 0.01;
 
-    public static final double ROTATION_P = 20.0;
+    public static final double ROTATION_P = 10.0;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
   }
