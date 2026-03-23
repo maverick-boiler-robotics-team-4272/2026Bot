@@ -95,12 +95,10 @@ public class RobotContainer {
             joystick::getLeftY).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // IT WORKS!!!!
     // shoot with intake agitation
     joystick.a().whileTrue( 
-        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)
-            .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
     // shoot and intake fuel
     joystick.a().and(joystick.leftTrigger()).whileTrue(
-        ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
-            .withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+        ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain));
 
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
