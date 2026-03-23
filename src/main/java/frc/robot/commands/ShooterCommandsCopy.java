@@ -1,12 +1,9 @@
 package frc.robot.commands;
 
 import static frc.robot.constants.FieldConstants.*;
-import static frc.robot.constants.FieldConstants.getHubLocation;
-import static frc.robot.constants.FieldConstants.getShuttlePoses;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
-import static frc.robot.constants.SubsystemConstants.ShooterConstants.TufF_TABLE;
 
 import java.util.function.DoubleSupplier;
 
@@ -36,11 +33,16 @@ public class ShooterCommandsCopy{
                 return new ParallelCommandGroup(
                                 drive.defer(() -> Commands.repeatingSequence(
                                                 drive.pointTowardsPoint(() -> {
-                                                        currentLocation = getHubLocation().getTranslation();
-                                                        for(int i = 0; i < 20; i++) {
-                                                                DogLog.log("hub", new Pose2d(currentLocation.getX(), currentLocation.getY(), Rotation2d.kZero));
-                                                                currentLocation = new Translation2d(getHubLocation().getX() + drive.getVelocityX().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(currentLocation)*3), getHubLocation().getY() + drive.getVelocityY().getAsDouble() * TufF_TABLE.get(drive.getState().Pose.getTranslation().getDistance(currentLocation)*3));
-                                                        }
+                                                    currentLocation = getHubLocation().getTranslation();
+                                                    Translation2d robotPos = drive.getState().Pose.getTranslation();
+                                                    double vx = drive.getVelocityX().getAsDouble();
+                                                    double vy = drive.getVelocityY().getAsDouble();
+                                                    for (int i = 0; i < 15; i++) {
+                                                        double tof = TufF_TABLE.get(robotPos.getDistance(currentLocation));
+                                                        currentLocation = getHubLocation().getTranslation().minus(new Translation2d(vx * tof, vy * tof));
+                                                        DogLog.log("hub", new Pose2d(currentLocation, Rotation2d.kZero));
+                                                    }
+
                                                         return currentLocation;},
                                                                 joystickX,
                                                                 joystickY)
@@ -80,7 +82,7 @@ public class ShooterCommandsCopy{
                                     () -> SCORE_ANGLE_LOOKUP_FAR.get(drive.getState().Pose
                                             .getTranslation()
                                             .getDistance(currentLocation)),
-                                    () -> SHOOTER_VELOCITY_LOOKUP_FAR
+                                    () -> SHOOTER_VELOCITY_LOOKUP
                                             .get(drive.getState().Pose.getTranslation()
                                                     .getDistance(currentLocation)))
                                     .until(drive.isNotInAllianceZone()),
@@ -95,4 +97,5 @@ public class ShooterCommandsCopy{
                                     .until(drive.isInAllianceZone())))
                                     );
         }
+
 }
