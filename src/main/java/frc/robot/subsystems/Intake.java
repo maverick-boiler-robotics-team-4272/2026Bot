@@ -198,7 +198,7 @@ public class Intake extends SubsystemBase {
 
   public boolean isSafe() {
     if (disableSafety) {
-      return false;
+      return true;
     }
     if (prevDesDistance == desiredExtensionRotations) {
       return true;
