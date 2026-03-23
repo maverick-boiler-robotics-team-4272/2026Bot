@@ -75,8 +75,8 @@ public class FieldConstants {
 
         public static final ArrayList<Pose2d> BLUE_SHUTTLE_POSES = new ArrayList<Pose2d>();
         static {
-                RED_SHUTTLE_POSES.add(BLUE_LEFT_SHUTTLE);
-                RED_SHUTTLE_POSES.add(BLUE_RIGHT_SHUTTLE);
+                BLUE_SHUTTLE_POSES.add(BLUE_LEFT_SHUTTLE);
+                BLUE_SHUTTLE_POSES.add(BLUE_RIGHT_SHUTTLE);
         }
 
         public static ArrayList<Pose2d> getShuttlePoses() {
