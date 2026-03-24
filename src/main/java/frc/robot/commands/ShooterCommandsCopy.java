@@ -37,10 +37,10 @@ public class ShooterCommandsCopy{
                                                     Translation2d robotPos = drive.getState().Pose.getTranslation();
                                                     double vx = drive.getVelocityX().getAsDouble();
                                                     double vy = drive.getVelocityY().getAsDouble();
-                                                    for (int i = 0; i < 15; i++) {
+                                                    for (int i = 0; i < 10; i++) {
                                                         double tof = TufF_TABLE.get(robotPos.getDistance(currentLocation));
                                                         currentLocation = getHubLocation().getTranslation().minus(new Translation2d(vx * tof, vy * tof));
-                                                        DogLog.log("hub", new Pose2d(currentLocation, Rotation2d.kZero));
+                                                        DogLog.log("Subsystems/Drive/Virtual Hub", new Pose2d(currentLocation, Rotation2d.kZero));
                                                     }
 
                                                         return currentLocation;},
@@ -60,7 +60,6 @@ public class ShooterCommandsCopy{
                 return new SequentialCommandGroup(
                                 new WaitUntilCommand(shooter::isAtDesiredSpeed),
                                 new WaitUntilCommand(shooter::isAtDesiredAngle),
-                                new WaitUntilCommand(drive::isAtDesiredAngle),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),

@@ -6,6 +6,7 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -38,7 +39,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.4, 0.0, 0.00, 0.35, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.2, 0.0, 0.00, .42, 0, 0, 0.123)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build(); // p = 0.1, d = 0.001, s = 0.2
 
@@ -48,7 +49,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.4, 0.0, 0.00, 0.32, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.2, 0.0, 0.00, .42, 0, 0, 0.123)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -132,15 +133,16 @@ public class Shooter extends SubsystemBase {
   }
     
   public boolean isAtDesiredAngle() {
-    if (hoodedMotor.getPosition().getValueAsDouble() > desiredAngle-0.001 && 
-      hoodedMotor.getPosition().getValueAsDouble() < desiredAngle+0.001) {
+    if (hoodedMotor.getPosition(false).getValueAsDouble() > desiredAngle - 0.001 &&
+        hoodedMotor.getPosition(false).getValueAsDouble() < desiredAngle + 0.001) {
       return true;
     }
     return false; 
   }
 
   public boolean isAtDesiredSpeed() {
-    if (shooterMotorLeft.getVelocity().getValueAsDouble() >= desiredSpeed - 1.5) {
+    if (shooterMotorLeft.getVelocity(false).getValueAsDouble() >= desiredSpeed
+        || shooterMotorRight.getVelocity(false).getValueAsDouble() >= desiredSpeed) {
       return true;
     }
     return false; // sim is always at the right velocity

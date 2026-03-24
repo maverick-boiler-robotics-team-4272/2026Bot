@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.elastic.Elastic;
-import frc.robot.utils.gameData.GameData;
+// import frc.robot.utils.gameData.GameData;
 import frc.robot.utils.periodic.PeriodicalUtil;
 
 public class Robot extends TimedRobot {
@@ -17,13 +17,14 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     Elastic.selectTab("Autonomous");
+    // DogLog.setEnabled(false);
+
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     PeriodicalUtil.runPeriodics();
-
     DogLog.log("Alliance Status", DriverStation.getAlliance().isPresent());
     DriverStation.getAlliance().ifPresent(alliance -> DogLog.log("Alliance", alliance.toString()));
   }
@@ -62,7 +63,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    GameData.setGameData();
+    // GameData.setGameData();
   }
 
   @Override

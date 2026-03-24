@@ -4,7 +4,9 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot1Configs;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -82,7 +84,12 @@ public class Intake extends SubsystemBase {
     // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
 
     // extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
-    
+
+    extensionMotor.getConfigurator()
+        .apply(new MotionMagicConfigs()
+            .withMotionMagicCruiseVelocity(4)
+            .withMotionMagicAcceleration(9999));
+
     currentLimitTrigger = new Trigger(this::isSafe);
 
     // currentLimitTrigger.onTrue(new InstantCommand(() -> {
@@ -99,7 +106,7 @@ public class Intake extends SubsystemBase {
         () -> {
           desiredExtensionRotations = rotationsDistance;
           desiredIntakeSpeed = rotationsPerSecond;
-          if(isSafe()) {
+          if (!isSafe()) {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true).withSlot(0));
           } else {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true).withSlot(1));
@@ -113,12 +120,28 @@ public class Intake extends SubsystemBase {
         () -> {
           desiredExtensionRotations = rotationsDistance.getAsDouble();
           desiredIntakeSpeed = rotationsPerSecond.getAsDouble();
-          if(isSafe()) {
+          if (!isSafe()) {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withSlot(0).withEnableFOC(true));
           } else {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withSlot(1).withEnableFOC(true));
           }
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
+        });
+  }
+
+  public Command setIntakeStateMotionMagic(double rotationsDistance, double rotationsPerSecond) {
+    return run(
+        () -> {
+          desiredExtensionRotations = rotationsDistance;
+          desiredIntakeSpeed = rotationsPerSecond;
+          if (!isSafe()) {
+            extensionMotor.setControl(
+                new MotionMagicVoltage(rotationsDistance - 0.1).withSlot(0).withEnableFOC(true));
+          } else {
+            extensionMotor.setControl(
+                new MotionMagicVoltage(rotationsDistance - 0.1).withSlot(1).withEnableFOC(true));
+          }
+          intakeMotor.setControl(new VoltageOut(0));
         });
   }
 
@@ -151,7 +174,7 @@ public class Intake extends SubsystemBase {
     return run(
         () -> {
           desiredIntakeSpeed = 0;
-          desiredExtensionRotations = extensionMotor.getPosition().getValueAsDouble();
+          desiredExtensionRotations = extensionMotor.getPosition(false).getValueAsDouble();
           extensionMotor
               .setControl(new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withSlot(1).withEnableFOC(true));
           intakeMotor.setControl(new VoltageOut(0).withEnableFOC(true));
@@ -159,9 +182,16 @@ public class Intake extends SubsystemBase {
   }
 
   public Command agitateIntake() {
-    return new SequentialCommandGroup(
-        setIntakeState(6, 45).withTimeout(0.25),
-        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.25)).repeatedly()
+  return new SequentialCommandGroup(
+  setIntakeState(6, 45).withTimeout(0.2),
+  setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
+  .beforeStarting(() -> {
+  disableSafety = true;
+  }).finallyDo(() -> disableSafety = false);
+  }
+
+  public Command agitateIntakeMM() {
+    return setIntakeStateMotionMagic(0.0, 0.0)
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);
@@ -194,13 +224,15 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     DogLog.log(INTAKE_KEY + "desired distance", desiredExtensionRotations);
     DogLog.log(INTAKE_KEY + "desired speed", desiredIntakeSpeed);
+    DogLog.log(INTAKE_KEY + "isSafe", isSafe());
   }
 
   public boolean isSafe() {
     if (disableSafety) {
-      return true;
+      return false;
     }
-    if (prevDesDistance == desiredExtensionRotations) {
+    if (prevDesDistance >= extensionMotor.getPosition(false).getValueAsDouble() - 0.1
+        && prevDesDistance <= extensionMotor.getPosition(false).getValueAsDouble() + 0.1) {
       return true;
     } else {
       return false;
