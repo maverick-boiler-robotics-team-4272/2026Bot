@@ -375,7 +375,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)))
             .withTimeout(5)
         // new ParallelRaceGroup(
         //   AutoBuilder.followPath(rightOutpostShootToOutpost), 
@@ -421,7 +421,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper)))
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)))
             .withTimeout(5),
         new ParallelRaceGroup(
             AutoBuilder.followPath(DepotShootToDepot),
@@ -433,7 +433,7 @@ public class RobotContainer {
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             new SequentialCommandGroup(
-                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper))));
+                ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))));
 
     Command terry = new SequentialCommandGroup(
         AutoBuilder.followPath(PutItInReverseTerry),
