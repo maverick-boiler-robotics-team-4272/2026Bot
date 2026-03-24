@@ -93,11 +93,7 @@ public class ShooterCommands {
                     shooter.defer(() -> Commands.repeatingSequence(
                             shooter.setShooterState(
                                     () -> {
-                                        return (drive.getState().Pose.getTranslation()
-                                                .getDistance(getHubLocation()
-                                                        .getTranslation()) < 3.146)
-                                                                ? 0
-                                                                : SCORE_ANGLE_LOOKUP_FAR
+                                        return SCORE_ANGLE_LOOKUP_FAR
                                                                         .get(
                                                                                 drive.getState().Pose
                                                                                         .getTranslation()
