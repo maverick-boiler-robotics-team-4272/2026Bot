@@ -10,7 +10,7 @@ import edu.wpi.first.math.util.Units;
 
 public class VisionConstants {
     public static final String CAMERA_A = "Camera_A";
-    public static final String CAMERA_B = "Camera_B";
+    public static final String CAMERA_B = "Camera_B"; //actually F...
     public static final String CAMERA_C = "Camera_C";
     public static final String CAMERA_D = "Camera_D";
 
