@@ -25,8 +25,8 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     PeriodicalUtil.runPeriodics();
-    DogLog.log("Alliance Status", DriverStation.getAlliance().isPresent());
-    DriverStation.getAlliance().ifPresent(alliance -> DogLog.log("Alliance", alliance.toString()));
+    // DogLog.log("Alliance Status", DriverStation.getAlliance().isPresent());
+    // DriverStation.getAlliance().ifPresent(alliance -> DogLog.log("Alliance", alliance.toString()));
   }
 
   @Override

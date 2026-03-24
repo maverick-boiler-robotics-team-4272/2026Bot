@@ -59,7 +59,7 @@ public class GameData implements Periodical{
     }
     @Override
     public void periodic() {
-        DogLog.log("GameData/data", gameData);
-        DogLog.log("GameData/time", matchTime);
+        // DogLog.log("GameData/data", gameData);
+        // DogLog.log("GameData/time", matchTime);
     }
 }

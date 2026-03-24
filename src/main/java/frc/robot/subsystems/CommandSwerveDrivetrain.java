@@ -434,17 +434,16 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // mine
     hubDistance = getState().Pose.getTranslation().getDistance(getHubLocation().getTranslation());
     DogLog.log("Subsystems/Drive/Pose", getState().Pose);
-    DogLog.log("Subsystems/Drive/HubPose", getHubLocation());
-    DogLog.log("Subsystems/Drive/HubDistance",
-        hubDistance);
-    if (getCurrentCommand() != null) {
-      DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
-    } else {
-      DogLog.log("Subsystems/Drive/CurrentCommand", "None");
-    }
+    // DogLog.log("Subsystems/Drive/HubPose", getHubLocation());
+    DogLog.log("Subsystems/Drive/HubDistance", hubDistance);
+    // if (getCurrentCommand() != null) {
+    //   DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
+    // } else {
+    //   DogLog.log("Subsystems/Drive/CurrentCommand", "None");
+    // }
     DogLog.log("Subsystems/Drive/isInAllianceZone", isInAllianceZone().getAsBoolean());
 
-    DogLog.log("Subsystems/Drive/Speeds", getState().Speeds);
+    // DogLog.log("Subsystems/Drive/Speeds", getState().Speeds);
     if (!Robot.isReal()) {
       for (Vision camera : cameras) {
         camera.simulationPeriodic(getState().Pose);
