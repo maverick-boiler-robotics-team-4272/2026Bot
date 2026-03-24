@@ -11,14 +11,15 @@ public class MotorLogger {
    *                  from there
    * @param motors    is a list of as many motors as you please
    */
+  
   public static void log(String subsystem, Kraken motor) {
     StringBuilder keyBuilder = new StringBuilder("Subsystems/").append(subsystem).append("/Motors/");
-    var supplyCurrent = motor.getSupplyCurrent();
-    var statorCurrent = motor.getStatorCurrent();
-    var voltage = motor.getMotorVoltage();
-    var temp = motor.getDeviceTemp();
-    var velocity = motor.getVelocity();
-    var position = motor.getPosition();
+    var supplyCurrent = motor.getSupplyCurrent(false);
+    var statorCurrent = motor.getStatorCurrent(false);
+    var voltage = motor.getMotorVoltage(false);
+    var temp = motor.getDeviceTemp(false);
+    var velocity = motor.getVelocity(false);
+    var position = motor.getPosition(false);
 
     BaseStatusSignal.refreshAll(supplyCurrent, statorCurrent, voltage, temp, velocity, position);
 
