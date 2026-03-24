@@ -1,4 +1,4 @@
-package frc.robot.utils.gamedata;
+package frc.robot.utils.gameData;
 
 import static frc.robot.constants.FieldConstants.isRedSide;
 

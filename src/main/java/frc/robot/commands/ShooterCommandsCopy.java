@@ -59,7 +59,9 @@ public class ShooterCommandsCopy{
         public static Command tele2ndHalfShooterCommand(
                         Loader loader, Intake intake, Hopper hopper, Shooter shooter, CommandSwerveDrivetrain drive) {
                 return new SequentialCommandGroup(
-                                new WaitCommand(0.5),
+                                // new WaitUntilCommand(shooter::isAtDesiredSpeed),
+                                // new WaitUntilCommand(shooter::isAtDesiredAngle),
+                                new WaitCommand(0.25),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),

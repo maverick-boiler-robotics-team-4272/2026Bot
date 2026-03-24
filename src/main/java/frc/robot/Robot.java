@@ -17,7 +17,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     Elastic.selectTab("Autonomous");
-    // DogLog.setEnabled(false);
+    DogLog.setEnabled(false);
 
   }
 

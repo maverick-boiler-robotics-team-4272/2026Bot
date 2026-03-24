@@ -59,5 +59,6 @@
   ],
   "java.dependency.enableDependencyCheckup": false,
   "java.format.settings.url": "eclipse-formatter.xml",
-  "java.compile.nullAnalysis.mode": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.debug.settings.onBuildFailureProceed": true
 }
