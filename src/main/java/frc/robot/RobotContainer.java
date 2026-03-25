@@ -341,6 +341,20 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
+    PathPlannerPath secondSwipRightFar;
+    try {
+      secondSwipRightFar = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath secondSwipLeftFar;
+    try {
+      secondSwipLeftFar = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far").mirrorPath();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -410,6 +424,32 @@ public class RobotContainer {
             .withTimeout(5),
         new ParallelRaceGroup(
             AutoBuilder.followPath(secondSwipRight),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
+
+    Command doubleSwipRightFar = new SequentialCommandGroup(
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
+        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(newRightStart),
+            shooter.zeroHood(),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        // AutoBuilder.followPath(midRightOutpostShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+            .withTimeout(5),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(secondSwipRightFar),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
@@ -430,6 +470,26 @@ public class RobotContainer {
             .withTimeout(5),
         new ParallelRaceGroup(
             AutoBuilder.followPath(secondSwipLeft),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
+
+    Command doubleSwipLeftFar = new SequentialCommandGroup(
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
+        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(newLeftStart),
+            shooter.zeroHood(),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        // AutoBuilder.followPath(midRightOutpostShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+            .withTimeout(5),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(secondSwipLeftFar),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
@@ -497,7 +557,9 @@ public class RobotContainer {
     // rightSideOneAndOutpostAuto);
     autoChooser.addOption("Put It In Reverse Terry", terry);
     autoChooser.addOption("Right Double Swip", doubleSwipRight);
+    autoChooser.addOption("Right Double Swip Far", doubleSwipRightFar);
     autoChooser.addOption("Left Double Swip", doubleSwipLeft);
+    autoChooser.addOption("Left Double Swip Far", doubleSwipLeftFar);
     autoChooser.addOption("De-Pot", leftDepotAuto);
     autoChooser.addOption("Boeing Door", BoeingRight);
     autoChooser.addOption("Boeing Cockpit", BoeingLeft);
