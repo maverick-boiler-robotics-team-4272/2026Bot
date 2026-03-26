@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.commands.ShooterCommandsCopy;
+import frc.robot.commands.ShooterCommandsCopyCopy;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -91,7 +92,7 @@ public class RobotContainer {
     joystick.a().whileTrue(
         ShooterCommands.teleHalfShooterCommand(shooter,
             drivetrain, joystick::getLeftX,
-            joystick::getLeftY).withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // IT WORKS!!!!
+            joystick::getLeftY)); // IT WORKS!!!!
     // shoot with intake agitation
     joystick.a().whileTrue(
         ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
@@ -106,6 +107,8 @@ public class RobotContainer {
         shooter.zeroHood());
     joystick.rightBumper().whileTrue(
         ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
+    joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
+    joystick.x().whileTrue(ShooterCommandsCopyCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
     // joystick.y().whileTrue(ShooterCommandsCopy.tele2ndHalfShooterCommand(loader,
     // intake, hopper, shooter, drivetrain));
 
@@ -127,6 +130,10 @@ public class RobotContainer {
     // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
+    // operator.povUp().whileTrue(shooter.oof());
+    operator.rightBumper().onTrue(ShooterCommandsCopyCopy.addShooterAdd(shooter));
+    operator.leftBumper().onTrue(ShooterCommandsCopyCopy.subtractShooterAdd(shooter));
+
     operator.povLeft().whileTrue(intake.outZeroExtension());
     operator.povDown().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());

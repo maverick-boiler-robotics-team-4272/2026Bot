@@ -44,8 +44,6 @@ public class SubsystemConstants {
     public static final double AUTO_SHOOTER_HOOD = 0.02;
     public static final double AUTO_SHOOTER_VELOCITY = 55;
 
-    public static final double SHOOTER_SHUTTLE_VELOCITY = 55; // TODO: tune
-
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(3.01, 43.0), Map.entry(5.42, 51.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(

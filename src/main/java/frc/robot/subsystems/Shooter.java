@@ -77,6 +77,15 @@ public class Shooter extends SubsystemBase {
         });
   }
 
+  public Command oof() {
+    return run(
+      () -> {
+        hoodedMotor.setControl(new VoltageOut(1).withEnableFOC(true));
+        shooterMotorLeft.setControl(new VoltageOut(0).withEnableFOC(true));
+        shooterMotorRight.setControl(new VoltageOut(0).withEnableFOC(true));
+      }
+    );
+  }
   public Command setShooterState(DoubleSupplier anglePosition, DoubleSupplier rotationsPerSecond) {
     return run(
         () -> {

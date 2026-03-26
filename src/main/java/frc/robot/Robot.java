@@ -15,9 +15,10 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
+    // super(0.02);
     m_robotContainer = new RobotContainer();
     Elastic.selectTab("Autonomous");
-    DogLog.setEnabled(false);
+    // DogLog.setEnabled(false);
 
   }
 
