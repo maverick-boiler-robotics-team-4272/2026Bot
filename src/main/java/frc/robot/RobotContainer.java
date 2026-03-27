@@ -137,9 +137,7 @@ public class RobotContainer {
     operator.povLeft().whileTrue(intake.outZeroExtension());
     operator.povDown().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
-
-    operator.leftTrigger().whileTrue(
-        hopper.agitate(50, 10));
+    operator.povUp().whileTrue(hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED));
 
     operator.rightTrigger().whileTrue(
         intake.agitateIntake());
@@ -549,14 +547,23 @@ public class RobotContainer {
         AutoBuilder.followPath(PutItInReverseTerry),
         drivetrain.applyRequest(() -> brake));
 
-    Command BoeingRight = new SequentialCommandGroup(
+    Command boeingRight = new SequentialCommandGroup(
         AutoBuilder.followPath(AirplaneTakeDownRight));
 
-    Command BoeingLeft = new SequentialCommandGroup(
+    Command boeingLeft = new SequentialCommandGroup(
         AutoBuilder.followPath(AirplaneTakeDownLeft));
 
-    Command NewRightSide = new SequentialCommandGroup(
-        AutoBuilder.followPath(RightControledChaos));
+    Command chaos = new SequentialCommandGroup(
+        new ParallelRaceGroup(
+        intake.setIntakeStateOUT(EXTEND_DISTANCE,INTAKE_SPEED),
+        AutoBuilder.followPath(RightControledChaos)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+      
+    );
+
+
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
@@ -568,9 +575,9 @@ public class RobotContainer {
     autoChooser.addOption("Left Double Swip", doubleSwipLeft);
     autoChooser.addOption("Left Double Swip Far", doubleSwipLeftFar);
     autoChooser.addOption("De-Pot", leftDepotAuto);
-    autoChooser.addOption("Boeing Door", BoeingRight);
-    autoChooser.addOption("Boeing Cockpit", BoeingLeft);
-    autoChooser.addOption("ChAoS", NewRightSide);
+    autoChooser.addOption("Boeing Door", boeingRight);
+    autoChooser.addOption("Boeing Cockpit", boeingLeft);
+    autoChooser.addOption("ChAoS", chaos);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
 
