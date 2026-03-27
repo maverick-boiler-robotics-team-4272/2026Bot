@@ -130,7 +130,7 @@ public class RobotContainer {
     // joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
     // testing commands
-    // operator.povUp().whileTrue(shooter.oof());
+    operator.rightStick().whileTrue(shooter.oof());
     operator.rightBumper().onTrue(ShooterCommandsCopyCopy.addShooterAdd(shooter));
     operator.leftBumper().onTrue(ShooterCommandsCopyCopy.subtractShooterAdd(shooter));
 
@@ -314,6 +314,13 @@ public class RobotContainer {
     PathPlannerPath RightControledChaos;
     try {
       RightControledChaos = PathPlannerPath.fromChoreoTrajectory("IDk_what_to_call_this");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath LeftControledChaos;
+    try {
+      LeftControledChaos = PathPlannerPath.fromChoreoTrajectory("IDk_what_to_call_this").mirrorPath();
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -553,7 +560,7 @@ public class RobotContainer {
     Command boeingLeft = new SequentialCommandGroup(
         AutoBuilder.followPath(AirplaneTakeDownLeft));
 
-    Command chaos = new SequentialCommandGroup(
+    Command rightChaos = new SequentialCommandGroup(
         new ParallelRaceGroup(
         intake.setIntakeStateOUT(EXTEND_DISTANCE,INTAKE_SPEED),
         AutoBuilder.followPath(RightControledChaos)),
@@ -563,6 +570,15 @@ public class RobotContainer {
       
     );
 
+    Command leftChaos = new SequentialCommandGroup(
+        new ParallelRaceGroup(
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
+            AutoBuilder.followPath(LeftControledChaos)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+
+    );
 
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
@@ -577,7 +593,8 @@ public class RobotContainer {
     autoChooser.addOption("De-Pot", leftDepotAuto);
     autoChooser.addOption("Boeing Door", boeingRight);
     autoChooser.addOption("Boeing Cockpit", boeingLeft);
-    autoChooser.addOption("ChAoS", chaos);
+    autoChooser.addOption("RiGhT cHaOs", rightChaos);
+    autoChooser.addOption("LeFt ChAoS", leftChaos);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
 

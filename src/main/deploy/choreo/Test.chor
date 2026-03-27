@@ -5,6 +5,20 @@
  "variables":{
   "expressions":{},
   "poses":{
+   "Double_Swipe_Shoot":{
+    "x":{
+     "exp":"2.8 m",
+     "val":2.8
+    },
+    "y":{
+     "exp":"1.3 m",
+     "val":1.3
+    },
+    "heading":{
+     "exp":"45 deg",
+     "val":0.7853981633974483
+    }
+   },
    "Mid Right Intake Start":{
     "x":{
      "exp":"7.813464164733887 m",
