@@ -73,6 +73,7 @@ public class ShooterCommands {
                 new WaitUntilCommand(shooter::isAtDesiredSpeed),
                 new WaitUntilCommand(shooter::isAtDesiredAngle),
                 new WaitUntilCommand(drive::isAtDesiredAngle),
+                // new WaitUntilCommand(0.2),
                 Commands.repeatingSequence(
                 new ParallelCommandGroup(
                                 loader.loadBoth(70),

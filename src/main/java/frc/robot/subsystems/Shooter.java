@@ -52,6 +52,8 @@ public class Shooter extends SubsystemBase {
         .withSlot0PIDSGAV(0.2, 0.0, 0.00, .42, 0, 0, 0.123)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
+    shooterMotorRight.setGearRatio(1);
+    shooterMotorLeft.setGearRatio(1);
 
     hoodedMotor = KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
         .withCurrentLimit(
@@ -64,6 +66,7 @@ public class Shooter extends SubsystemBase {
         .build();
 
     hoodedMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(348.0 * 24.0 / (16.0 * 11.0)));
+    hoodedMotor.setGearRatio(348.0 * 24.0 / (16.0 * 11.0));
   }
 
   public Command zeroHood() {

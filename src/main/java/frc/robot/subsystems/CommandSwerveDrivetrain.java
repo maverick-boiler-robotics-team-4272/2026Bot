@@ -380,7 +380,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   }
 
    public boolean isAtDesiredAngle() {
-    return (Math.abs(getState().Pose.getRotation().minus(desriedAngle).getDegrees()) < 15);
+    Rotation2d checkAngle = desriedAngle;
+    if(isRedSide()) {
+      checkAngle = checkAngle.plus(Rotation2d.fromDegrees(180));
+    }
+    return (Math.abs(getState().Pose.getRotation().minus(checkAngle).getDegrees()) < 7);
    }
 
    public BooleanSupplier isAtDesiredAngleCheck() {
