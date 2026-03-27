@@ -45,9 +45,9 @@ public class SubsystemConstants {
     public static final double AUTO_SHOOTER_VELOCITY = 55;
 
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(3.01, 43.0), Map.entry(5.42, 51.0));
+        Map.entry(1.0, 36.3278), Map.entry(3.01, 43.0), Map.entry(5.42, 51.0));
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(3.01, 0.01), Map.entry(5.42, 0.031));
+        Map.entry(1.862381, 0.0), Map.entry(3.01, 0.01), Map.entry(5.42, 0.031));
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(0.0, 0.0), Map.entry(10.0, 2.0));
     // public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP =
