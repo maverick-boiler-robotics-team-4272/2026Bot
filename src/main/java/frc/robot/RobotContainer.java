@@ -107,8 +107,10 @@ public class RobotContainer {
         shooter.zeroHood());
     joystick.rightBumper().whileTrue(
         ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
-    joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
-    joystick.x().whileTrue(ShooterCommandsCopyCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
+    // joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter,
+    // drivetrain, joystick::getLeftX, joystick::getLeftY));
+    // joystick.x().whileTrue(ShooterCommandsCopyCopy.tele2ndHalfShooterCommand(loader,
+    // intake, hopper, shooter, drivetrain));
     // joystick.y().whileTrue(ShooterCommandsCopy.tele2ndHalfShooterCommand(loader,
     // intake, hopper, shooter, drivetrain));
 
@@ -131,8 +133,8 @@ public class RobotContainer {
 
     // testing commands
     operator.rightStick().whileTrue(shooter.oof());
-    operator.rightBumper().onTrue(ShooterCommandsCopyCopy.addShooterAdd(shooter));
-    operator.leftBumper().onTrue(ShooterCommandsCopyCopy.subtractShooterAdd(shooter));
+    // operator.rightBumper().onTrue(ShooterCommandsCopyCopy.addShooterAdd(shooter));
+    // operator.leftBumper().onTrue(ShooterCommandsCopyCopy.subtractShooterAdd(shooter));
 
     operator.povLeft().whileTrue(intake.outZeroExtension());
     operator.povDown().whileTrue(intake.zeroExtension());
@@ -367,6 +369,40 @@ public class RobotContainer {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
 
+    PathPlannerPath secondSwipRightFarTrench;
+    try {
+      secondSwipRightFarTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far_Trench");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath fistMyBumpRight;
+    try {
+      fistMyBumpRight = PathPlannerPath.fromChoreoTrajectory("Fist_My_Bump");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath fistMyBumpLeft;
+    try {
+      fistMyBumpLeft = PathPlannerPath.fromChoreoTrajectory("Fist_My_Bump").mirrorPath();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath fistBumpRight;
+    try {
+      fistBumpRight = PathPlannerPath.fromChoreoTrajectory("Fist_Bump");
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
+
+    PathPlannerPath fistBumpLeft;
+    try {
+      fistBumpLeft = PathPlannerPath.fromChoreoTrajectory("Fist_Bump").mirrorPath();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
+    }
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -388,7 +424,7 @@ public class RobotContainer {
         AutoBuilder.followPath(midRightShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
     // Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
     // // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M -
@@ -428,12 +464,12 @@ public class RobotContainer {
         new ParallelRaceGroup(
             AutoBuilder.followPath(newRightStart),
             shooter.zeroHood(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
         // AutoBuilder.followPath(midRightOutpostShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(5),
+            .withTimeout(4),
         new ParallelRaceGroup(
             AutoBuilder.followPath(secondSwipRight),
             shooter.defaultCommand(),
@@ -451,14 +487,37 @@ public class RobotContainer {
         new ParallelRaceGroup(
             AutoBuilder.followPath(newRightStart),
             shooter.zeroHood(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
         // AutoBuilder.followPath(midRightOutpostShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(5),
+            .withTimeout(4),
         new ParallelRaceGroup(
             AutoBuilder.followPath(secondSwipRightFar),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
+
+    Command doubleSwipRightFarTrench = new SequentialCommandGroup(
+        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
+        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
+        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(newRightStart),
+            shooter.zeroHood(),
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
+        // AutoBuilder.followPath(midRightOutpostShoot),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+            .withTimeout(4),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(secondSwipRightFarTrench),
             shooter.defaultCommand(),
             loader.loadBoth(0),
             hopper.stop(),
@@ -474,14 +533,17 @@ public class RobotContainer {
         new ParallelRaceGroup(
             AutoBuilder.followPath(newLeftStart),
             shooter.zeroHood(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
         // AutoBuilder.followPath(midRightOutpostShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(5),
+            .withTimeout(4),
         new ParallelRaceGroup(
             AutoBuilder.followPath(secondSwipLeft),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
@@ -494,14 +556,17 @@ public class RobotContainer {
         new ParallelRaceGroup(
             AutoBuilder.followPath(newLeftStart),
             shooter.zeroHood(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
         // AutoBuilder.followPath(midRightOutpostShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(5),
+            .withTimeout(4),
         new ParallelRaceGroup(
             AutoBuilder.followPath(secondSwipLeftFar),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
             intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
@@ -537,7 +602,7 @@ public class RobotContainer {
         AutoBuilder.followPath(MidleftToDepotShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
             .withTimeout(5),
         new ParallelRaceGroup(
             AutoBuilder.followPath(DepotShootToDepot),
@@ -548,7 +613,7 @@ public class RobotContainer {
         AutoBuilder.followPath(DepotToShoot),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
     Command terry = new SequentialCommandGroup(
         AutoBuilder.followPath(PutItInReverseTerry),
@@ -562,12 +627,12 @@ public class RobotContainer {
 
     Command rightChaos = new SequentialCommandGroup(
         new ParallelRaceGroup(
-        intake.setIntakeStateOUT(EXTEND_DISTANCE,INTAKE_SPEED),
-        AutoBuilder.followPath(RightControledChaos)),
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
+            AutoBuilder.followPath(RightControledChaos)),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-      
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+
     );
 
     Command leftChaos = new SequentialCommandGroup(
@@ -576,10 +641,47 @@ public class RobotContainer {
             AutoBuilder.followPath(LeftControledChaos)),
         new ParallelCommandGroup(
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
-    );
+    Command HAILMARY_Right = new SequentialCommandGroup(
+        new ParallelRaceGroup(
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
+            new SequentialCommandGroup(
+                AutoBuilder.followPath(fistMyBumpRight),
+                drivetrain.applyRequest(() -> brake).withTimeout(2),
+                AutoBuilder.followPath(fistBumpRight))),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)).withTimeout(4),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(secondSwipRight),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
+    Command HAILMARY_Left = new SequentialCommandGroup(
+        new ParallelRaceGroup(
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
+            new SequentialCommandGroup(
+                AutoBuilder.followPath(fistMyBumpLeft),
+                drivetrain.applyRequest(() -> brake).withTimeout(2),
+                AutoBuilder.followPath(fistBumpLeft))),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)).withTimeout(4),
+        new ParallelRaceGroup(
+            AutoBuilder.followPath(secondSwipLeft),
+            shooter.defaultCommand(),
+            loader.loadBoth(0),
+            hopper.stop(),
+            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+        new ParallelCommandGroup(
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
@@ -595,6 +697,9 @@ public class RobotContainer {
     autoChooser.addOption("Boeing Cockpit", boeingLeft);
     autoChooser.addOption("RiGhT cHaOs", rightChaos);
     autoChooser.addOption("LeFt ChAoS", leftChaos);
+    autoChooser.addOption("Right Trech Double", doubleSwipRightFarTrench);
+    autoChooser.addOption("HailMary Left", HAILMARY_Left);
+    autoChooser.addOption("HailMary Right", HAILMARY_Right);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
 
