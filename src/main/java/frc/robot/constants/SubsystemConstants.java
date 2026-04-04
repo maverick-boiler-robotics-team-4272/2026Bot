@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class SubsystemConstants {
 
-  public static final String CAN_BUS = "Drivetrain";
+  public static final String CAN_BUS = "CAN'Train";
 
   public static class HopperConstants {
     public static final int HOPPER_LOWER_MOTOR_ID = 61;
@@ -83,7 +83,7 @@ public class SubsystemConstants {
     public static final double DRIVE_I = 0.0;
     public static final double DRIVE_D = 0.01;
 
-    public static final double ROTATION_P = 10.0;
+    public static final double ROTATION_P = 6.25;
     public static final double ROTATION_I = 0.0;
     public static final double ROTATION_D = 0.0;
   }
