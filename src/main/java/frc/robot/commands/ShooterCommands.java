@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -50,9 +51,9 @@ public class ShooterCommands {
         public static Command tele2ndHalfShooterCommand(
                         Loader loader, Intake intake, Hopper hopper, Shooter shooter, CommandSwerveDrivetrain drive) {
                 return new SequentialCommandGroup(
-                                new WaitUntilCommand(shooter::isAtDesiredSpeed),
-                                new WaitUntilCommand(shooter::isAtDesiredAngle),
-                                new WaitUntilCommand(drive::isAtDesiredAngle),
+                                // new WaitUntilCommand(shooter::isAtDesiredSpeed),
+                                // new WaitUntilCommand(shooter::isAtDesiredAngle),
+                                new WaitUntilCommand(drive::isAtDesiredAngle).raceWith(loader.loadBoth(-7)),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
