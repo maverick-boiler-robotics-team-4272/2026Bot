@@ -53,7 +53,10 @@ public class ShooterCommands {
                 return new SequentialCommandGroup(
                                 // new WaitUntilCommand(shooter::isAtDesiredSpeed),
                                 // new WaitUntilCommand(shooter::isAtDesiredAngle),
-                                new WaitUntilCommand(drive::isAtDesiredAngle).raceWith(loader.loadBoth(-7)),
+                                new WaitUntilCommand(drive::isAtDesiredAngle).raceWith(
+                                        loader.loadBoth(-5),
+                                        hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED)
+                                ),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
