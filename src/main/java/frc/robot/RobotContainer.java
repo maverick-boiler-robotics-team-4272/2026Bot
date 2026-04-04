@@ -88,7 +88,8 @@ public class RobotContainer {
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
-    // shoot rev
+    joystick.rightStick().whileTrue(drivetrain.trenchDriveCommand(joystick::getLeftX, joystick::getLeftY));
+    // shoot rev 
     joystick.a().whileTrue(
         ShooterCommands.teleHalfShooterCommand(shooter,
             drivetrain, joystick::getLeftX,

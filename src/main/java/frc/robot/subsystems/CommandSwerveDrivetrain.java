@@ -5,6 +5,11 @@ import static frc.robot.constants.FieldConstants.*;
 import static frc.robot.constants.SubsystemConstants.DrivetrainConstants.*;
 import static frc.robot.constants.VisionConstants.*;
 
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
@@ -17,6 +22,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import dev.doglog.DogLog;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
@@ -32,20 +38,12 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Robot;
 import frc.robot.Vision;
 import frc.robot.constants.TunerConstants;
 import frc.robot.constants.TunerConstants.TunerSwerveDrivetrain;
-
-import java.util.Optional;
-import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -322,12 +320,33 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         .withRotationalDeadband(0.0)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     return run(
-        () -> this.setControl(
+        () -> setControl(
             request
                 .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
                 .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
                 .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)))
         .withName("Joystick Drive");
+  }
+
+  public Command trenchDriveCommand (DoubleSupplier x, DoubleSupplier y) {
+    FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
+    .withDeadband(0)
+    .withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D)
+    .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+    return defer(
+      ()-> run(() -> {
+          Rotation2d current = getState().Pose.getRotation();
+          Rotation2d desired = current.getDegrees() < 90 && current.getDegrees() > -90 ? Rotation2d.kZero : Rotation2d.k180deg;
+          
+           setControl(
+              request
+                  .withVelocityX(-y.getAsDouble() * MAX_DRIVE_SPEED)
+                  .withVelocityY(-x.getAsDouble() * MAX_DRIVE_SPEED)
+                  .withTargetDirection(desired));
+        }
+      )
+    );
+
   }
 
   public Command pointTowardsPoint(
@@ -344,7 +363,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
           Rotation2d targetAngle = delta.getAngle().plus(isRedSide() ? Rotation2d.k180deg : Rotation2d.kZero);
           desriedAngle = targetAngle;
-          this.setControl(
+          setControl(
               request
                   .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
                   .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
