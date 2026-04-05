@@ -1,6 +1,7 @@
 package frc.robot;
 
 import dev.doglog.DogLog;
+import dev.doglog.DogLogOptions;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,9 +16,13 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
+    // super(0.02);
     m_robotContainer = new RobotContainer();
     Elastic.selectTab("Autonomous");
-    DogLog.setEnabled(false);
+    // DogLog.setEnabled(false);
+
+    DogLog.setOptions(
+        new DogLogOptions().withNtPublish(false));
 
   }
 

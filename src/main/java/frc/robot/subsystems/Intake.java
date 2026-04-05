@@ -76,7 +76,7 @@ public class Intake extends SubsystemBase {
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
-    extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.1));
+    extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.01));
     prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
 
     extensionMotor.setPosition(0);

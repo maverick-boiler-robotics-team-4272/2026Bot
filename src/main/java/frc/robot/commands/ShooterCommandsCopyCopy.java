@@ -26,7 +26,10 @@ import frc.robot.subsystems.Shooter;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-public class ShooterCommands {
+public class ShooterCommandsCopyCopy
+ {
+    public static double shooterAdd = 0;
+    public static double angleAdd = 0;
         public static Command teleHalfShooterCommand(
                         Shooter shooter,
                         CommandSwerveDrivetrain drive,
@@ -73,7 +76,6 @@ public class ShooterCommands {
                 new WaitUntilCommand(shooter::isAtDesiredSpeed),
                 new WaitUntilCommand(shooter::isAtDesiredAngle),
                 new WaitUntilCommand(drive::isAtDesiredAngle),
-                // new WaitUntilCommand(0.2),
                 Commands.repeatingSequence(
                 new ParallelCommandGroup(
                                 loader.loadBoth(70),
@@ -106,7 +108,7 @@ public class ShooterCommands {
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
-                                                                                        .getTranslation()));
+                                                                                        .getTranslation())) + getShooterAdd().getAsDouble();
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
@@ -143,5 +145,25 @@ public class ShooterCommands {
                                                                                             : 85)))
                                     .until(() -> !drive.isInOpposingAllianceZone()
                                             .getAsBoolean()))));
+        }
+
+        public static Command addShooterAdd(Shooter shooter) {
+            return Commands.runOnce(() -> shooterAdd += 0.5, shooter);
+        }
+
+        public static Command subtractShooterAdd(Shooter shooter) {
+            return Commands.runOnce(() -> shooterAdd -= 0.5, shooter);
+        }
+
+        public static DoubleSupplier getShooterAdd() {
+            return () -> shooterAdd;
+        }
+
+        public static Command addAngleAdd(Shooter shooter) {
+            return Commands.runOnce(() -> angleAdd += 0.005, shooter);
+        }
+
+        public static Command subtractAngleAdd(Shooter shooter) {
+            return Commands.runOnce(() -> angleAdd -= 0.005, shooter);
         }
 }
