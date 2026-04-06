@@ -186,6 +186,7 @@ public class RobotContainer {
 
     SmartDashboard.putNumber("ANGLE", 0.02);
     SmartDashboard.putNumber("SPEED", 50);
+    
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
@@ -194,107 +195,9 @@ public class RobotContainer {
     // e.getMessage());
     // }
 
-    PathPlannerPath startRight;
-    try {
-      startRight = PathPlannerPath.fromChoreoTrajectory("Start_To_Mid_Right");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath intakeRight;
-    try {
-      intakeRight = PathPlannerPath.fromChoreoTrajectory("Mid_Right_Intake");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath midRightShoot;
-    try {
-      midRightShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Right_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath RightShootToOutpost;
-    try {
-      RightShootToOutpost = PathPlannerPath.fromChoreoTrajectory("Right_Shoot_To_Outpost");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath OutpostToRightShoot;
-    try {
-      OutpostToRightShoot = PathPlannerPath.fromChoreoTrajectory("Outpost_To_Right_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath startLeft;
-    try {
-      startLeft = PathPlannerPath.fromChoreoTrajectory("Start_To_Mid_Left");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath intakeLeft;
-    try {
-      intakeLeft = PathPlannerPath.fromChoreoTrajectory("Mid_Left_Intake");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath midLeftShoot;
-    try {
-      midLeftShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_Left_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath midRightOutpostShoot;
-    try {
-      midRightOutpostShoot = PathPlannerPath.fromChoreoTrajectory("Mid_To_OutPost_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath rightOutpostShootToOutpost;
-    try {
-      rightOutpostShootToOutpost = PathPlannerPath.fromChoreoTrajectory("Outpost_Shoot_to_Outpost");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath outpostToOutpostShoot;
-    try {
-      outpostToOutpostShoot = PathPlannerPath.fromChoreoTrajectory("Outpost_to_Outpost_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath MidleftToDepotShoot;
-    try {
-      MidleftToDepotShoot = PathPlannerPath.fromChoreoTrajectory("Left_Mid_To_Depot_Shoot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath DepotShootToDepot;
-    try {
-      DepotShootToDepot = PathPlannerPath.fromChoreoTrajectory("Left_Shoot_To_Depot");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trjectory: " + e.getMessage());
-    }
-
     PathPlannerPath PutItInReverseTerry;
     try {
       PutItInReverseTerry = PathPlannerPath.fromChoreoTrajectory("Put_It_In_Reverse_Terry");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath DepotToShoot;
-    try {
-      DepotToShoot = PathPlannerPath.fromChoreoTrajectory("Depot_To_Depot_Shoot");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -403,6 +306,8 @@ public class RobotContainer {
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
+   
+   
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -410,52 +315,6 @@ public class RobotContainer {
     // intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(1.5)
     // ),
     // );
-
-    Command rightSideOneAuto = new SequentialCommandGroup(
-        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(startRight),
-            intake.outZeroExtension()),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(intakeRight),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        AutoBuilder.followPath(midRightShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
-
-    // Command rightSideOneAndOutpostAuto = new SequentialCommandGroup(
-    // // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M -
-    // 4.4,
-    // // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-    // // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-    // new ParallelRaceGroup(
-    // AutoBuilder.followPath(startRight),
-    // intake.outZeroExtension()),
-    // new ParallelRaceGroup(
-    // AutoBuilder.followPath(intakeRight),
-    // intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-    // AutoBuilder.followPath(midRightShoot),
-    // new ParallelCommandGroup(
-    // ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () ->
-    // 0),
-    // new SequentialCommandGroup(
-    // new WaitCommand(0.75),
-    // ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter,
-    // drivetrain)))
-    // .withTimeout(5),
-    // AutoBuilder.followPath(RightShootToOutpost),
-    // intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(3),
-    // AutoBuilder.followPath(OutpostToRightShoot),
-    // new ParallelCommandGroup(
-    // ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () ->
-    // 0),
-    // new SequentialCommandGroup(
-    // new WaitCommand(0.75),
-    // ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter,
-    // drivetrain))));
 
     Command doubleSwipRight = new SequentialCommandGroup(
         // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
@@ -572,48 +431,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
-    // Command leftSideOneAuto = new SequentialCommandGroup(
-    // // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M -
-    // 4.4,
-    // // !isRedSide() ? 7.64 : FIELD_WIDTH_M - 7.64, !isRedSide() ?
-    // // Rotation2d.kCCW_90deg : Rotation2d.kCW_90deg)),
-    // new ParallelRaceGroup(
-    // AutoBuilder.followPath(startLeft),
-    // intake.outZeroExtension()),
-    // new ParallelRaceGroup(
-    // AutoBuilder.followPath(intakeLeft),
-    // intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-    // AutoBuilder.followPath(midLeftShoot),
-    // new ParallelCommandGroup(
-    // ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () ->
-    // 0),
-    // new SequentialCommandGroup(
-    // new WaitCommand(0.75),
-    // ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter,
-    // drivetrain))));
 
-    Command leftDepotAuto = new SequentialCommandGroup(
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(startLeft),
-            intake.outZeroExtension()),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(intakeLeft),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        AutoBuilder.followPath(MidleftToDepotShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(5),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(DepotShootToDepot),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop()),
-        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED).withTimeout(2.5),
-        AutoBuilder.followPath(DepotToShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
     Command terry = new SequentialCommandGroup(
         AutoBuilder.followPath(PutItInReverseTerry),
