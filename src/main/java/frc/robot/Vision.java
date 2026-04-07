@@ -77,7 +77,7 @@ public class Vision {
       visionSim = new VisionSystemSim("main");
       // Add all the AprilTags inside the tag layout as visible targets to this
       // simulated field.
-      visionSim.addAprilTags(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark));
+      visionSim.addAprilTags(AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded));
       // Create simulated camera properties. These can be set to mimic your actual
       // camera.
       var cameraProp = new SimCameraProperties();
