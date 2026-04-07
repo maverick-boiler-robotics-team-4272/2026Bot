@@ -22,8 +22,8 @@ public class Robot extends TimedRobot {
     Elastic.selectTab("Autonomous");
     // DogLog.setEnabled(false);
 
-    DogLog.setOptions(
-        new DogLogOptions().withNtPublish(false));
+    // DogLog.setOptions(
+    //     new DogLogOptions().withNtPublish(false));
     RobotController.setBrownoutVoltage(6.25);
 
   }

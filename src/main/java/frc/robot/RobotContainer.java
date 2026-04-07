@@ -502,15 +502,13 @@ public class RobotContainer {
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
-    autoChooser.setDefaultOption("Right One Cycle", rightSideOneAuto);
     // autoChooser.addOption("Right One and Outpost Cycle",
     // rightSideOneAndOutpostAuto);
     autoChooser.addOption("Put It In Reverse Terry", terry);
-    autoChooser.addOption("Right Double Swip", doubleSwipRight);
+    autoChooser.setDefaultOption("Right Double Swip", doubleSwipRight);
     autoChooser.addOption("Right Double Swip Far", doubleSwipRightFar);
     autoChooser.addOption("Left Double Swip", doubleSwipLeft);
     autoChooser.addOption("Left Double Swip Far", doubleSwipLeftFar);
-    autoChooser.addOption("De-Pot", leftDepotAuto);
     autoChooser.addOption("Boeing Door", boeingRight);
     autoChooser.addOption("Boeing Cockpit", boeingLeft);
     autoChooser.addOption("RiGhT cHaOs", rightChaos);
