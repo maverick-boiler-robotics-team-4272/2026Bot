@@ -15,6 +15,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,6 +27,7 @@ import java.util.function.DoubleSupplier;
 public class Intake extends SubsystemBase {
   Kraken intakeMotor;
   Kraken extensionMotor;
+  Kraken extensionMotor2;
 
   double desiredIntakeSpeed;
   double desiredExtensionRotations;
@@ -66,7 +68,7 @@ public class Intake extends SubsystemBase {
         .build();
     intakeMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
-    extensionMotor = KrakenBuilder.create(INTAKE_MOTOR_2_ID, "rio", "Intake", "Actuation Motor")
+    extensionMotor = KrakenBuilder.create(EXTENSION_MOTOR_ID, "rio", "Intake", "Actuation Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(30)
@@ -77,9 +79,21 @@ public class Intake extends SubsystemBase {
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
     extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.01));
-    prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
 
     extensionMotor.setPosition(0);
+    extensionMotor2 = KrakenBuilder.create(EXTENSION_MOTOR_I2_D, "rio", "Intake", "Actuation Motor 2")
+        .withCurrentLimit(
+            new CurrentLimitsConfigs()
+                .withSupplyCurrentLimit(30)
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(10))
+        .withIdleMode(NeutralModeValue.Coast)
+        .withInversion(InvertedValue.Clockwise_Positive)
+        .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
+        .build();
+    extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.01));
+    prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
+
     // extensionMotor.getConfigurator()
     // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
 
@@ -108,8 +122,10 @@ public class Intake extends SubsystemBase {
           desiredIntakeSpeed = rotationsPerSecond;
           if (!isSafe()) {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true).withSlot(0));
+            extensionMotor2.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true).withSlot(0));
           } else {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true).withSlot(1));
+            extensionMotor2.setControl(new PositionVoltage(rotationsDistance).withEnableFOC(true).withSlot(1));
           }
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         });
@@ -121,6 +137,7 @@ public class Intake extends SubsystemBase {
           desiredExtensionRotations = rotationsDistance;
           desiredIntakeSpeed = rotationsPerSecond;
           extensionMotor.setControl(new VoltageOut(12).withEnableFOC(true));
+          extensionMotor2.setControl(new VoltageOut(12).withEnableFOC(true));
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
         }).finallyDo(() -> extensionMotor.setPosition(EXTEND_DISTANCE));
   }
@@ -132,28 +149,35 @@ public class Intake extends SubsystemBase {
           desiredIntakeSpeed = rotationsPerSecond.getAsDouble();
           if (!isSafe()) {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withSlot(0).withEnableFOC(true));
+            extensionMotor2
+                .setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withSlot(0).withEnableFOC(true));
           } else {
             extensionMotor.setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withSlot(1).withEnableFOC(true));
+            extensionMotor2
+                .setControl(new PositionVoltage(rotationsDistance.getAsDouble() - 0.1).withSlot(1).withEnableFOC(true));
           }
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
         });
   }
 
-  public Command setIntakeStateMotionMagic(double rotationsDistance, double rotationsPerSecond) {
-    return run(
-        () -> {
-          desiredExtensionRotations = rotationsDistance;
-          desiredIntakeSpeed = rotationsPerSecond;
-          if (!isSafe()) {
-            extensionMotor.setControl(
-                new MotionMagicVoltage(rotationsDistance - 0.1).withSlot(0).withEnableFOC(true));
-          } else {
-            extensionMotor.setControl(
-                new MotionMagicVoltage(rotationsDistance - 0.1).withSlot(1).withEnableFOC(true));
-          }
-          intakeMotor.setControl(new VoltageOut(0));
-        });
-  }
+  // public Command setIntakeStateMotionMagic(double rotationsDistance, double
+  // rotationsPerSecond) {
+  // return run(
+  // () -> {
+  // desiredExtensionRotations = rotationsDistance;
+  // desiredIntakeSpeed = rotationsPerSecond;
+  // if (!isSafe()) {
+  // extensionMotor.setControl(
+  // new MotionMagicVoltage(rotationsDistance -
+  // 0.1).withSlot(0).withEnableFOC(true));
+  // } else {
+  // extensionMotor.setControl(
+  // new MotionMagicVoltage(rotationsDistance -
+  // 0.1).withSlot(1).withEnableFOC(true));
+  // }
+  // intakeMotor.setControl(new VoltageOut(0));
+  // });
+  // }
 
   public Command zeroExtension() {
     return startEnd(
@@ -161,9 +185,11 @@ public class Intake extends SubsystemBase {
           disableSafety = false;
           desiredExtensionRotations = 0;
           extensionMotor.setControl(new VoltageOut(-6).withEnableFOC(false));
+          extensionMotor2.setControl(new VoltageOut(-6).withEnableFOC(false));
         }, () -> {
           disableSafety  = true;
           extensionMotor.setPosition(0);
+          extensionMotor2.setPosition(0);
         });
   }
 
@@ -173,9 +199,11 @@ public class Intake extends SubsystemBase {
           disableSafety = true;
           desiredExtensionRotations = EXTEND_DISTANCE;
           extensionMotor.setControl(new VoltageOut(12).withEnableFOC(false));
+          extensionMotor2.setControl(new VoltageOut(12).withEnableFOC(false));
           intakeMotor.setControl(new VoltageOut(0));
         }, () -> {
           extensionMotor.setPosition(EXTEND_DISTANCE);
+          extensionMotor2.setPosition(EXTEND_DISTANCE);
           disableSafety = false;
         });
   }
@@ -185,27 +213,43 @@ public class Intake extends SubsystemBase {
         () -> {
           desiredIntakeSpeed = 0;
           desiredExtensionRotations = extensionMotor.getPosition(false).getValueAsDouble();
-          extensionMotor
-              .setControl(new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withSlot(1).withEnableFOC(true));
+          extensionMotor.setControl(
+              new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withSlot(1).withEnableFOC(true));
+          extensionMotor2.setControl(
+              new PositionVoltage(extensionMotor.getPosition().getValueAsDouble()).withSlot(1).withEnableFOC(true));
           intakeMotor.setControl(new VoltageOut(0).withEnableFOC(true));
         });
   }
 
   public Command agitateIntake() {
-  return new SequentialCommandGroup(
-  setIntakeState(6, 45).withTimeout(0.2),
-  setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
-  .beforeStarting(() -> {
-  disableSafety = true;
-  }).finallyDo(() -> disableSafety = false);
-  }
-
-  public Command agitateIntakeMM() {
-    return setIntakeStateMotionMagic(0.0, 0.0)
+    return new SequentialCommandGroup(
+        setIntakeState(6, 45).withTimeout(0.2),
+        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);
   }
+
+  public Command stupidateIntake() {
+    return new SequentialCommandGroup(
+        Commands.run(() -> {
+          extensionMotor.setControl(new PositionVoltage(6));
+          extensionMotor2.setControl(new PositionVoltage(EXTEND_DISTANCE - 0.1));
+        }).withTimeout(0.2),
+        Commands.run(() -> {
+          extensionMotor.setControl(new PositionVoltage(EXTEND_DISTANCE - 0.1));
+          extensionMotor2.setControl(new PositionVoltage(6));
+        }).withTimeout(0.2)).repeatedly().beforeStarting(
+            () -> disableSafety = true)
+        .finallyDo(() -> disableSafety = false);
+  }
+
+  // public Command agitateIntakeMM() {
+  // return setIntakeStateMotionMagic(0.0, 0.0)
+  // .beforeStarting(() -> {
+  // disableSafety = true;
+  // }).finallyDo(() -> disableSafety = false);
+  // }
 
   public Command barf() {
     return setIntakeState(EXTEND_DISTANCE, -INTAKE_SPEED);
@@ -216,6 +260,7 @@ public class Intake extends SubsystemBase {
         () -> {
           disableSafety = true;
           extensionMotor.getConfigurator().apply(regularLimits);
+          extensionMotor2.getConfigurator().apply(regularLimits);
         }, () -> disableSafety = false);
   }
 
@@ -225,8 +270,10 @@ public class Intake extends SubsystemBase {
     }
     if (prevDesDistance == desiredExtensionRotations) {
       extensionMotor.getConfigurator().apply(safeLimits);
+      extensionMotor2.getConfigurator().apply(safeLimits);
     } else {
       extensionMotor.getConfigurator().apply(regularLimits);
+      extensionMotor2.getConfigurator().apply(regularLimits);
     }
   }
 

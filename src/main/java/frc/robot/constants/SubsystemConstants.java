@@ -58,7 +58,8 @@ public class SubsystemConstants {
 
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 51;
-    public static final int INTAKE_MOTOR_2_ID = 52;
+    public static final int EXTENSION_MOTOR_ID = 52;
+    public static final int EXTENSION_MOTOR_I2_D = 53;
 
     public static final double EXTEND_DISTANCE = 10.56;
     public static final int INTAKE_SPEED = 50;

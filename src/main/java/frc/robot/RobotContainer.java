@@ -143,6 +143,9 @@ public class RobotContainer {
 
     operator.rightTrigger().whileTrue(
         intake.agitateIntake());
+    operator.rightBumper().whileTrue(
+      intake.stupidateIntake()
+    );
 
     // operator.y().whileTrue(
     // shooter.setShooterState(0.015, 50));
