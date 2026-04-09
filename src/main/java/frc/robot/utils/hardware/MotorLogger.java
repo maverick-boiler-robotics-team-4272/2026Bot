@@ -38,16 +38,16 @@ public class MotorLogger {
     keyBuilder.append(motor.getName()).append("/");
     int length = keyBuilder.length();
 
-    // keyBuilder.append("Supply Current");
-    // DogLog.log(keyBuilder.toString(), supplyCurrent.getValueAsDouble());
+    keyBuilder.append("Supply Current");
+    DogLog.log(keyBuilder.toString(), supplyCurrent.getValueAsDouble());
 
-    // keyBuilder.setLength(length);
-    // keyBuilder.append("Stator Current");
-    // DogLog.log(keyBuilder.toString(), statorCurrent.getValueAsDouble());
+    keyBuilder.setLength(length);
+    keyBuilder.append("Stator Current");
+    DogLog.log(keyBuilder.toString(), statorCurrent.getValueAsDouble());
 
-    // keyBuilder.setLength(length);
-    // keyBuilder.append("Voltage");
-    // DogLog.log(keyBuilder.toString(), voltage.getValueAsDouble());
+    keyBuilder.setLength(length);
+    keyBuilder.append("Voltage");
+    DogLog.log(keyBuilder.toString(), voltage.getValueAsDouble());
 
     keyBuilder.setLength(length);
     keyBuilder.append("Velocity");
