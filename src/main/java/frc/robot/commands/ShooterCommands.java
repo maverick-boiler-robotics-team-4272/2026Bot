@@ -56,13 +56,14 @@ public class ShooterCommands {
                                 new WaitUntilCommand(drive::isAtDesiredAngle).raceWith(
                                         loader.loadBoth(-5),
                                         hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED)
-                                ),
+                                ).raceWith(new WaitCommand(0.15)),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
-                                                intake.agitateIntake(),
+                                                // intake.agitateIntake(),
                                                                 hopper.agitate(HOPPER_LOWER_SPEED,
                                                                                 HOPPER_UPPER_SPEED))
+                                                // drive.applyRequest(()-> new SwerveRequest.SwerveDriveBrake())
                                         .unless(() -> {
                                             return drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                 && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units

@@ -59,7 +59,7 @@ public class ShooterCommandsCopyCopy
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
-                                                intake.agitateIntake(),
+                                                intake.agitateIntakeLong(),
                                                                 hopper.agitate(HOPPER_LOWER_SPEED,
                                                                                 HOPPER_UPPER_SPEED))
                                         .unless(() -> {

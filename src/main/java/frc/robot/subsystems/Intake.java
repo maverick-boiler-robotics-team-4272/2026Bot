@@ -191,14 +191,23 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command agitateIntake() {
+  public Command agitateIntakeShort() {
   return new SequentialCommandGroup(
-  setIntakeState(6, 45).withTimeout(0.2),
-  setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
+  setIntakeState(8, 45).withTimeout(0.3),
+  setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.3/*2*/)).repeatedly()
   .beforeStarting(() -> {
   disableSafety = true;
   }).finallyDo(() -> disableSafety = false);
   }
+
+  public Command agitateIntakeLong() {
+    return new SequentialCommandGroup(
+    setIntakeState(6, 45).withTimeout(0.3),
+    setIntakeState(EXTEND_DISTANCE, 45).withTimeout(0.3/*2*/)).repeatedly()
+    .beforeStarting(() -> {
+    disableSafety = true;
+    }).finallyDo(() -> disableSafety = false);
+    }
 
   public Command agitateIntakeMM() {
     return setIntakeStateMotionMagic(0.0, 0.0)

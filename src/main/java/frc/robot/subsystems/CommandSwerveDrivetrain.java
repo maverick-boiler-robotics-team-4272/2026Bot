@@ -261,7 +261,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         new PPHolonomicDriveController(
             new PIDConstants(DRIVE_P, DRIVE_I, DRIVE_D), // TODO: tune these drive pid constants
             new PIDConstants(
-                ROTATION_P, ROTATION_I, ROTATION_D) // TODO: tune these rotational pid constants
+                ROTATION_P, ROTATION_I, ROTATION_D)
         ),
         config,
         () -> {

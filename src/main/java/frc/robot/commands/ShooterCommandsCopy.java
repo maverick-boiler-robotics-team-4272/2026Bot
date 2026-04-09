@@ -61,11 +61,11 @@ public class ShooterCommandsCopy{
                 return new SequentialCommandGroup(
                                 // new WaitUntilCommand(shooter::isAtDesiredSpeed),
                                 // new WaitUntilCommand(shooter::isAtDesiredAngle),
-                                new WaitCommand(0.25),
+                                new WaitCommand(0.15),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
-                                                intake.agitateIntake(),
+                                                intake.agitateIntakeLong(),
                                         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED))
                                         .unless(() -> {
                                             return drive.getState().Pose.getY() > Units.inchesToMeters(135)

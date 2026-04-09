@@ -12,8 +12,6 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DIST
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
 import static frc.robot.constants.FieldConstants.*;
 
-import java.lang.reflect.Field;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -84,7 +82,9 @@ public class RobotContainer {
 
   private void configureBindings() {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.rightTrigger().whileTrue(intake.barf());// checkmark
     joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
@@ -140,10 +140,14 @@ public class RobotContainer {
     operator.povDown().whileTrue(intake.zeroExtension());
     operator.povRight().whileTrue(shooter.zeroHood());
     operator.povUp().whileTrue(hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED));
+    operator.leftStick().whileTrue(hopper.agitate(-5, 0));
 
     operator.rightTrigger().whileTrue(
-        intake.agitateIntake());
-
+        intake.agitateIntakeLong());
+    operator.leftTrigger().whileTrue(
+      intake.agitateIntakeShort()
+    );
+// !false //its funny because it istrue
     // operator.y().whileTrue(
     // shooter.setShooterState(0.015, 50));
     // operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
@@ -164,11 +168,11 @@ public class RobotContainer {
         shooter.setShooterState(0.01, 43));
 
     operator.x().whileTrue(new ParallelCommandGroup(
-        intake.agitateIntake(),
+        intake.agitateIntakeLong(),
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         loader.loadBoth(70)).repeatedly());
     operator.y().whileTrue(new ParallelCommandGroup(
-        intake.agitateIntake(),
+        intake.agitateIntakeShort(),
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         loader.loadBoth(70)).repeatedly());
   }
