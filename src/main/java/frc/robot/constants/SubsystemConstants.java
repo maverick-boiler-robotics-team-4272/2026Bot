@@ -20,7 +20,7 @@ public class SubsystemConstants {
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
     public static final int HOPPER_LOWER_SPEED = 50;
-    public static final double HOPPER_UPPER_SPEED = -20.0;
+    public static final double HOPPER_UPPER_SPEED = -5.0;
   }
 
   public static class LoaderConstants {
@@ -36,8 +36,8 @@ public class SubsystemConstants {
     public static final int HOODED_MOTOR_ID = 43;
 
     public static final String SHOOTER_LOG_KEY = "Subsystems/Shooter/";
-    public static final double SHOOTER_WHEEL_RADIUS = 1.5;
-    public static final double SHOOTER_WHEEL_CIRCUMFERENCE = Math.PI * SHOOTER_WHEEL_RADIUS;
+    // public static final double SHOOTER_WHEEL_RADIUS = 1.5;
+    // public static final double SHOOTER_WHEEL_CIRCUMFERENCE = Math.PI * SHOOTER_WHEEL_RADIUS;
     public static final double SHOOTER_HEIGHT_M = Meters.convertFrom(16.784, Inches);
     public static final double IDLE_SPEED = 0;
 
@@ -77,7 +77,7 @@ public class SubsystemConstants {
     public static final double MAX_DRIVE_SPEED = 5; 
     public static final double MAX_ROTATIONAL_SPEED = 7.5;
     public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF,
-        DCMotor.getKrakenX60Foc(4), 80, 4);
+        DCMotor.getKrakenX60Foc(4), 50, 4);
 
     public static final double DRIVE_P = 4.0;
     public static final double DRIVE_I = 0.0;

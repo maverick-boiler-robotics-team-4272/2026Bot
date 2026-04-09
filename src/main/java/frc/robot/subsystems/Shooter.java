@@ -58,10 +58,10 @@ public class Shooter extends SubsystemBase {
     hoodedMotor = KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(60)
+                .withSupplyCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(400, 0.0, 0.00, 0.0, 0.5, 0, 0)
+        .withSlot0PIDSGAV(/*4*/300, 0.0, 0.00, 0.0, 0.5, 0, 0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
