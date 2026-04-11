@@ -5,6 +5,7 @@ import dev.doglog.DogLogOptions;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.elastic.Elastic;
@@ -20,10 +21,9 @@ public class Robot extends TimedRobot {
     // super(0.02);
     m_robotContainer = new RobotContainer();
     Elastic.selectTab("Autonomous");
-    // DogLog.setEnabled(false);
 
     DogLog.setOptions(
-        new DogLogOptions().withNtPublish(false));
+        new DogLogOptions().withLogEntryQueueCapacity(100));
     RobotController.setBrownoutVoltage(6.25);
 
   }
@@ -70,6 +70,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    SmartDashboard.clearPersistent("Auto chooser");
     // GameData.setGameData();
   }
 
