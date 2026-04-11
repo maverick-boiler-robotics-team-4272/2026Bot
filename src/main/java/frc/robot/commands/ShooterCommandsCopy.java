@@ -65,7 +65,7 @@ public class ShooterCommandsCopy{
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                                 loader.loadBoth(70),
-                                                intake.agitateIntakeLong(),
+                                                intake.agitateIntake(),
                                         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED))
                                         .unless(() -> {
                                             return drive.getState().Pose.getY() > Units.inchesToMeters(135)

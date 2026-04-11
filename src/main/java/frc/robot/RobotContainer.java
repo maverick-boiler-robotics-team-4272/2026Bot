@@ -168,11 +168,11 @@ public class RobotContainer {
         shooter.setShooterState(0.01, 43));
 
     operator.x().whileTrue(new ParallelCommandGroup(
-        intake.agitateIntakeLong(),
+        intake.agitateIntake(),
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         loader.loadBoth(70)).repeatedly());
     operator.y().whileTrue(new ParallelCommandGroup(
-        intake.agitateIntakeShort(),
+        intake.agitateIntake(),
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
         loader.loadBoth(70)).repeatedly());
   }
