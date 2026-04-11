@@ -20,7 +20,7 @@ public class SubsystemConstants {
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
     public static final int HOPPER_LOWER_SPEED = 50;
-    public static final double HOPPER_UPPER_SPEED = -50.0;
+    public static final double HOPPER_UPPER_SPEED = -50;
   }
 
   public static class LoaderConstants {
@@ -45,9 +45,9 @@ public class SubsystemConstants {
     public static final double AUTO_SHOOTER_VELOCITY = 55;
 
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(1.0, 37.8278), Map.entry(3.01, 44.5), Map.entry(5.42, 52.5)/*51.0*/); //+1.5
+        Map.entry(1.0, 34.96993), Map.entry(3.00, 47.0), Map.entry(4.995, 59.0)/* 51.0 */); // +1.5
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(1.862381, 0.0), Map.entry(3.01, 0.01), Map.entry(5.42, 0.031));
+        Map.entry(2.335, 0.0), Map.entry(3.00, 0.01), Map.entry(4.995, 0.04));
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(0.0, 0.0), Map.entry(10.0, 2.0));
     // public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP =
