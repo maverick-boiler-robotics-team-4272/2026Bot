@@ -85,6 +85,7 @@ public class RobotContainer {
   private void configureBindings() {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
     joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.rightTrigger().whileTrue(intake.barf());
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
@@ -187,8 +188,8 @@ public class RobotContainer {
     autoChooser = new SendableChooser<>();
     SmartDashboard.putData("Auto chooser", autoChooser);
 
-    SmartDashboard.putNumber("ANGLE", 0.02);
-    SmartDashboard.putNumber("SPEED", 50);
+    // SmartDashboard.putNumber("ANGLE", 0.02);
+    // SmartDashboard.putNumber("SPEED", 50);
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
