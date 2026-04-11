@@ -84,7 +84,7 @@ public class RobotContainer {
     joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
     joystick.rightTrigger().whileTrue(intake.barf());// checkmark
     joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
-    
+    joystick.rightTrigger().whileTrue(intake.barf());
 
     // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
 
@@ -143,11 +143,11 @@ public class RobotContainer {
     operator.leftStick().whileTrue(hopper.agitate(-5, 0));
 
     operator.rightTrigger().whileTrue(
-        intake.agitateIntakeLong());
-    operator.leftTrigger().whileTrue(
-      intake.agitateIntakeShort()
+        intake.agitateIntake());
+    operator.rightBumper().whileTrue(
+      intake.stupidateIntake()
     );
-// !false //its funny because it istrue
+
     // operator.y().whileTrue(
     // shooter.setShooterState(0.015, 50));
     // operator.rightTrigger().whileTrue(new PathPlannerAuto("Test", false));
@@ -188,8 +188,8 @@ public class RobotContainer {
     autoChooser = new SendableChooser<>();
     SmartDashboard.putData("Auto chooser", autoChooser);
 
-    SmartDashboard.putNumber("ANGLE", 0.02);
-    SmartDashboard.putNumber("SPEED", 50);
+    // SmartDashboard.putNumber("ANGLE", 0.02);
+    // SmartDashboard.putNumber("SPEED", 50);
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
