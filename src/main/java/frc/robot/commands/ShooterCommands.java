@@ -75,9 +75,7 @@ public class ShooterCommands {
 
         public static Command tele2ndHalfShooterCommandWithIntake(Loader loader, Intake intake, Hopper hopper, Shooter shooter, CommandSwerveDrivetrain drive) {
             return new SequentialCommandGroup(
-                new WaitUntilCommand(shooter::isAtDesiredSpeed),
-                new WaitUntilCommand(shooter::isAtDesiredAngle),
-                new WaitUntilCommand(drive::isAtDesiredAngle),
+                new WaitUntilCommand(0.15),
                 // new WaitUntilCommand(0.2),
                 Commands.repeatingSequence(
                 new ParallelCommandGroup(
