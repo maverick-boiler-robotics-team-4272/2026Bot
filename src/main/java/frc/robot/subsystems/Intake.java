@@ -184,8 +184,8 @@ public class Intake extends SubsystemBase {
         () -> {
           disableSafety = false;
           desiredExtensionRotations = 0;
-          extensionMotor.setControl(new VoltageOut(-6).withEnableFOC(false));
-          extensionMotor2.setControl(new VoltageOut(-6).withEnableFOC(false));
+          extensionMotor.setControl(new VoltageOut(-0).withEnableFOC(false));
+          extensionMotor2.setControl(new VoltageOut(-0).withEnableFOC(false));
         }, () -> {
           disableSafety  = true;
           extensionMotor.setPosition(0);
@@ -198,8 +198,8 @@ public class Intake extends SubsystemBase {
         () -> {
           disableSafety = true;
           desiredExtensionRotations = EXTEND_DISTANCE;
-          extensionMotor.setControl(new VoltageOut(12).withEnableFOC(false));
-          extensionMotor2.setControl(new VoltageOut(12).withEnableFOC(false));
+          extensionMotor.setControl(new VoltageOut(2).withEnableFOC(false));
+          extensionMotor2.setControl(new VoltageOut(2).withEnableFOC(false));
           intakeMotor.setControl(new VoltageOut(0));
         }, () -> {
           extensionMotor.setPosition(EXTEND_DISTANCE);
@@ -223,7 +223,7 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(6, 45).withTimeout(0.2),
+        setIntakeState(7, 45).withTimeout(0.2),
         setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
