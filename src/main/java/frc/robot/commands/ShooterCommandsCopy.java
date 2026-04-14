@@ -39,7 +39,7 @@ public class ShooterCommandsCopy{
                                                     double vx = drive.getVelocityX().getAsDouble();
                                                     double vy = drive.getVelocityY().getAsDouble();
                                                     for (int i = 0; i < 10; i++) {
-                                                        double tof = TufF_TABLE.get(robotPos.getDistance(currentLocation));
+                                                        double tof = 1.15;//TufF_TABLE.get(robotPos.getDistance(currentLocation));
                                                         currentLocation = getHubLocation().getTranslation().minus(new Translation2d(vx * tof, vy * tof));
                                                         DogLog.log("Subsystems/Drive/Virtual Hub", new Pose2d(currentLocation, Rotation2d.kZero));
                                                     }
