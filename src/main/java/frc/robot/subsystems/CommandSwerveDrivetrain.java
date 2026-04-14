@@ -383,7 +383,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     if(isRedSide()) {
       checkAngle = checkAngle.plus(Rotation2d.fromDegrees(180));
     }
-    return (Math.abs(getState().Pose.getRotation().minus(checkAngle).getDegrees()) < 7);
+    return (Math.abs(getState().Pose.getRotation().minus(checkAngle).getDegrees()) < 3);
    }
 
    public BooleanSupplier isAtDesiredAngleCheck() {
