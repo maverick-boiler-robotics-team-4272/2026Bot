@@ -1,8 +1,6 @@
 package frc.robot.commands;
 
 import static frc.robot.constants.FieldConstants.*;
-import static frc.robot.constants.FieldConstants.getHubLocation;
-import static frc.robot.constants.FieldConstants.getShuttlePoses;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWER_SPEED;
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
@@ -14,7 +12,11 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -44,8 +46,8 @@ public class ShooterCommands {
                                                                                 .getTranslation(),
                                                                 joystickX, joystickY)
                                         .until(drive.isInAllianceZone()))),
-                        setDesiredShooterStates(shooter, drive))
-                        .andThen(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+                                        // new ConditionalCommand(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()), new InstantCommand(() -> {}), drive::isAtDesiredAngle),
+                        setDesiredShooterStates(shooter, drive));
         }
 
         public static Command tele2ndHalfShooterCommand(
@@ -53,17 +55,19 @@ public class ShooterCommands {
                 return new SequentialCommandGroup(
                                 // new WaitUntilCommand(shooter::isAtDesiredSpeed),
                                 // new WaitUntilCommand(shooter::isAtDesiredAngle),
-                                new WaitUntilCommand(drive::isAtDesiredAngle).raceWith(
-                                        loader.loadBoth(-5),
-                                        hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED)
-                                ).raceWith(new WaitCommand(0.15)),
+                        new ParallelDeadlineGroup(
+                                new ParallelCommandGroup(
+                                    new WaitCommand(0.2)
+                                ).unless(drive::isAtDesiredAngle),
+                                loader.loadBoth(-20),
+                                hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED),
+                                new WaitCommand(0.2)).until(drive::isAtDesiredAngle),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
-                                                loader.loadBoth(70),
-                                                // intake.agitateIntake(),
-                                                                hopper.agitate(HOPPER_LOWER_SPEED,
-                                                                                HOPPER_UPPER_SPEED))
-                                                // drive.applyRequest(()-> new SwerveRequest.SwerveDriveBrake())
+                                        loader.loadBoth(70),
+                                        intake.agitateIntake(),
+                                        hopper.agitate(HOPPER_LOWER_SPEED,
+                                                HOPPER_UPPER_SPEED))
                                         .unless(() -> {
                                             return drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                 && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
@@ -102,24 +106,30 @@ public class ShooterCommands {
                                                                                 drive.getState().Pose
                                                                                         .getTranslation()
                                                                                         .getDistance(getHubLocation()
-                                                                                                .getTranslation()));
+                                                                        .getTranslation()));
                                     },
                                     () -> {
                                         return SHOOTER_VELOCITY_LOOKUP.get(
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
-                                                                                        .getTranslation()));
+                                                                .getTranslation()));
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
                                     () -> Commands.repeatingSequence(shooter.setShooterState(
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 0.07,
+                                                            .inchesToMeters(135) ? 0 : 0.08,
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 70)))
+                                                            .inchesToMeters(135)
+                                                                    ? 0
+                                                                    : SHUTTLE_SPEED_TABLE
+                                                                            .get(drive.getState().Pose.getTranslation()
+                                                                                    .getDistance(drive.getState().Pose
+                                                                                            .nearest(getShuttlePoses())
+                                                                                            .getTranslation())))))
                                     .until(() -> drive.isInAllianceZone().getAsBoolean()
                                             || drive.isInOpposingAllianceZone()
                                                     .getAsBoolean()),
