@@ -92,6 +92,7 @@ public class Intake extends SubsystemBase {
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
     extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.01));
+    extensionMotor2.setPosition(0);
     prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
 
     // extensionMotor.getConfigurator()
@@ -223,7 +224,7 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(8, 45).withTimeout(0.2),
+        setIntakeState(7, 45).withTimeout(0.2),
         setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
