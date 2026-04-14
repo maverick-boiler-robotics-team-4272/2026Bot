@@ -223,7 +223,7 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(7, 45).withTimeout(0.2),
+        setIntakeState(8, 45).withTimeout(0.2),
         setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
