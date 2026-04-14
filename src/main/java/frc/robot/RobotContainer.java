@@ -9,10 +9,6 @@ import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_LOWE
 import static frc.robot.constants.SubsystemConstants.HopperConstants.HOPPER_UPPER_SPEED;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.EXTEND_DISTANCE;
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEED;
-import static frc.robot.constants.FieldConstants.*;
-
-import java.lang.reflect.Field;
-import java.util.function.Consumer;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -20,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Command;
