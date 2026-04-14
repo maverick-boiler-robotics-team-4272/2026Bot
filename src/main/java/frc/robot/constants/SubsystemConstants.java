@@ -2,6 +2,7 @@ package frc.robot.constants;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_KEY;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -19,7 +20,7 @@ public class SubsystemConstants {
 
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
-    public static final int HOPPER_LOWER_SPEED = 50;
+    public static final int HOPPER_LOWER_SPEED =25;
     public static final double HOPPER_UPPER_SPEED = -50;
   }
 
@@ -45,16 +46,39 @@ public class SubsystemConstants {
     public static final double AUTO_SHOOTER_VELOCITY = 55;
 
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(1.0, 34.96993), Map.entry(3.00, 47.0), Map.entry(4.995, 59.0)/* 51.0 */); // +1.5
+      //  Map.entry(1.0, 34.96993), Map.entry(3.00, 47.0), Map.entry(4.995, 59.0)/* 51.0 */);
+         Map.entry(1.0,32.58511), Map.entry(4.95, 62.0), Map.entry(3.07, 48.0)); //new
+        // 
+      
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(2.335, 0.0), Map.entry(3.00, 0.01), Map.entry(4.995, 0.04));
+        // Map.entry(2.335, 0.0), Map.entry(3.00, 0.01), Map.entry(4.995, 0.04));
+        Map.entry(1.843913, 0.0), Map.entry(4.95, 0.038), Map.entry(3.07, 0.015)); //new
+         //
+
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(0.0, 0.0), Map.entry(10.0, 2.0));
-    // public static final InterpolatingDoubleTreeMap SHUTTLE_ANGLE_LOOKUP =
-    // InterpolatingDoubleTreeMap
-    // .ofEntries(Map.entry(1.0, 1.0), Map.entry(2.0, 2.0), Map.entry(3.0, 3.0),
-    // Map.entry(4.0, 4.0));
+   
+    public static final InterpolatingDoubleTreeMap SHUTTLE_SPEED_TABLE = InterpolatingDoubleTreeMap.ofEntries(
+        Map.entry(6.0, 40.0), Map.entry(8.9, 60.0), Map.entry(10.0, 80.0));
+
+
+        //shuttle
+        //1(D:6.0, Speed 40.0)
+        //2(D:8.9, Speed 60.0)
+        //3(D:10, Speed 80)
+
+
+        //hub shooting
+    //0(D: 1, Speed: 32.58511)
+    //0.5(D: 1.843913, Angle: 0)
+    //1(D: 4.95, Angle: 0.038, Speed 62)
+    //2(D: 3.07, Angle: 0.015, Speed 48)
+
+
+    //
   }
+
+  
 
   public static class IntakeConstants {
     public static final int INTAKE_MOTOR_ID = 51;
