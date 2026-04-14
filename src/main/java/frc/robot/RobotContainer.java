@@ -96,6 +96,10 @@ public class RobotContainer {
     // shoot with intake agitation
     joystick.a().whileTrue(
         ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
+
+    // joystick.a().and(drivetrain::isAtDesiredAngle).whileTrue(
+    // drivetrain.applyRequest(() -> brake)
+    // );
     // shoot and intake fuel
     joystick.a().and(joystick.leftTrigger()).whileTrue(
         ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain));
@@ -154,15 +158,14 @@ public class RobotContainer {
 
     drivetrain.registerTelemetry(logger::telemeterize);
 
-    operator.b().whileTrue(
-        shooter.setShooterState(0.07, 60));
+    // operator.b().whileTrue(
+    // shooter.setShooterState(0.07, 60));
 
     // operator.x().whileTrue(
     // hopper.agitate(-50, -30));
 
-    // operator.b().whileTrue(shooter.setShooterState(() ->
-    // SmartDashboard.getNumber("ANGLE", 0.02),
-    // () -> SmartDashboard.getNumber("SPEED", 50)));
+    operator.b().whileTrue(shooter.setShooterState(() -> SmartDashboard.getNumber("ANGLE", 0.02),
+        () -> SmartDashboard.getNumber("SPEED", 50)));
 
     operator.a().whileTrue(
         shooter.setShooterState(0.01, 43));
@@ -188,8 +191,8 @@ public class RobotContainer {
     autoChooser = new SendableChooser<>();
     SmartDashboard.putData("Auto chooser", autoChooser);
 
-    // SmartDashboard.putNumber("ANGLE", 0.02);
-    // SmartDashboard.putNumber("SPEED", 50);
+    SmartDashboard.putNumber("ANGLE", 0.02);
+    SmartDashboard.putNumber("SPEED", 50);
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
