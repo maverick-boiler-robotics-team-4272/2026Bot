@@ -326,8 +326,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
             request
                 .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
                 .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
-                .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)))
-        .withName("Joystick Drive");
+                .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)));
   }
 
   public Command pointTowardsPoint(
@@ -440,28 +439,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     DogLog.log("Subsystems/Drive/Pose", getState().Pose);
     // DogLog.log("Subsystems/Drive/HubPose", getHubLocation());
     DogLog.log("Subsystems/Drive/HubDistance", hubDistance);
+    double shuttleDis = getState().Pose.getTranslation().getDistance(getState().Pose.nearest(getShuttlePoses()).getTranslation());
+    DogLog.log("Subsystems/Drive/ShuttleDistance", shuttleDis);
+
     // if (getCurrentCommand() != null) {
     //   DogLog.log("Subsystems/Drive/CurrentCommand", getCurrentCommand().getName());
     // } else {
     //   DogLog.log("Subsystems/Drive/CurrentCommand", "None");
     // }
-    DogLog.log("Subsystems/Drive/isInAllianceZone", isInAllianceZone().getAsBoolean());
+    // DogLog.log("Subsystems/Drive/isInAllianceZone", isInAllianceZone().getAsBoolean());
 
     // DogLog.log("Subsystems/Drive/Speeds", getState().Speeds);
-    if (!Robot.isReal()) {
-      for (Vision camera : cameras) {
-        camera.simulationPeriodic(getState().Pose);
-      }
-    }
+    // if (!Robot.isReal()) {
+    //   for (Vision camera : cameras) {
+    //     camera.simulationPeriodic(getState().Pose);
+    //   }
+    // }
 
     for (Vision camera : cameras) {
       camera.periodic();
     }
 
-    for (int i = 0; i < 4; i++) {
-      DogLog.log("Subsystems/Drive/Current" + i,
-          getModule(i).getDriveMotor().getTorqueCurrent(true).getValueAsDouble());
-    }
+    // for (int i = 0; i < 4; i++) {
+    //   DogLog.log("Subsystems/Drive/Current" + i,
+    //       getModule(i).getDriveMotor().getTorqueCurrent(true).getValueAsDouble());
+    // }
     DogLog.log("Subsystems/Drive/Checks", isAtDesiredAngleCheck().getAsBoolean());
     // not mine
     /*
