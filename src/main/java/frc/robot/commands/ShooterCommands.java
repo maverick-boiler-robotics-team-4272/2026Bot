@@ -37,16 +37,23 @@ public class ShooterCommands {
                         DoubleSupplier joystickY) {
                 return new ParallelCommandGroup(
                                 drive.defer(() -> Commands.repeatingSequence(
-                                                drive.pointTowardsPoint(() -> getHubLocation().getTranslation(),
+                                new ConditionalCommand(drive.pointTowardsPoint(
+                                        () -> getHubLocation().getTranslation(),
                                                                 joystickX,
-                                                                joystickY)
-                                        .until(drive.isNotInAllianceZone()),
-                                                drive.pointTowardsPoint(
-                                                                () -> drive.getState().Pose.nearest(getShuttlePoses())
-                                                                                .getTranslation(),
-                                                                joystickX, joystickY)
-                                        .until(drive.isInAllianceZone()))),
-                                        // new ConditionalCommand(drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()), new InstantCommand(() -> {}), drive::isAtDesiredAngle),
+                                        joystickY),
+                                        drive.pointTowardsPoint(
+                                                () -> drive.getState().Pose.nearest(
+                                                        getShuttlePoses())
+                                                        .getTranslation(),
+                                                joystickX, joystickY)
+                                                .until(drive.isInAllianceZone()),
+                                        drive.isInAllianceZone())
+
+                        ))
+                                .until(drive::isAtDesiredAngle)
+                                .andThen(drive.defer(() -> drive.applyRequest(
+                                        () -> new SwerveRequest.SwerveDriveBrake())))
+                                .until(() -> !drive.isAtDesiredAngle() || joystickX.getAsDouble() != 0.0 || joystickY.getAsDouble() != 0.0).repeatedly(),
                         setDesiredShooterStates(shooter, drive));
         }
 
@@ -54,17 +61,15 @@ public class ShooterCommands {
                         Loader loader, Intake intake, Hopper hopper, Shooter shooter, CommandSwerveDrivetrain drive) {
                 return new SequentialCommandGroup(
                                 // new WaitUntilCommand(shooter::isAtDesiredSpeed),
-                                // new WaitUntilCommand(shooter::isAtDesiredAngle),
-                        new ParallelDeadlineGroup(
-                                new ParallelCommandGroup(
-                                    new WaitCommand(0.2)
-                                ).unless(drive::isAtDesiredAngle),
-                                loader.loadBoth(-20),
-                                hopper.agitate(-HOPPER_LOWER_SPEED, -HOPPER_UPPER_SPEED),
-                                new WaitCommand(0.2)).until(drive::isAtDesiredAngle),
+                        // new WaitUntilCommand(shooter::isAtDesiredAngle),
+                        new ParallelCommandGroup(
+                                loader.loadBoth(-50),
+                                hopper.agitate(-HOPPER_LOWER_SPEED * 2, -HOPPER_UPPER_SPEED)
+                                )
+                                .withTimeout(0.2).onlyWhile(() -> !shooter.isAtDesiredSpeed()),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
-                                        loader.loadBoth(70),
+                                        loader.loadBoth(50),
                                         intake.agitateIntake(),
                                         hopper.agitate(HOPPER_LOWER_SPEED,
                                                 HOPPER_UPPER_SPEED))
@@ -113,7 +118,7 @@ public class ShooterCommands {
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
-                                                                .getTranslation()));
+                                                                .getTranslation())) + 2;
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
