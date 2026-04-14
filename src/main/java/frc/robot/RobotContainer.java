@@ -13,6 +13,7 @@ import static frc.robot.constants.SubsystemConstants.IntakeConstants.INTAKE_SPEE
 import static frc.robot.constants.FieldConstants.*;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -26,6 +27,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -52,6 +54,7 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private SendableChooser<Command> autoChooser;
+  private SendableChooser<PathPlannerPath> pathOne;
 
   public static final CommandXboxController joystick = new CommandXboxController(0);
   public static final CommandXboxController operator = new CommandXboxController(1);
@@ -173,20 +176,22 @@ public class RobotContainer {
         loader.loadBoth(70)).repeatedly());
   }
 
-  public void registerNamedCommands() {
-    // NamedCommands.registerCommand("EXAMPLE", command);
-    NamedCommands.registerCommand(
-        "Intake",
-        intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));
-  }
+  // public void registerNamedCommands() {
+  // // NamedCommands.registerCommand("EXAMPLE", command);
+  // NamedCommands.registerCommand(
+  // "Intake",
+  // intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));
+  // }
 
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
+    pathOne = new SendableChooser<>();
     SmartDashboard.putData("Auto chooser", autoChooser);
+    SmartDashboard.putData("First Path", pathOne);
 
     SmartDashboard.putNumber("ANGLE", 0.02);
     SmartDashboard.putNumber("SPEED", 50);
-    
+
     // PathPlannerPath ExamplePath;
     // try {
     // ExamplePath = PathPlannerPath.fromChoreoTrajectory("Exact Name of Path");
@@ -306,8 +311,7 @@ public class RobotContainer {
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
-   
-   
+
     // Command exampleAuto = new SequentialCommandGroup(
     // AutoBuilder.followPath(startRight),
     // new ParallelCommandGroup(
@@ -431,8 +435,6 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
-
-
     Command terry = new SequentialCommandGroup(
         AutoBuilder.followPath(PutItInReverseTerry),
         drivetrain.applyRequest(() -> brake));
@@ -501,9 +503,14 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
+    pathOne.setDefaultOption("rightStart", newRightStart);
+    pathOne.addOption("second path right far", secondSwipRightFar);
+    pathOne.addOption("second path Left far", secondSwipLeftFar);
+
     // autoChooser.setDefaultOption("Example", exampleAuto);
     // autoChooser.addOption("Right One and Outpost Cycle",
     // rightSideOneAndOutpostAuto);
+
     autoChooser.addOption("Put It In Reverse Terry", terry);
     autoChooser.setDefaultOption("Right Double Swip", doubleSwipRight);
     autoChooser.addOption("Right Double Swip Far", doubleSwipRightFar);
@@ -516,12 +523,26 @@ public class RobotContainer {
     autoChooser.addOption("Right Trech Double", doubleSwipRightFarTrench);
     autoChooser.addOption("HailMary Left", HAILMARY_Left);
     autoChooser.addOption("HailMary Right", HAILMARY_Right);
+    autoChooser.addOption("Mix&Match", new InstantCommand(() -> {
+    }).withName("Mix"));
+    // autoChooser.addOption("Test for mix&match", PathOne);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
+    SmartDashboard.putData("First Path", pathOne);
 
   }
 
   public Command getAutonomousCommand() {
+    if(autoChooser.getSelected().getName().equals("Mix")) {
+      return new SequentialCommandGroup(
+        new ParallelRaceGroup(
+            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
+            AutoBuilder.followPath(pathOne.getSelected())),
+            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain).withTimeout(4));
+        
+        
+    }
     return autoChooser.getSelected();
   }
 }
