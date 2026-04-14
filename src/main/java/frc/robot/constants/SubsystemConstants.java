@@ -47,16 +47,16 @@ public class SubsystemConstants {
 
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
       //  Map.entry(1.0, 34.96993), Map.entry(3.00, 47.0), Map.entry(4.995, 59.0)/* 51.0 */);
-         Map.entry(1.0,32.58511), Map.entry(4.95, 62.0), Map.entry(3.07, 48.0)); //new
+        Map.entry(1.0, 36.686171), Map.entry(3.07, 51.0), Map.entry(4.95, 64.0)); // new
         // 
       
     public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
         // Map.entry(2.335, 0.0), Map.entry(3.00, 0.01), Map.entry(4.995, 0.04));
-        Map.entry(1.843913, 0.0), Map.entry(4.95, 0.038), Map.entry(3.07, 0.015)); //new
+        Map.entry(1.942, 0.0), Map.entry(3.07, 0.015), Map.entry(4.95, 0.04)); // new
          //
 
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(0.0, 0.0), Map.entry(10.0, 2.0));
+        Map.entry(3.91, 1.16), Map.entry(4.51, 1.15), Map.entry(4.94, 1.13)); // ehh... need to try again
    
     public static final InterpolatingDoubleTreeMap SHUTTLE_SPEED_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(6.0, 40.0), Map.entry(8.9, 60.0), Map.entry(10.0, 80.0));
@@ -74,8 +74,9 @@ public class SubsystemConstants {
     //1(D: 4.95, Angle: 0.038, Speed 62)
     //2(D: 3.07, Angle: 0.015, Speed 48)
 
+    // hub shooting 2.0
+    // 1, dis 4.96, ang 0.04, speed64
 
-    //
   }
 
   
