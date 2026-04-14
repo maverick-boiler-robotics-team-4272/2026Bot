@@ -34,7 +34,7 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     // PID needs to be aggressive
-    VoltageConfigs volts = new VoltageConfigs().withPeakForwardVoltage(10);
+    VoltageConfigs volts = new VoltageConfigs().withPeakForwardVoltage(16);
 
     shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, "rio", "Shooter", "Shooter Motor Left")
         .withCurrentLimit(
