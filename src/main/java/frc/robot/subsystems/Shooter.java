@@ -5,6 +5,7 @@ import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -33,27 +34,32 @@ public class Shooter extends SubsystemBase {
 
   public Shooter() {
     // PID needs to be aggressive
+    VoltageConfigs volts = new VoltageConfigs().withPeakForwardVoltage(10);
+
     shooterMotorLeft = KrakenBuilder.create(SHOOTER_MOTOR_LEFT_ID, "rio", "Shooter", "Shooter Motor Left")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.2, 0.0, 0.00, .42, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.35, 0.0, 0.00, .42, 0, 0, 0.123)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build(); // p = 0.1, d = 0.001, s = 0.2
 
+        shooterMotorLeft.getConfigurator().apply(volts);
     shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, "rio", "Shooter", "Shooter Motor Right")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(80)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.2, 0.0, 0.00, .42, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.35, 0.0, 0.00, .42, 0, 0, 0.123)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
     shooterMotorRight.setGearRatio(1);
-    shooterMotorLeft.setGearRatio(1);
+        shooterMotorLeft.setGearRatio(1);
+
+        shooterMotorRight.getConfigurator().apply(volts);
 
     hoodedMotor = KrakenBuilder.create(HOODED_MOTOR_ID, CAN_BUS, "Shooter", "Hooder Motor")
         .withCurrentLimit(
