@@ -122,8 +122,8 @@ public class Vision {
             var estStdDevs = getEstimationStdDevs();
 
             Pose3d estPose = est.estimatedPose;
-            DogLog.log("Vision/3DRaw/" + camera.getName(), est.estimatedPose);
-            DogLog.log("Vision/Raw/" + camera.getName(), est.estimatedPose.toPose2d());
+            // DogLog.log("Vision/3DRaw/" + camera.getName(), est.estimatedPose);
+            // DogLog.log("Vision/Raw/" + camera.getName(), est.estimatedPose.toPose2d());
 
             if (Math.abs(estPose.getZ()) < 0.2
                 && estPose.getX() > 0
