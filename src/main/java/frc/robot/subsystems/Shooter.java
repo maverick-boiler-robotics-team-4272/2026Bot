@@ -3,24 +3,16 @@ package frc.robot.subsystems;
 import static frc.robot.constants.SubsystemConstants.CAN_BUS;
 import static frc.robot.constants.SubsystemConstants.ShooterConstants.*;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.VoltageConfigs;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.signals.*;
 
 import dev.doglog.DogLog;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 
-import java.security.PublicKey;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
@@ -44,7 +36,7 @@ public class Shooter extends SubsystemBase {
         .withIdleMode(NeutralModeValue.Coast)
         .withSlot0PIDSGAV(0.35, 0.0, 0.00, .42, 0, 0, 0.123)
         .withInversion(InvertedValue.Clockwise_Positive)
-        .build(); // p = 0.1, d = 0.001, s = 0.2
+        .build();
 
         shooterMotorLeft.getConfigurator().apply(volts);
     shooterMotorRight = KrakenBuilder.create(SHOOTER_MOTOR_RIGHT_ID, "rio", "Shooter", "Shooter Motor Right")
@@ -67,7 +59,7 @@ public class Shooter extends SubsystemBase {
                 .withSupplyCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(/*4*/300, 0.0, 0.00, 0.0, 0.5, 0, 0)
+        .withSlot0PIDSGAV(300, 0.0, 0.00, 0.0, 0.5, 0, 0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -163,7 +155,7 @@ public class Shooter extends SubsystemBase {
         || shooterMotorRight.getVelocity(false).getValueAsDouble() >= desiredSpeed - 1) {
       return true;
     }
-    return false; // sim is always at the right velocity
+    return false;
   }
 
   public BooleanSupplier isAtDesiredSpeedCheck() {

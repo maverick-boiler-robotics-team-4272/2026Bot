@@ -2,24 +2,12 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.SubsystemConstants.IntakeConstants.*;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.Slot1Configs;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.signals.*;
 
 import dev.doglog.DogLog;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
 import java.util.function.DoubleSupplier;
@@ -38,7 +26,6 @@ public class Intake extends SubsystemBase {
   double prevDesDistance;
   boolean disableSafety;
 
-  Trigger currentLimitTrigger;
 
   public Intake() {
     regularLimits.StatorCurrentLimitEnable = false;
@@ -64,7 +51,7 @@ public class Intake extends SubsystemBase {
                 .withSupplyCurrentLowerTime(3.0))
         .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.CounterClockwise_Positive)
-        .withSlot0PIDSGAV(5, 0, 0, 12, 0, 0, 0)// 0.12413 * 24.0 * 2.8 / 11.0)
+        .withSlot0PIDSGAV(5, 0, 0, 12, 0, 0, 0)
         .build();
     intakeMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
 
@@ -95,25 +82,10 @@ public class Intake extends SubsystemBase {
     extensionMotor2.setPosition(0);
     prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
 
-    // extensionMotor.getConfigurator()
-    // .apply(new FeedbackConfigs().withSensorToMechanismRatio(46.0 / (11.0)));
-
-    // extensionMotor.setGearRatio(46.0 / (11.0 * 3.0 * Math.PI));
-
     extensionMotor.getConfigurator()
         .apply(new MotionMagicConfigs()
             .withMotionMagicCruiseVelocity(4)
             .withMotionMagicAcceleration(9999));
-
-    currentLimitTrigger = new Trigger(this::isSafe);
-
-    // currentLimitTrigger.onTrue(new InstantCommand(() -> {
-    //   extensionMotor.getConfigurator().apply(safeLimits);
-    // }));
-
-    // currentLimitTrigger.onFalse(new InstantCommand(() -> {
-    //   extensionMotor.getConfigurator().apply(regularLimits);
-    // }));
   }
 
   public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
@@ -160,25 +132,6 @@ public class Intake extends SubsystemBase {
           intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond.getAsDouble()).withEnableFOC(true));
         });
   }
-
-  // public Command setIntakeStateMotionMagic(double rotationsDistance, double
-  // rotationsPerSecond) {
-  // return run(
-  // () -> {
-  // desiredExtensionRotations = rotationsDistance;
-  // desiredIntakeSpeed = rotationsPerSecond;
-  // if (!isSafe()) {
-  // extensionMotor.setControl(
-  // new MotionMagicVoltage(rotationsDistance -
-  // 0.1).withSlot(0).withEnableFOC(true));
-  // } else {
-  // extensionMotor.setControl(
-  // new MotionMagicVoltage(rotationsDistance -
-  // 0.1).withSlot(1).withEnableFOC(true));
-  // }
-  // intakeMotor.setControl(new VoltageOut(0));
-  // });
-  // }
 
   public Command zeroExtension() {
     return startEnd(
@@ -244,13 +197,6 @@ public class Intake extends SubsystemBase {
             () -> disableSafety = true)
         .finallyDo(() -> disableSafety = false);
   }
-
-  // public Command agitateIntakeMM() {
-  // return setIntakeStateMotionMagic(0.0, 0.0)
-  // .beforeStarting(() -> {
-  // disableSafety = true;
-  // }).finallyDo(() -> disableSafety = false);
-  // }
 
   public Command barf() {
     return setIntakeState(EXTEND_DISTANCE, -INTAKE_SPEED);

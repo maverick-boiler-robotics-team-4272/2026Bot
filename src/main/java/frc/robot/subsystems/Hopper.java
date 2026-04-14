@@ -49,7 +49,6 @@ public class Hopper extends SubsystemBase {
                 .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
         .withSlot0PIDSGAV(10, 00, 0.0, 10, 0, 0, 01)
-        // .withSlot0PIDSGAV(0, 00, 0.1, 0, 0, 0, 0.12413 * 5)// * 24.0 / 11.0)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
 
@@ -110,19 +109,6 @@ public class Hopper extends SubsystemBase {
           upperMotor.setControl(new VoltageOut(0).withEnableFOC(true));
         });
   }
-
-  // public void appliPIDSAVG(DoubleSupplier p, DoubleSupplier i, DoubleSupplier
-  // d, DoubleSupplier s, DoubleSupplier a, DoubleSupplier v, DoubleSupplier g) {
-  // Slot0Configs configs = new Slot0Configs();
-  // configs.kP = p;
-  // configs.kI = i;
-  // configs.kD = d;
-  // configs.kS = s;
-  // configs.kA = a;
-  // configs.kV = v;
-  // configs.kG = g;
-  // lowerMotor.getConfigurator().
-  // }
 
   @Override
   public void periodic() {
