@@ -29,7 +29,7 @@ public class Loader extends SubsystemBase {
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Brake)
-        .withSlot0PIDSGAV(2.75, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11) //TODO: PID
+        .withSlot0PIDSGAV(0.75, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11) //TODO: PID
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
     motor1.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
@@ -39,7 +39,7 @@ public class Loader extends SubsystemBase {
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
         .withIdleMode(NeutralModeValue.Brake)
-        .withSlot0PIDSGAV(2.75, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
+        .withSlot0PIDSGAV(0.75, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
     motor2.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
