@@ -105,9 +105,8 @@ public class RobotContainer {
         shooter.zeroHood());
     joystick.rightBumper().whileTrue(
         ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
-        joystick.rightBumper().whileTrue(
-          ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)
-        );
+    joystick.rightBumper().whileTrue(
+        ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
     // joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter,
     // drivetrain, joystick::getLeftX, joystick::getLeftY));
     // joystick.x().whileTrue(ShooterCommandsCopyCopy.tele2ndHalfShooterCommand(loader,
@@ -146,8 +145,7 @@ public class RobotContainer {
     operator.rightTrigger().whileTrue(
         intake.agitateIntake());
     operator.rightBumper().whileTrue(
-      intake.stupidateIntake()
-    );
+        intake.stupidateIntake());
 
     // operator.y().whileTrue(
     // shooter.setShooterState(0.015, 50));
@@ -505,6 +503,7 @@ public class RobotContainer {
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
     pathOne.setDefaultOption("rightStart", newRightStart);
+    pathOne.addOption("leftStart", newLeftStart);
     pathOne.addOption("second path right far", secondSwipRightFar);
     pathOne.addOption("second path Left far", secondSwipLeftFar);
 
@@ -534,15 +533,16 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    if(autoChooser.getSelected().getName().equals("Mix")) {
+    if (autoChooser.getSelected().getName().equals("Mix")) {
       return new SequentialCommandGroup(
-        new ParallelRaceGroup(
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
-            AutoBuilder.followPath(pathOne.getSelected())),
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain).withTimeout(4));
-        
-        
+          new ParallelRaceGroup(
+              new SequentialCommandGroup(
+                  intake.zeroExtension().withTimeout(0.2),
+                  intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+              AutoBuilder.followPath(pathOne.getSelected())),
+          ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+          ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain).withTimeout(5));
+
     }
     return autoChooser.getSelected();
   }
