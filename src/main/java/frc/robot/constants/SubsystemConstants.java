@@ -45,7 +45,7 @@ public class SubsystemConstants {
         Map.entry(1.942, 0.0), Map.entry(3.07, 0.015), Map.entry(4.95, 0.04));
 
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
-        Map.entry(3.91, 1.16), Map.entry(4.51, 1.15), Map.entry(4.94, 1.13)); // ehh... need to try again
+        Map.entry(1.0, 0.94)/*FAKE*/, Map.entry(2.0, 1.1), Map.entry(3.87, 1.2), Map.entry(4.98, 1.5), Map.entry(7.0, 1.7)/*FAKE*/);
    
     public static final InterpolatingDoubleTreeMap SHUTTLE_SPEED_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(6.0, 40.0), Map.entry(8.9, 60.0), Map.entry(10.0, 80.0));

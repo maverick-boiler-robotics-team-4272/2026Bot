@@ -103,11 +103,16 @@ public class RobotContainer {
 
     joystick.povRight().whileTrue(
         shooter.zeroHood());
+
     joystick.rightBumper().whileTrue(
         ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
-        joystick.rightBumper().whileTrue(
-          ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)
-        );
+    joystick.rightBumper().whileTrue(
+        ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)
+    );
+    joystick.rightBumper().and(joystick.leftTrigger()).whileTrue(
+      ShooterCommandsCopy.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
+    );
+
     // joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter,
     // drivetrain, joystick::getLeftX, joystick::getLeftY));
     // joystick.x().whileTrue(ShooterCommandsCopyCopy.tele2ndHalfShooterCommand(loader,

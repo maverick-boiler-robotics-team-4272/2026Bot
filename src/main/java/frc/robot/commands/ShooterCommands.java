@@ -51,7 +51,7 @@ public class ShooterCommands {
                                 loader.loadBoth(-50),
                                 hopper.agitate(-HOPPER_LOWER_SPEED * 2, -HOPPER_UPPER_SPEED)
                                 )
-                                .withTimeout(0.2).onlyWhile(() -> !shooter.isAtDesiredSpeed()),
+                                .withTimeout(0.15).onlyWhile(() -> !shooter.isAtDesiredSpeed()),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                         loader.loadBoth(50),
