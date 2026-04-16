@@ -103,7 +103,7 @@ public class ShooterCommands {
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
-                                                                .getTranslation())) + 2;
+                                                                .getTranslation()));
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
