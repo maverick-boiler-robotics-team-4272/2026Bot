@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
@@ -44,6 +45,7 @@ public class RobotContainer {
 
   private SendableChooser<Command> autoChooser;
   private SendableChooser<PathPlannerPath> pathOne;
+  private SendableChooser<PathPlannerPath> pathTwo;
 
   public static final CommandXboxController joystick = new CommandXboxController(0);
   public static final CommandXboxController operator = new CommandXboxController(1);
@@ -138,8 +140,7 @@ public class RobotContainer {
     operator.rightTrigger().whileTrue(
         intake.agitateIntake());
     operator.rightBumper().whileTrue(
-      intake.stupidateIntake()
-    );
+        intake.stupidateIntake());
 
     // operator.y().whileTrue(
     // shooter.setShooterState(0.015, 50));
@@ -179,11 +180,14 @@ public class RobotContainer {
   public void setupAutos() {
     autoChooser = new SendableChooser<>();
     pathOne = new SendableChooser<>();
+    pathTwo = new SendableChooser<>();
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putData("First Path", pathOne);
+    SmartDashboard.putData("Second Path", pathTwo);
 
     SmartDashboard.putNumber("ANGLE", 0.02);
     SmartDashboard.putNumber("SPEED", 50);
+    SmartDashboard.putNumber("Wait Time", 0.0);
 
     // PathPlannerPath ExamplePath;
     // try {
@@ -193,114 +197,26 @@ public class RobotContainer {
     // e.getMessage());
     // }
 
-    PathPlannerPath PutItInReverseTerry;
-    try {
-      PutItInReverseTerry = PathPlannerPath.fromChoreoTrajectory("Put_It_In_Reverse_Terry");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath AirplaneTakeDownRight;
-    try {
-      AirplaneTakeDownRight = PathPlannerPath.fromChoreoTrajectory("Boeing_Door");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath AirplaneTakeDownLeft;
-    try {
-      AirplaneTakeDownLeft = PathPlannerPath.fromChoreoTrajectory("Boeing_Cockpit");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath RightControledChaos;
-    try {
-      RightControledChaos = PathPlannerPath.fromChoreoTrajectory("IDk_what_to_call_this");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath LeftControledChaos;
-    try {
-      LeftControledChaos = PathPlannerPath.fromChoreoTrajectory("IDk_what_to_call_this").mirrorPath();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath newRightStart;
-    try {
-      newRightStart = PathPlannerPath.fromChoreoTrajectory("New_Right_Start");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath newLeftStart;
-    try {
-      newLeftStart = PathPlannerPath.fromChoreoTrajectory("New_Right_Start").mirrorPath();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath secondSwipRight;
-    try {
-      secondSwipRight = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath secondSwipLeft;
-    try {
-      secondSwipLeft = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path").mirrorPath();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath secondSwipRightFar;
-    try {
-      secondSwipRightFar = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath secondSwipLeftFar;
-    try {
-      secondSwipLeftFar = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far").mirrorPath();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
-    PathPlannerPath secondSwipRightFarTrench;
-    try {
-      secondSwipRightFarTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far_Trench");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
+    PathPlannerPath ControledChaos;
+    PathPlannerPath newStart;
+    PathPlannerPath secondSwip;
+    PathPlannerPath secondSwipFar;
+    PathPlannerPath secondSwipFarTrench;
     PathPlannerPath fistMyBumpRight;
-    try {
-      fistMyBumpRight = PathPlannerPath.fromChoreoTrajectory("Fist_My_Bump");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
     PathPlannerPath fistMyBumpLeft;
-    try {
-      fistMyBumpLeft = PathPlannerPath.fromChoreoTrajectory("Fist_My_Bump").mirrorPath();
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
     PathPlannerPath fistBumpRight;
-    try {
-      fistBumpRight = PathPlannerPath.fromChoreoTrajectory("Fist_Bump");
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
-    }
-
     PathPlannerPath fistBumpLeft;
+
     try {
       fistBumpLeft = PathPlannerPath.fromChoreoTrajectory("Fist_Bump").mirrorPath();
+      fistBumpRight = PathPlannerPath.fromChoreoTrajectory("Fist_Bump");
+      fistMyBumpLeft = PathPlannerPath.fromChoreoTrajectory("Fist_My_Bump").mirrorPath();
+      fistMyBumpRight = PathPlannerPath.fromChoreoTrajectory("Fist_My_Bump");
+      secondSwipFarTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far_Trench");
+      secondSwipFar = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far");
+      secondSwip = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path");
+      newStart = PathPlannerPath.fromChoreoTrajectory("New_Right_Start");
+      ControledChaos = PathPlannerPath.fromChoreoTrajectory("IDk_what_to_call_this");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -313,148 +229,29 @@ public class RobotContainer {
     // ),
     // );
 
-    Command doubleSwipRight = new SequentialCommandGroup(
-        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(newRightStart),
-            shooter.zeroHood(),
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
-        // AutoBuilder.followPath(midRightOutpostShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(4),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipRight),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
-
-    Command doubleSwipRightFar = new SequentialCommandGroup(
-        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(newRightStart),
-            shooter.zeroHood(),
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
-        // AutoBuilder.followPath(midRightOutpostShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(4),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipRightFar),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
-
-    Command doubleSwipRightFarTrench = new SequentialCommandGroup(
-        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(newRightStart),
-            shooter.zeroHood(),
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
-        // AutoBuilder.followPath(midRightOutpostShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(4),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipRightFarTrench),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
-
-    Command doubleSwipLeft = new SequentialCommandGroup(
-        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(newLeftStart),
-            shooter.zeroHood(),
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
-        // AutoBuilder.followPath(midRightOutpostShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(4),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipLeft),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
-
-    Command doubleSwipLeftFar = new SequentialCommandGroup(
-        // drivetrain.resetThePose(new Pose2d(!isRedSide() ? 4.4 : FIELD_LENGTH_M - 4.4,
-        // !isRedSide() ? 0.45 : FIELD_WIDTH_M - 0.45, !isRedSide() ?
-        // Rotation2d.kCW_90deg : Rotation2d.kCCW_90deg)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(newLeftStart),
-            shooter.zeroHood(),
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
-        // AutoBuilder.followPath(midRightOutpostShoot),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(4),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipLeftFar),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
-
-    Command terry = new SequentialCommandGroup(
-        AutoBuilder.followPath(PutItInReverseTerry),
-        drivetrain.applyRequest(() -> brake));
-
-    Command boeingRight = new SequentialCommandGroup(
-        AutoBuilder.followPath(AirplaneTakeDownRight));
-
-    Command boeingLeft = new SequentialCommandGroup(
-        AutoBuilder.followPath(AirplaneTakeDownLeft));
-
-    Command rightChaos = new SequentialCommandGroup(
-        new ParallelRaceGroup(
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
-            AutoBuilder.followPath(RightControledChaos)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-
-    );
-
-    Command leftChaos = new SequentialCommandGroup(
-        new ParallelRaceGroup(
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
-            AutoBuilder.followPath(LeftControledChaos)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
+    // Command doubleSwipRight = new SequentialCommandGroup(
+    // new ParallelRaceGroup(
+    // AutoBuilder.followPath(newRightStart),
+    // shooter.zeroHood(),
+    // intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED)),
+    // // AutoBuilder.followPath(midRightOutpostShoot),
+    // new ParallelCommandGroup(
+    // ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () ->
+    // 0),
+    // ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper,
+    // shooter, drivetrain))
+    // .withTimeout(4),
+    // new ParallelRaceGroup(
+    // AutoBuilder.followPath(secondSwipRight),
+    // shooter.defaultCommand(),
+    // loader.loadBoth(0),
+    // hopper.stop(),
+    // intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+    // new ParallelCommandGroup(
+    // ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () ->
+    // 0),
+    // ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper,
+    // shooter, drivetrain)));
 
     Command HAILMARY_Right = new SequentialCommandGroup(
         new ParallelRaceGroup(
@@ -467,7 +264,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)).withTimeout(4),
         new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipRight),
+            AutoBuilder.followPath(secondSwip),
             shooter.defaultCommand(),
             loader.loadBoth(0),
             hopper.stop(),
@@ -487,7 +284,7 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)).withTimeout(4),
         new ParallelRaceGroup(
-            AutoBuilder.followPath(secondSwipLeft),
+            AutoBuilder.followPath(secondSwip.mirrorPath()),
             shooter.defaultCommand(),
             loader.loadBoth(0),
             hopper.stop(),
@@ -496,45 +293,78 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
-    pathOne.setDefaultOption("rightStart", newRightStart);
-    pathOne.addOption("second path right far", secondSwipRightFar);
-    pathOne.addOption("second path Left far", secondSwipLeftFar);
+    pathOne.setDefaultOption("Start", newStart);
+    pathOne.addOption("controlled chaos", ControledChaos);
+
+    pathTwo.setDefaultOption("second path close", secondSwip);
+    pathTwo.addOption("second path far", secondSwipFar);
+    pathTwo.addOption("second path far trench", secondSwipFarTrench);
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     // autoChooser.addOption("Right One and Outpost Cycle",
     // rightSideOneAndOutpostAuto);
 
-    autoChooser.addOption("Put It In Reverse Terry", terry);
-    autoChooser.setDefaultOption("Right Double Swip", doubleSwipRight);
-    autoChooser.addOption("Right Double Swip Far", doubleSwipRightFar);
-    autoChooser.addOption("Left Double Swip", doubleSwipLeft);
-    autoChooser.addOption("Left Double Swip Far", doubleSwipLeftFar);
-    autoChooser.addOption("Boeing Door", boeingRight);
-    autoChooser.addOption("Boeing Cockpit", boeingLeft);
-    autoChooser.addOption("RiGhT cHaOs", rightChaos);
-    autoChooser.addOption("LeFt ChAoS", leftChaos);
-    autoChooser.addOption("Right Trech Double", doubleSwipRightFarTrench);
     autoChooser.addOption("HailMary Left", HAILMARY_Left);
     autoChooser.addOption("HailMary Right", HAILMARY_Right);
-    autoChooser.addOption("Mix&Match", new InstantCommand(() -> {
-    }).withName("Mix"));
+    autoChooser.addOption("Mix & Match Left", new InstantCommand(() -> {
+    }).withName("Mix Left"));
+    autoChooser.addOption("Mix & Match Right", new InstantCommand(() -> {
+    }).withName("Mix Right"));
     // autoChooser.addOption("Test for mix&match", PathOne);
 
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putData("First Path", pathOne);
+    SmartDashboard.putData("Second Path", pathTwo);
 
   }
 
   public Command getAutonomousCommand() {
-    if(autoChooser.getSelected().getName().equals("Mix")) {
+    if (autoChooser.getSelected().getName().equals("Mix Left")) {
       return new SequentialCommandGroup(
-        new ParallelRaceGroup(
-            intake.setIntakeStateOUT(EXTEND_DISTANCE, INTAKE_SPEED),
-            AutoBuilder.followPath(pathOne.getSelected())),
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain).withTimeout(4));
-        
-        
+          new WaitCommand(SmartDashboard.getNumber("Wait Time", 0.0)),
+          new ParallelRaceGroup(
+              new SequentialCommandGroup(
+                  intake.zeroExtension().withTimeout(0.2),
+                  intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+                  shooter.zeroHood(),
+              AutoBuilder.followPath(pathOne.getSelected().mirrorPath())),
+          new ParallelCommandGroup(
+              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+              .withTimeout(5),
+          new ParallelRaceGroup(
+              AutoBuilder.followPath(pathTwo.getSelected().mirrorPath()),
+              shooter.defaultCommand(),
+              loader.loadBoth(0),
+              hopper.stop(),
+              intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+          new ParallelCommandGroup(
+              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+              .withTimeout(5));
+    } else if (autoChooser.getSelected().getName().equals("Mix Right")) {
+      return new SequentialCommandGroup(
+          new WaitCommand(SmartDashboard.getNumber("Wait Time", 0.0)),
+          new ParallelRaceGroup(
+              new SequentialCommandGroup(
+                  intake.zeroExtension().withTimeout(0.2),
+                  intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+                  shooter.zeroHood(),
+              AutoBuilder.followPath(pathOne.getSelected())),
+          new ParallelCommandGroup(
+              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+              .withTimeout(5),
+              new ParallelRaceGroup(
+                AutoBuilder.followPath(pathTwo.getSelected()),
+                shooter.defaultCommand(),
+                loader.loadBoth(0),
+                hopper.stop(),
+                intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+          new ParallelCommandGroup(
+              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+              .withTimeout(5));
     }
     return autoChooser.getSelected();
   }
