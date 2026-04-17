@@ -35,8 +35,8 @@ public class ShooterCommandsCopy{
                                                     }
 
                                                         return currentLocation;},
-                                                                () -> joystickX.getAsDouble() / 2.5,
-                                                                () -> joystickY.getAsDouble() / 2.5)
+                                                                () -> joystickX.getAsDouble() / 3,
+                                                                () -> joystickY.getAsDouble() / 3)
                                         .until(drive.isNotInAllianceZone()),
                                                 drive.pointTowardsPoint(
                                                                 () -> drive.getState().Pose.nearest(getShuttlePoses())

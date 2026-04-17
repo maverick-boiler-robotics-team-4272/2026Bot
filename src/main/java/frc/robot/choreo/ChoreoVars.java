@@ -1,5 +1,7 @@
+// spotless:off
 package frc.robot.choreo;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.*;
 
 /**
@@ -9,5 +11,9 @@ import edu.wpi.first.units.measure.*;
  */
 public final class ChoreoVars {
 
-    private ChoreoVars() {}
+
+    public static final class Poses {
+
+    }
 }
+// spotless:on

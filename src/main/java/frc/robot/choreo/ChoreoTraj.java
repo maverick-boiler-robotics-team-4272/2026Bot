@@ -1,10 +1,11 @@
-
+// spotless:off
 package frc.robot.choreo;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Map;
 import java.util.OptionalInt;
+
 
 
 /**
@@ -20,20 +21,140 @@ public record ChoreoTraj(
     Pose2d initialPoseBlue,
     Pose2d endPoseBlue
 ) {
-    public static final ChoreoTraj test = new ChoreoTraj(
-	    "test",
-	    OptionalInt.empty(),
-	    2.45527,
-	    new Pose2d(2.173, 5.882, Rotation2d.fromRadians(0)),
-	    new Pose2d(3.271, 3.99, Rotation2d.fromRadians(0))
-	);
+    public static final ChoreoTraj attempt_3_Cycle = new ChoreoTraj(
+        "attempt_3_Cycle",
+        OptionalInt.empty(),
+        3.91103,
+        new Pose2d(4.4, 0.45, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj Boeing_Cockpit = new ChoreoTraj(
+        "Boeing_Cockpit",
+        OptionalInt.empty(),
+        2.49743,
+        new Pose2d(4.17218, 7.36855, Rotation2d.fromRadians(0)),
+        new Pose2d(8.65695, 2.1192, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj Boeing_Door = new ChoreoTraj(
+        "Boeing_Door",
+        OptionalInt.empty(),
+        2.39085,
+        new Pose2d(4.32799, 0.51387, Rotation2d.fromRadians(0)),
+        new Pose2d(8.60473, 6.0462, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj Depot_To_Depot_Shoot = new ChoreoTraj(
+        "Depot_To_Depot_Shoot",
+        OptionalInt.empty(),
+        0.78783,
+        new Pose2d(0.75, 6, Rotation2d.fromRadians(0)),
+        new Pose2d(1.8, 5.8, Rotation2d.fromRadians(-0.5236))
+    );
+    public static final ChoreoTraj Dif_Left = new ChoreoTraj(
+        "Dif_Left",
+        OptionalInt.empty(),
+        5.67311,
+        new Pose2d(4.4, 7.64, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(3.36984, 6.48215, Rotation2d.fromRadians(-1.0637))
+    );
+    public static final ChoreoTraj Fist_Bump = new ChoreoTraj(
+        "Fist_Bump",
+        OptionalInt.empty(),
+        4.70311,
+        new Pose2d(8.5, 5.9, Rotation2d.fromRadians(0.7854)),
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj Fist_My_Bump = new ChoreoTraj(
+        "Fist_My_Bump",
+        OptionalInt.empty(),
+        3.47889,
+        new Pose2d(4.39911, 0.47, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(8.5, 5.9, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj IDk_what_to_call_this = new ChoreoTraj(
+        "IDk_what_to_call_this",
+        OptionalInt.empty(),
+        9.57645,
+        new Pose2d(4.41148, 0.76028, Rotation2d.fromRadians(1.5708)),
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj NewPath = new ChoreoTraj(
+        "NewPath",
+        OptionalInt.empty(),
+        4.09453,
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854)),
+        new Pose2d(3, 5.5, Rotation2d.fromRadians(-0.7854))
+    );
+    public static final ChoreoTraj NewPath_copy1 = new ChoreoTraj(
+        "NewPath_copy1",
+        OptionalInt.empty(),
+        4.07916,
+        new Pose2d(3.2, 0.9, Rotation2d.fromRadians(1.13446)),
+        new Pose2d(3.07248, 5.47165, Rotation2d.fromRadians(-0.75159))
+    );
+    public static final ChoreoTraj NewPath_copy2 = new ChoreoTraj(
+        "NewPath_copy2",
+        OptionalInt.empty(),
+        4.00827,
+        new Pose2d(3.2, 0.9, Rotation2d.fromRadians(1.13446)),
+        new Pose2d(3.2, 0.9, Rotation2d.fromRadians(1.13446))
+    );
+    public static final ChoreoTraj New_Right_Start = new ChoreoTraj(
+        "New_Right_Start",
+        OptionalInt.empty(),
+        6.41634,
+        new Pose2d(4.4, 0.45, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj Put_It_In_Reverse_Terry = new ChoreoTraj(
+        "Put_It_In_Reverse_Terry",
+        OptionalInt.empty(),
+        1.77191,
+        new Pose2d(3.60035, 2.6123, Rotation2d.fromRadians(0)),
+        new Pose2d(8.4387, 4.02293, Rotation2d.fromRadians(0))
+    );
+    public static final ChoreoTraj Right_2nd_Path = new ChoreoTraj(
+        "Right_2nd_Path",
+        OptionalInt.empty(),
+        6.98801,
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854)),
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj Right_2nd_Path_Far = new ChoreoTraj(
+        "Right_2nd_Path_Far",
+        OptionalInt.empty(),
+        6.19842,
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854)),
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854))
+    );
+    public static final ChoreoTraj Right_2nd_Path_Far_Trench = new ChoreoTraj(
+        "Right_2nd_Path_Far_Trench",
+        OptionalInt.empty(),
+        6.31542,
+        new Pose2d(2.8, 1.3, Rotation2d.fromRadians(0.7854)),
+        new Pose2d(1.37102, 1.19298, Rotation2d.fromRadians(0.588))
+    );
 
     /**
      * A map between trajectory names and their corresponding data.
      * This allows for trajectory data to be looked up with strings during runtime.
      */
     public static final Map<String, ChoreoTraj> ALL_TRAJECTORIES = Map.ofEntries(
-    	Map.entry("test", test)
+        Map.entry("attempt_3_Cycle", attempt_3_Cycle),
+        Map.entry("Boeing_Cockpit", Boeing_Cockpit),
+        Map.entry("Boeing_Door", Boeing_Door),
+        Map.entry("Depot_To_Depot_Shoot", Depot_To_Depot_Shoot),
+        Map.entry("Dif_Left", Dif_Left),
+        Map.entry("Fist_Bump", Fist_Bump),
+        Map.entry("Fist_My_Bump", Fist_My_Bump),
+        Map.entry("IDk_what_to_call_this", IDk_what_to_call_this),
+        Map.entry("NewPath", NewPath),
+        Map.entry("NewPath_copy1", NewPath_copy1),
+        Map.entry("NewPath_copy2", NewPath_copy2),
+        Map.entry("New_Right_Start", New_Right_Start),
+        Map.entry("Put_It_In_Reverse_Terry", Put_It_In_Reverse_Terry),
+        Map.entry("Right_2nd_Path", Right_2nd_Path),
+        Map.entry("Right_2nd_Path_Far", Right_2nd_Path_Far),
+        Map.entry("Right_2nd_Path_Far_Trench", Right_2nd_Path_Far_Trench)
     );
 
     /**
@@ -47,5 +168,6 @@ public record ChoreoTraj(
         }
         return traj;
     }
-
+    
 }
+// spotless:on

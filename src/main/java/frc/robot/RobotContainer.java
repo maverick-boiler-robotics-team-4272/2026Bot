@@ -113,19 +113,6 @@ public class RobotContainer {
       ShooterCommandsCopy.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
     );
 
-    // joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter,
-    // drivetrain, joystick::getLeftX, joystick::getLeftY));
-    // joystick.x().whileTrue(ShooterCommandsCopyCopy.tele2ndHalfShooterCommand(loader,
-    // intake, hopper, shooter, drivetrain));
-    // joystick.y().whileTrue(ShooterCommandsCopy.tele2ndHalfShooterCommand(loader,
-    // intake, hopper, shooter, drivetrain));
-
-    // joystick.povDown()
-    // .whileTrue(
-    // ClimbCommands.driveThenClimbCommand(drivetrain, climber, intake, () ->
-    // joystick.getHID().getXButton())
-    // .withInterruptBehavior(InterruptionBehavior.kCancelIncoming)); // Yup
-
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
     joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));// not me
