@@ -18,9 +18,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -30,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.commands.ShooterCommandsCopy;
+import frc.robot.commands.ShooterCommandsCopyCopy;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -55,11 +58,15 @@ public class RobotContainer {
   private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   private final Telemetry logger = new Telemetry(MAX_DRIVE_SPEED);
 
+  public Command autonomousSequence;
+
   public RobotContainer() {
     setDefaultCommands();
     configureBindings();
 
     setupAutos();
+
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   private void setDefaultCommands() {
@@ -100,7 +107,7 @@ public class RobotContainer {
     // drivetrain.applyRequest(() -> brake)
     // );
     // shoot and intake fuel
-    joystick.a().and(joystick.leftTrigger()).whileTrue(
+    joystick.rightBumper().and(joystick.leftBumper()).whileTrue(
         ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain));
 
     joystick.povLeft().whileTrue(
@@ -131,8 +138,10 @@ public class RobotContainer {
 
     // testing commands
     operator.rightStick().whileTrue(shooter.oof());
-    // operator.rightBumper().onTrue(ShooterCommandsCopyCopy.addShooterAdd(shooter));
-    // operator.leftBumper().onTrue(ShooterCommandsCopyCopy.subtractShooterAdd(shooter));
+    operator.rightBumper().onTrue(ShooterCommandsCopyCopy.addShooterAdd(shooter));
+    operator.leftBumper().onTrue(ShooterCommandsCopyCopy.subtractShooterAdd(shooter));
+    joystick.x().whileTrue(ShooterCommandsCopyCopy.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0));
+    joystick.x().whileTrue(ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
 
     operator.povLeft().whileTrue(intake.outZeroExtension());
     operator.povDown().whileTrue(intake.setIntakeState(0,0));
@@ -190,11 +199,12 @@ public class RobotContainer {
     SmartDashboard.putData("Second Path", pathTwo);
     SmartDashboard.putData("Third Path", pathThree);
 
-    // SmartDashboard.putNumber("ANGLE", 0.02);
-    // SmartDashboard.putNumber("SPEED", 50);
+    SmartDashboard.putNumber("ANGLE", 0.02);
+    SmartDashboard.putNumber("SPEED", 50);
+
     SmartDashboard.putNumber("Wait Time", 0.0);
     SmartDashboard.putNumber("Shoot One", 5.0);
-    SmartDashboard.putNumber("Shoot Two", 4.0);
+    SmartDashboard.putNumber("Shoot Two", 7.0);
     SmartDashboard.putNumber("Shoot Three", 4.0);
 
     // PathPlannerPath ExamplePath;
@@ -208,6 +218,7 @@ public class RobotContainer {
     PathPlannerPath ControledChaos;
     PathPlannerPath newStart;
     PathPlannerPath secondSwip;
+    PathPlannerPath secondSwipShallow;
     PathPlannerPath secondSwipFar;
     PathPlannerPath secondSwipFarTrench;
     PathPlannerPath fistMyBumpRight;
@@ -215,6 +226,9 @@ public class RobotContainer {
     PathPlannerPath fistBumpRight;
     PathPlannerPath fistBumpLeft;
     PathPlannerPath depot;
+    PathPlannerPath ZoneStart;
+    PathPlannerPath newDepot;
+    PathPlannerPath depAutoStart;
 
     try {
       fistBumpLeft = PathPlannerPath.fromChoreoTrajectory("Fist_Bump").mirrorPath();
@@ -224,9 +238,13 @@ public class RobotContainer {
       secondSwipFarTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far_Trench");
       secondSwipFar = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far");
       secondSwip = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path");
+      secondSwipShallow = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_shallow");
       newStart = PathPlannerPath.fromChoreoTrajectory("New_Right_Start");
       ControledChaos = PathPlannerPath.fromChoreoTrajectory("IDk_what_to_call_this");
       depot = PathPlannerPath.fromChoreoTrajectory("Depot");
+      ZoneStart = PathPlannerPath.fromChoreoTrajectory("Zone_Start");
+      newDepot = PathPlannerPath.fromChoreoTrajectory("New_depot");
+      depAutoStart = PathPlannerPath.fromChoreoTrajectory("Depauto_Start");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -303,15 +321,62 @@ public class RobotContainer {
             ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
             ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)));
 
+    autonomousSequence = new SequentialCommandGroup(
+            // new WaitCommand(SmartDashboard.getNumber("Wait Time", 0.0)),
+            new ParallelRaceGroup(
+                    new SequentialCommandGroup(
+                            intake.zeroExtension().withTimeout(0.2),
+                            intake.setIntakeState(2, 0).withTimeout(.3),
+                            intake.setIntakeState(0, 0).withTimeout(0.2),
+                            intake.zeroExtension().withTimeout(0.1),
+                            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+                    shooter.zeroHood(),
+                    drivetrain.defer(() -> AutoBuilder.followPath(getFirstPath()))),
+            new ParallelCommandGroup(
+                    ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+                    ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+                    .withTimeout(SmartDashboard.getNumber("Shoot One", 5.0)),
+            new ParallelRaceGroup(
+                    drivetrain.defer(() -> AutoBuilder.followPath(getSecondPath())),
+                    shooter.defaultCommand(),
+                    loader.loadBoth(0),
+                    hopper.stop(),
+                    intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            new ParallelCommandGroup(
+                    ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+                    ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+                    .withTimeout(SmartDashboard.getNumber("Shoot Two", 7.0)),
+            new ParallelRaceGroup(
+                    drivetrain.defer(() -> AutoBuilder.followPath(getThirdPath())),
+                    shooter.defaultCommand(),
+                    loader.loadBoth(0),
+                    hopper.stop(),
+                    intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
+            new ParallelCommandGroup(
+                    ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
+                    ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
+                    .withTimeout(SmartDashboard.getNumber("Shoot Three", 4.0)));
+
     pathOne.setDefaultOption("Start", newStart);
     pathOne.addOption("controlled chaos", ControledChaos);
+    pathOne.addOption("DepAuto Start", depAutoStart);
 
     pathTwo.setDefaultOption("second path close", secondSwip);
     pathTwo.addOption("second path far", secondSwipFar);
     pathTwo.addOption("second path far trench", secondSwipFarTrench);
     pathTwo.addOption("depot", depot);
+    pathTwo.addOption("second Swip Shallow", secondSwipShallow);
+    pathTwo.addOption("New Depot", newDepot);
+    pathTwo.addOption("ZoneStart", ZoneStart);
+
 
     pathThree.setDefaultOption("second path close", secondSwip);
+    pathThree.addOption("second path far", secondSwipFar);
+    pathThree.addOption("second path far trench", secondSwipFarTrench);
+    pathThree.addOption("depot", depot);
+    pathThree.addOption("second Swip Shallow", secondSwipShallow);
+    pathThree.addOption("New Depot", newDepot);
+    pathThree.addOption("ZoneStart", ZoneStart);
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     // autoChooser.addOption("Right One and Outpost Cycle",
@@ -319,7 +384,7 @@ public class RobotContainer {
 
     autoChooser.addOption("HailMary Left", HAILMARY_Left);
     autoChooser.addOption("HailMary Right", HAILMARY_Right);
-    autoChooser.addOption("Mix & Match Left", new InstantCommand(() -> {
+    autoChooser.setDefaultOption("Mix & Match Left", new InstantCommand(() -> {
     }).withName("Mix Left"));
     autoChooser.addOption("Mix & Match Right", new InstantCommand(() -> {
     }).withName("Mix Right"));
@@ -329,83 +394,39 @@ public class RobotContainer {
     SmartDashboard.putData("First Path", pathOne);
     SmartDashboard.putData("Second Path", pathTwo);
 
-  }
+}
 
-  public Command getAutonomousCommand() {
+public PathPlannerPath getFirstPath() {
     if (autoChooser.getSelected().getName().equals("Mix Left")) {
-      return new SequentialCommandGroup(
-          new WaitCommand(SmartDashboard.getNumber("Wait Time", 0.0)),
-          new ParallelRaceGroup(
-              new SequentialCommandGroup(
-                  intake.zeroExtension().withTimeout(0.2),
-                  intake.setIntakeState(2,0 ).withTimeout(.3),
-                  intake.setIntakeState(0,0).withTimeout(0.2),
-                  intake.zeroExtension().withTimeout(0.1),
-                  intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-                  shooter.zeroHood(),
-              AutoBuilder.followPath(pathOne.getSelected().mirrorPath())),
-          new ParallelCommandGroup(
-              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-              .withTimeout(SmartDashboard.getNumber("Shoot One", 5.0)),
-          new ParallelRaceGroup(
-              AutoBuilder.followPath(pathTwo.getSelected().mirrorPath()),
-              shooter.defaultCommand(),
-              loader.loadBoth(0),
-              hopper.stop(),
-              intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-          new ParallelCommandGroup(
-              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-              .withTimeout(SmartDashboard.getNumber("Shoot Two", 4.0)),
-              new ParallelRaceGroup(
-                AutoBuilder.followPath(pathThree.getSelected().mirrorPath()),
-                shooter.defaultCommand(),
-                loader.loadBoth(0),
-                hopper.stop(),
-                intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-            new ParallelCommandGroup(
-                ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-                ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-                .withTimeout(SmartDashboard.getNumber("Shoot Three", 4.0)));
-    } else if (autoChooser.getSelected().getName().equals("Mix Right")) {
-      return new SequentialCommandGroup(
-        new WaitCommand(SmartDashboard.getNumber("Wait Time", 0.0)),
-        new ParallelRaceGroup(
-            new SequentialCommandGroup(
-                intake.zeroExtension().withTimeout(0.2),
-                intake.setIntakeState(2,0 ).withTimeout(.3),
-                intake.setIntakeState(0,0).withTimeout(0.2),
-                intake.zeroExtension().withTimeout(0.1),
-                intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-                shooter.zeroHood(),
-            AutoBuilder.followPath(pathOne.getSelected())),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(SmartDashboard.getNumber("Shoot One", 5.0)),
-        new ParallelRaceGroup(
-            AutoBuilder.followPath(pathTwo.getSelected()),
-            shooter.defaultCommand(),
-            loader.loadBoth(0),
-            hopper.stop(),
-            intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-        new ParallelCommandGroup(
-            ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-            ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-            .withTimeout(SmartDashboard.getNumber("Shoot Two", 4.0)),
-            new ParallelRaceGroup(
-              AutoBuilder.followPath(pathThree.getSelected()),
-              shooter.defaultCommand(),
-              loader.loadBoth(0),
-              hopper.stop(),
-              intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED)),
-          new ParallelCommandGroup(
-              ShooterCommands.teleHalfShooterCommand(shooter, drivetrain, () -> 0, () -> 0),
-              ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain))
-              .withTimeout(SmartDashboard.getNumber("Shoot Three", 4.0)));
+        return pathOne.getSelected().mirrorPath();
     } else {
-    return autoChooser.getSelected();
+        return pathOne.getSelected();
+    }
+}
+
+public PathPlannerPath getSecondPath() {
+    if (autoChooser.getSelected().getName().equals("Mix Left")) {
+        return pathTwo.getSelected().mirrorPath();
+    } else {
+        return pathTwo.getSelected();
+    }
+}
+
+public PathPlannerPath getThirdPath() {
+    if (autoChooser.getSelected().getName().equals("Mix Left")) {
+        return pathThree.getSelected().mirrorPath();
+    } else {
+        return pathThree.getSelected();
+    }
+}
+
+public Command getAutonomousCommand() {
+    if (autoChooser.getSelected().getName().equals("Mix Left")) {
+        return autonomousSequence;
+    } else if (autoChooser.getSelected().getName().equals("Mix Right")) {
+        return autonomousSequence;
+    } else {
+        return autoChooser.getSelected();
     }
   }
 }

@@ -55,7 +55,7 @@ public class ShooterCommands {
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                         loader.loadBoth(50),
-                                        intake.agitateIntake(),
+                                        intake.stupidateIntake(),
                                         hopper.agitate(HOPPER_LOWER_SPEED,
                                                 HOPPER_UPPER_SPEED))
                                         .unless(() -> {
@@ -103,7 +103,8 @@ public class ShooterCommands {
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
-                                                                .getTranslation()));
+                                                                                                                    .getTranslation()))
+                                                                                    - 1.76; // TODO: 3 clicks
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
