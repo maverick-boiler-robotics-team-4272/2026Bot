@@ -55,7 +55,7 @@ public class ShooterCommands {
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                         loader.loadBoth(50),
-                                        intake.stupidateIntake(),
+                                        intake.agitateIntakeMM(),
                                         hopper.agitate(HOPPER_LOWER_SPEED,
                                                 HOPPER_UPPER_SPEED))
                                         .unless(() -> {

@@ -66,8 +66,8 @@ public class Intake extends SubsystemBase {
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
     extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.01));
-
     extensionMotor.setPosition(0);
+
     extensionMotor2 = KrakenBuilder.create(EXTENSION_MOTOR_I2_D, "rio", "Intake", "Actuation Motor 2")
         .withCurrentLimit(
             new CurrentLimitsConfigs()
@@ -78,14 +78,24 @@ public class Intake extends SubsystemBase {
         .withInversion(InvertedValue.Clockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
         .build();
-    extensionMotor.getConfigurator().apply(new Slot1Configs().withKP(0.01));
+    extensionMotor2.getConfigurator().apply(new Slot1Configs().withKP(0.01));
     extensionMotor2.setPosition(0);
-    prevDesDistance = extensionMotor.getPosition().getValueAsDouble();
+
+    prevDesDistance = 0;// extensionMotor2.getPosition().getValueAsDouble(); // uhh...
 
     extensionMotor.getConfigurator()
         .apply(new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(4)
-            .withMotionMagicAcceleration(9999));
+            .withMotionMagicCruiseVelocity(0)
+            .withMotionMagicAcceleration(9999)
+            .withMotionMagicExpo_kV(01)
+            .withMotionMagicExpo_kA(0.01));
+
+    extensionMotor2.getConfigurator()
+        .apply(new MotionMagicConfigs()
+            .withMotionMagicCruiseVelocity(0)
+            .withMotionMagicAcceleration(9999)
+            .withMotionMagicExpo_kV(01)
+            .withMotionMagicExpo_kA(0.01));
   }
 
   public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
@@ -152,8 +162,8 @@ public class Intake extends SubsystemBase {
         () -> {
           disableSafety = true;
           desiredExtensionRotations = EXTEND_DISTANCE;
-          extensionMotor.setControl(new VoltageOut(2).withEnableFOC(false));
-          extensionMotor2.setControl(new VoltageOut(2).withEnableFOC(false));
+          extensionMotor.setControl(new VoltageOut(1.25).withEnableFOC(false));
+          extensionMotor2.setControl(new VoltageOut(1.25).withEnableFOC(false));
           intakeMotor.setControl(new VoltageOut(0));
         }, () -> {
           extensionMotor.setPosition(EXTEND_DISTANCE);
@@ -175,10 +185,39 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command setIntakeStateMotionMagic(double rotationsDistance, double rotationsPerSecond) {
+    return run(
+        () -> {
+          desiredExtensionRotations = rotationsDistance;
+          desiredIntakeSpeed = rotationsPerSecond;
+          if (!isSafe()) {
+            extensionMotor.setControl(
+                new MotionMagicExpoVoltage(rotationsDistance).withSlot(0).withEnableFOC(true));
+            extensionMotor2.setControl(
+                new MotionMagicExpoVoltage(rotationsDistance).withSlot(0).withEnableFOC(true));
+          } else {
+            extensionMotor.setControl(
+                new MotionMagicExpoVoltage(rotationsDistance).withSlot(1).withEnableFOC(true));
+            extensionMotor2.setControl(
+                new MotionMagicExpoVoltage(rotationsDistance).withSlot(1).withEnableFOC(true));
+          }
+          intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond));
+        });
+  }
+
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(7, 45).withTimeout(0.2),
+        setIntakeState(8.5, 45).withTimeout(0.2),
         setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
+        .beforeStarting(() -> {
+          disableSafety = true;
+        }).finallyDo(() -> disableSafety = false);
+  }
+
+  public Command agitateIntakeMM() {
+    return new SequentialCommandGroup(
+        setIntakeStateMotionMagic(8.5, 45).withTimeout(0.2),
+        setIntakeStateMotionMagic(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);
@@ -187,12 +226,34 @@ public class Intake extends SubsystemBase {
   public Command stupidateIntake() {
     return new SequentialCommandGroup(
         Commands.run(() -> {
-          extensionMotor.setControl(new PositionVoltage(6));
+          extensionMotor.setControl(new PositionVoltage(7));
           extensionMotor2.setControl(new PositionVoltage(EXTEND_DISTANCE - 0.1));
         }).withTimeout(0.2),
         Commands.run(() -> {
           extensionMotor.setControl(new PositionVoltage(EXTEND_DISTANCE - 0.1));
-          extensionMotor2.setControl(new PositionVoltage(6));
+          extensionMotor2.setControl(new PositionVoltage(7));
+        }).withTimeout(0.2)).repeatedly().beforeStarting(
+            () -> disableSafety = true)
+        .finallyDo(() -> disableSafety = false);
+  }
+
+  public Command stupidateIntakeReallyStupid() {
+    return new SequentialCommandGroup(
+        Commands.run(() -> {
+          extensionMotor.setControl(new PositionVoltage(7));
+          extensionMotor2.setControl(new PositionVoltage(EXTEND_DISTANCE - 1.5));
+        }).withTimeout(0.2),
+        Commands.run(() -> {
+          extensionMotor.setControl(new PositionVoltage(EXTEND_DISTANCE - 1.5));
+          extensionMotor2.setControl(new PositionVoltage(7));
+        }).withTimeout(0.2),
+        Commands.run(() -> {
+          extensionMotor.setControl(new PositionVoltage(EXTEND_DISTANCE - 0.1));
+          extensionMotor2.setControl(new PositionVoltage(EXTEND_DISTANCE - 1.5));
+        }).withTimeout(0.2),
+        Commands.run(() -> {
+          extensionMotor.setControl(new PositionVoltage(EXTEND_DISTANCE - 1.5));
+          extensionMotor2.setControl(new PositionVoltage(EXTEND_DISTANCE - 0.1));
         }).withTimeout(0.2)).repeatedly().beforeStarting(
             () -> disableSafety = true)
         .finallyDo(() -> disableSafety = false);

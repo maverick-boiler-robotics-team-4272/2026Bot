@@ -102,6 +102,9 @@ public class RobotContainer {
     // shoot with intake agitation
     joystick.a().whileTrue(
         ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
+    joystick.povUp().whileTrue(
+        intake.agitateIntakeMM()
+    );
 
     // joystick.a().and(drivetrain::isAtDesiredAngle).whileTrue(
     // drivetrain.applyRequest(() -> brake)
