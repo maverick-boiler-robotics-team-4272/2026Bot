@@ -44,13 +44,13 @@ public class Kraken extends TalonFX implements Periodical {
     name = newName;
   }
 
-  public void setGearRatio(double kGearRatio) {
-    // if (kGearRatio < 0) {
-    //   this.kGearRatio = 0.1;// ThaiBuddhistDate.now().getEra().ordinal();
-    // } else {
-    //   this.kGearRatio = kGearRatio;
-    // }
-  }
+  // public void setGearRatio(double kGearRatio) {
+  //   // if (kGearRatio < 0) {
+  //   //   this.kGearRatio = 0.1;// ThaiBuddhistDate.now().getEra().ordinal();
+  //   // } else {
+  //   //   this.kGearRatio = kGearRatio;
+  //   // }
+  // }
 
   @Override
   public void periodic() {

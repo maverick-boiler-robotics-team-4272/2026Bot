@@ -96,7 +96,7 @@ public class ShooterCommandsCopy{
             return new ParallelCommandGroup(
                     shooter.defer(() -> Commands.repeatingSequence(
                             shooter.setShooterState(
-                                    () -> SCORE_ANGLE_LOOKUP_FAR.get(drive.getState().Pose
+                                    () -> SCORE_ANGLE_LOOKUP.get(drive.getState().Pose
                                             .getTranslation()
                                             .getDistance(currentLocation)),
                                     () -> SHOOTER_VELOCITY_LOOKUP

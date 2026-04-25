@@ -27,15 +27,12 @@ public class Robot extends TimedRobot {
         new DogLogOptions().withNtPublish(false));
     RobotController.setBrownoutVoltage(6);
     DriverStation.silenceJoystickConnectionWarning(true);
-
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     PeriodicalUtil.runPeriodics();
-    // DogLog.log("Alliance Status", DriverStation.getAlliance().isPresent());
-    // DriverStation.getAlliance().ifPresent(alliance -> DogLog.log("Alliance", alliance.toString()));
   }
 
   @Override
@@ -73,7 +70,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     SmartDashboard.clearPersistent("Auto chooser");
-    // GameData.setGameData();
   }
 
   @Override

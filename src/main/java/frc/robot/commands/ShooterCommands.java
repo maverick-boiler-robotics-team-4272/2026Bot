@@ -24,8 +24,8 @@ public class ShooterCommands {
                                 drive.defer(() -> Commands.repeatingSequence(
                                 new ConditionalCommand(drive.pointTowardsPoint(
                                         () -> getHubLocation().getTranslation(),
-                                                                joystickX,
-                                        joystickY),
+                                                joystickX,
+                                                joystickY),
                                         drive.pointTowardsPoint(
                                                 () -> drive.getState().Pose.nearest(
                                                         getShuttlePoses())
@@ -36,8 +36,8 @@ public class ShooterCommands {
 
                         ))
                                 .until(drive::isAtDesiredAngle)
-                                .andThen(drive.defer(() -> drive.applyRequest(
-                                        () -> new SwerveRequest.SwerveDriveBrake())))
+                                .andThen(drive.defer(() -> drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake())))
+
                                 .until(() -> !drive.isAtDesiredAngle() || joystickX.getAsDouble() != 0.0 || joystickY.getAsDouble() != 0.0).repeatedly(),
                         setDesiredShooterStates(shooter, drive));
         }
@@ -91,7 +91,7 @@ public class ShooterCommands {
                     shooter.defer(() -> Commands.repeatingSequence(
                             shooter.setShooterState(
                                     () -> {
-                                        return SCORE_ANGLE_LOOKUP_FAR
+                                        return SCORE_ANGLE_LOOKUP
                                                                         .get(
                                                                                 drive.getState().Pose
                                                                                         .getTranslation()
@@ -103,7 +103,8 @@ public class ShooterCommands {
                                                                         drive.getState().Pose
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
-                                                                .getTranslation()));
+                                                                                                                    .getTranslation()))
+                                                                                    - 1.76; // TODO: 3 clicks
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
@@ -134,7 +135,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 0.075,
+                                                                                            : 0.085,
                                                     () -> drive.getState().Pose
                                                             .getY() > Units.inchesToMeters(
                                                                     135)
@@ -143,7 +144,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 85)))
+                                                                                            : 130)))
                                     .until(() -> !drive.isInOpposingAllianceZone()
                                             .getAsBoolean()))));
         }

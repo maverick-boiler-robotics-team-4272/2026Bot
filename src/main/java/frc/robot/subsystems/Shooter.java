@@ -32,9 +32,12 @@ public class Shooter extends SubsystemBase {
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(80)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(60)
+                .withSupplyCurrentLowerTime(2.0)
+                .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.35, 0.0, 0.00, .42, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.5/*35*/, 0.0, 0.00, .42, 0, 0, 0.123 * 18.0 / 24.0)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
 
@@ -43,13 +46,17 @@ public class Shooter extends SubsystemBase {
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(80)
-                .withSupplyCurrentLimitEnable(true))
+                .withSupplyCurrentLimitEnable(true)
+                .withSupplyCurrentLowerLimit(60)
+                .withSupplyCurrentLowerTime(2.0)
+                .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(0.35, 0.0, 0.00, .42, 0, 0, 0.123)
+        .withSlot0PIDSGAV(0.5/*35*/, 0.0, 0.00, .42, 0, 0, 0.123 * 18.0 / 24.0)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
-    shooterMotorRight.setGearRatio(1);
-        shooterMotorLeft.setGearRatio(1);
+    shooterMotorLeft.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(18.0 / 24.0));
+    shooterMotorRight.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(18.0 / 24.0));
+
 
         shooterMotorRight.getConfigurator().apply(volts);
 
@@ -64,7 +71,6 @@ public class Shooter extends SubsystemBase {
         .build();
 
     hoodedMotor.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(348.0 * 24.0 / (16.0 * 11.0)));
-    hoodedMotor.setGearRatio(348.0 * 24.0 / (16.0 * 11.0));
   }
 
   public Command zeroHood() {
