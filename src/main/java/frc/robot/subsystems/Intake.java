@@ -7,6 +7,7 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.signals.*;
 
 import dev.doglog.DogLog;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.utils.hardware.Kraken;
 import frc.robot.utils.hardware.KrakenBuilder;
@@ -26,6 +27,7 @@ public class Intake extends SubsystemBase {
   double prevDesDistance;
   boolean disableSafety;
 
+  Timer zeroTimer;
 
   public Intake() {
     regularLimits.StatorCurrentLimitEnable = false;
@@ -60,7 +62,9 @@ public class Intake extends SubsystemBase {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true)
-                .withSupplyCurrentLowerLimit(10))
+                .withStatorCurrentLimit(70)
+                .withStatorCurrentLimitEnable(true)
+            )
         .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
@@ -73,7 +77,9 @@ public class Intake extends SubsystemBase {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true)
-                .withSupplyCurrentLowerLimit(10))
+                .withStatorCurrentLimit(70)
+                .withStatorCurrentLimitEnable(true)
+        )
         .withIdleMode(NeutralModeValue.Coast)
         .withInversion(InvertedValue.Clockwise_Positive)
         .withSlot0PIDSGAV(5, 0, 0, 0, 0, 0, 0.12413 * 46.0 / 11.0)
@@ -85,17 +91,18 @@ public class Intake extends SubsystemBase {
 
     extensionMotor.getConfigurator()
         .apply(new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(0)
+            .withMotionMagicCruiseVelocity(2)
             .withMotionMagicAcceleration(9999)
             .withMotionMagicExpo_kV(01)
             .withMotionMagicExpo_kA(0.01));
 
     extensionMotor2.getConfigurator()
         .apply(new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(0)
+            .withMotionMagicCruiseVelocity(2)
             .withMotionMagicAcceleration(9999)
             .withMotionMagicExpo_kV(01)
             .withMotionMagicExpo_kA(0.01));
+    zeroTimer = new Timer();
   }
 
   public Command setIntakeState(double rotationsDistance, double rotationsPerSecond) {
@@ -143,6 +150,32 @@ public class Intake extends SubsystemBase {
         });
   }
 
+  public Command driverIntake() {
+    return run(
+        () -> {
+          zeroTimer.start();
+          desiredExtensionRotations = EXTEND_DISTANCE;
+          desiredIntakeSpeed = INTAKE_SPEED;
+
+          intakeMotor.setControl(new VelocityVoltage(INTAKE_SPEED));
+
+          if (zeroTimer.get() < 0.1) {
+            extensionMotor.setControl(new VoltageOut(3));
+            extensionMotor2.setControl(new VoltageOut(3));
+            extensionMotor.setPosition(EXTEND_DISTANCE);
+            extensionMotor2.setPosition(EXTEND_DISTANCE);
+          } else {
+            extensionMotor.setPosition(EXTEND_DISTANCE);
+            extensionMotor2.setPosition(EXTEND_DISTANCE);
+            extensionMotor.setControl(new PositionDutyCycle(EXTEND_DISTANCE));
+            extensionMotor2.setControl(new PositionDutyCycle(EXTEND_DISTANCE));
+          }
+        }).finallyDo(() -> {
+          zeroTimer.stop();
+          zeroTimer.reset();
+        });
+  }
+
   public Command zeroExtension() {
     return startEnd(
         () -> {
@@ -169,7 +202,7 @@ public class Intake extends SubsystemBase {
           extensionMotor.setPosition(EXTEND_DISTANCE);
           extensionMotor2.setPosition(EXTEND_DISTANCE);
           disableSafety = false;
-        });
+        }).withName("Zero");
   }
 
   public Command setDefaultCommand() {
@@ -207,7 +240,7 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntake() {
     return new SequentialCommandGroup(
-        setIntakeState(8.5, 45).withTimeout(0.2),
+        setIntakeState(7.5, 45).withTimeout(0.2),
         setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
@@ -290,6 +323,12 @@ public class Intake extends SubsystemBase {
     DogLog.log(INTAKE_KEY + "desired distance", desiredExtensionRotations);
     DogLog.log(INTAKE_KEY + "desired speed", desiredIntakeSpeed);
     DogLog.log(INTAKE_KEY + "isSafe", isSafe());
+
+    if (getCurrentCommand() != null) {
+      DogLog.log("Subsystems/Intake/CurrentCommand", getCurrentCommand().getName());
+    } else {
+      DogLog.log("Subsystems/Intake/CurrentCommand", "None");
+    }
   }
 
   public boolean isSafe() {
