@@ -314,8 +314,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public Command joystickDrive(
       DoubleSupplier joystickX, DoubleSupplier joystickY, DoubleSupplier joystickThetaX) {
     FieldCentric request = new SwerveRequest.FieldCentric()
-        .withDeadband(0.0)
-        .withRotationalDeadband(0.0)
+        .withDeadband(0.05)
+        .withRotationalDeadband(0.05)
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     return run(
         () -> this.setControl(
