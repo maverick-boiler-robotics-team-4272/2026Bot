@@ -91,17 +91,17 @@ public class Intake extends SubsystemBase {
 
     extensionMotor.getConfigurator()
         .apply(new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(2)
+            .withMotionMagicCruiseVelocity(3)
             .withMotionMagicAcceleration(9999)
-            .withMotionMagicExpo_kV(01)
-            .withMotionMagicExpo_kA(0.01));
+            .withMotionMagicExpo_kV(3)
+            .withMotionMagicExpo_kA(0.1));
 
     extensionMotor2.getConfigurator()
         .apply(new MotionMagicConfigs()
-            .withMotionMagicCruiseVelocity(2)
+            .withMotionMagicCruiseVelocity(3)
             .withMotionMagicAcceleration(9999)
-            .withMotionMagicExpo_kV(01)
-            .withMotionMagicExpo_kA(0.01));
+            .withMotionMagicExpo_kV(3)
+            .withMotionMagicExpo_kA(0.1));
     zeroTimer = new Timer();
   }
 
@@ -247,10 +247,18 @@ public class Intake extends SubsystemBase {
         }).finallyDo(() -> disableSafety = false);
   }
 
+  public Command agitateIntakeSlow() {
+    return new SequentialCommandGroup(
+        setIntakeState(7.5, 45).withTimeout(0.5),
+        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.5)).repeatedly()
+        .beforeStarting(() -> {
+          disableSafety = true;
+        }).finallyDo(() -> disableSafety = false);
+  }
+
   public Command agitateIntakeMM() {
     return new SequentialCommandGroup(
-        setIntakeStateMotionMagic(8.5, 45).withTimeout(0.2),
-        setIntakeStateMotionMagic(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.2)).repeatedly()
+        setIntakeStateMotionMagic(4, 45)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);

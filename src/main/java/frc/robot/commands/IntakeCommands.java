@@ -10,17 +10,10 @@ import frc.robot.subsystems.Intake;
 
 public class IntakeCommands {
     public static Command intakeCommand(Intake intake, CommandSwerveDrivetrain drive, DoubleSupplier x, DoubleSupplier y, DoubleSupplier theta) {
-        return new ParallelCommandGroup(
-            new ConditionalCommand(
-                new ParallelCommandGroup(
-                    intake.driverIntake(),
-                    drive.joystickDrive(() -> x.getAsDouble() / 3, () -> y.getAsDouble() / 3, () -> theta.getAsDouble() / 3)
-                ), 
+        return 
                 new ParallelCommandGroup(
                     intake.driverIntake(),
                     drive.joystickDrive(x, y, theta)
-                ),
-                drive.isInOpposingAllianceZone())
-        ).repeatedly();
+                );
     }
 }

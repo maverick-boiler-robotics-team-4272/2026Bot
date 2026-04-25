@@ -135,7 +135,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 0.075,
+                                                                                            : 0.085,
                                                     () -> drive.getState().Pose
                                                             .getY() > Units.inchesToMeters(
                                                                     135)
@@ -144,7 +144,7 @@ public class ShooterCommands {
                                                                             - Units
                                                                                     .inchesToMeters(135)
                                                                                             ? 0
-                                                                                            : 85)))
+                                                                                            : 130)))
                                     .until(() -> !drive.isInOpposingAllianceZone()
                                             .getAsBoolean()))));
         }
