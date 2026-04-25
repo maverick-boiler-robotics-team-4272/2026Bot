@@ -92,7 +92,7 @@ public class ShooterCommandsCopyCopy
                     shooter.defer(() -> Commands.repeatingSequence(
                             shooter.setShooterState(
                                     () -> {
-                                        return SCORE_ANGLE_LOOKUP_FAR
+                                        return SCORE_ANGLE_LOOKUP
                                                                         .get(
                                                                                 drive.getState().Pose
                                                                                         .getTranslation()

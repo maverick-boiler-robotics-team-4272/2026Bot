@@ -24,8 +24,8 @@ public class ShooterCommands {
                                 drive.defer(() -> Commands.repeatingSequence(
                                 new ConditionalCommand(drive.pointTowardsPoint(
                                         () -> getHubLocation().getTranslation(),
-                                                                joystickX,
-                                        joystickY),
+                                                joystickX,
+                                                joystickY),
                                         drive.pointTowardsPoint(
                                                 () -> drive.getState().Pose.nearest(
                                                         getShuttlePoses())
@@ -36,8 +36,8 @@ public class ShooterCommands {
 
                         ))
                                 .until(drive::isAtDesiredAngle)
-                                .andThen(drive.defer(() -> drive.applyRequest(
-                                        () -> new SwerveRequest.SwerveDriveBrake())))
+                                .andThen(drive.defer(() -> drive.applyRequest(() -> new SwerveRequest.SwerveDriveBrake())))
+
                                 .until(() -> !drive.isAtDesiredAngle() || joystickX.getAsDouble() != 0.0 || joystickY.getAsDouble() != 0.0).repeatedly(),
                         setDesiredShooterStates(shooter, drive));
         }
@@ -55,7 +55,7 @@ public class ShooterCommands {
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
                                         loader.loadBoth(50),
-                                        intake.agitateIntakeMM(),
+                                        intake.agitateIntake(),
                                         hopper.agitate(HOPPER_LOWER_SPEED,
                                                 HOPPER_UPPER_SPEED))
                                         .unless(() -> {
@@ -91,7 +91,7 @@ public class ShooterCommands {
                     shooter.defer(() -> Commands.repeatingSequence(
                             shooter.setShooterState(
                                     () -> {
-                                        return SCORE_ANGLE_LOOKUP_FAR
+                                        return SCORE_ANGLE_LOOKUP
                                                                         .get(
                                                                                 drive.getState().Pose
                                                                                         .getTranslation()

@@ -30,9 +30,11 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.robot.commands.IntakeCommands;
 import frc.robot.commands.ShooterCommands;
 import frc.robot.commands.ShooterCommandsCopy;
 import frc.robot.commands.ShooterCommandsCopyCopy;
+import frc.robot.commands.ShooterCommandsS;
 import frc.robot.constants.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Hopper;
@@ -87,12 +89,17 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    // joystick.leftTrigger().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
+    joystick.leftTrigger().whileTrue(IntakeCommands.intakeCommand(intake, drivetrain, joystick::getLeftX, joystick::getLeftY, joystick::getRightX));
+    
     joystick.rightTrigger().whileTrue(intake.barf());// checkmark
-    joystick.leftBumper().whileTrue(intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED));// checkmark
-    joystick.rightTrigger().whileTrue(intake.barf());
 
-    // joystick.leftBumper().whileTrue(drivetrain.doTrenches());
+    // joystick.leftBumper().whileTrue(ShooterCommandsS.aim(shooter, drivetrain,
+    //         joystick::getLeftX, joystick::getLeftY));
+    // joystick.leftBumper().whileTrue(ShooterCommandsS.fire(loader, intake, hopper,
+    //         shooter, drivetrain));
+    // joystick.leftBumper().whileTrue(ShooterCommandsS.dejam(loader, hopper,
+    // intake));
 
     // shoot rev
     joystick.a().whileTrue(
@@ -109,10 +116,7 @@ public class RobotContainer {
     // joystick.a().and(drivetrain::isAtDesiredAngle).whileTrue(
     // drivetrain.applyRequest(() -> brake)
     // );
-    // shoot and intake fuel
-    joystick.rightBumper().and(joystick.leftBumper()).whileTrue(
-        ShooterCommands.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain));
-
+    
     joystick.povLeft().whileTrue(
         intake.outZeroExtension());
 
@@ -127,6 +131,10 @@ public class RobotContainer {
     joystick.rightBumper().and(joystick.leftTrigger()).whileTrue(
       ShooterCommandsCopy.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
     );
+
+    joystick.leftTrigger().and(joystick.rightBumper()).whileTrue(
+        ShooterCommandsCopy.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
+      );
 
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
