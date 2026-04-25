@@ -16,7 +16,8 @@ public class SubsystemConstants {
 
     public static final String HOPPER_KEY = "Subsystems/Hopper/";
 
-    public static final int HOPPER_LOWER_SPEED =25;
+    public static final double HOPPER_LOWER_SPEED = 25;
+    public static final double HOPPER_LOWER_MAX_SPEED = 50; //Yeah Yeah... I know it is like 46, but this is a nice number to work with
     public static final double HOPPER_UPPER_SPEED = -50;
   }
 
@@ -41,12 +42,15 @@ public class SubsystemConstants {
     public static final InterpolatingDoubleTreeMap SHOOTER_VELOCITY_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(1.0, 36.686171), Map.entry(3.07, 51.0), Map.entry(4.95, 64.0));
       
-    public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP_FAR = InterpolatingDoubleTreeMap.ofEntries(
+    public static final InterpolatingDoubleTreeMap SCORE_ANGLE_LOOKUP = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(1.942, 0.0), Map.entry(3.07, 0.015), Map.entry(4.95, 0.04));
 
     public static final InterpolatingDoubleTreeMap TufF_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(1.0, 0.94)/*FAKE*/, Map.entry(2.0, 1.1), Map.entry(3.87, 1.2), Map.entry(4.98, 1.5), Map.entry(7.0, 1.7)/*FAKE*/);
    
+    public static final InterpolatingDoubleTreeMap TufF_TABLE_SHUTTLE = InterpolatingDoubleTreeMap.ofEntries(
+    Map.entry(1.0, 0.94)/*FAKE*/, Map.entry(2.0, 1.1), Map.entry(3.87, 1.2), Map.entry(4.98, 1.5), Map.entry(7.0, 1.7)/*FAKE*/);
+
     public static final InterpolatingDoubleTreeMap SHUTTLE_SPEED_TABLE = InterpolatingDoubleTreeMap.ofEntries(
         Map.entry(6.0, 40.0), Map.entry(8.9, 60.0), Map.entry(10.0, 80.0));
   }
