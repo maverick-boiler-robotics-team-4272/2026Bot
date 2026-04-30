@@ -249,8 +249,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntakeSlow() {
     return new SequentialCommandGroup(
-        setIntakeState(7.5, 45).withTimeout(0.5),
-        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.5)).repeatedly()
+        setIntakeState(7.5, 45).withTimeout(0.6),
+        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.6)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);

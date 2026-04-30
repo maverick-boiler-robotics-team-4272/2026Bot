@@ -68,7 +68,7 @@ public class SubsystemConstants {
   public static class DrivetrainConstants {
     public static final double WHEEL_COF = 1.1;
     public static final double MAX_DRIVE_SPEED = 5; 
-    public static final double MAX_ROTATIONAL_SPEED = 7.5;
+    public static final double MAX_ROTATIONAL_SPEED = 10;
     public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(2, MAX_DRIVE_SPEED, WHEEL_COF,
         DCMotor.getKrakenX60Foc(4), 50, 4);
 

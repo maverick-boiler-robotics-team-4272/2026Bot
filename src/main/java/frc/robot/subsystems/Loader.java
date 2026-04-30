@@ -96,7 +96,7 @@ public class Loader extends SubsystemBase {
   }
 
   public BooleanSupplier isJammed() {
-    return () -> rightJam || leftJam;
+    return () -> false;
   }
 
   public Command dejam() {

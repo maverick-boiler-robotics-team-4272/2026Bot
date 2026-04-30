@@ -111,7 +111,9 @@ public class ShooterCommands {
                                     () -> Commands.repeatingSequence(shooter.setShooterState(
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
-                                                            .inchesToMeters(135) ? 0 : 0.08,
+                                                            .inchesToMeters(135)
+                                                                    ? 0
+                                                                    : 0.085,
                                             () -> drive.getState().Pose.getY() > Units.inchesToMeters(135)
                                                     && drive.getState().Pose.getY() < FIELD_WIDTH_M - Units
                                                             .inchesToMeters(135)
@@ -148,4 +150,63 @@ public class ShooterCommands {
                                     .until(() -> !drive.isInOpposingAllianceZone()
                                             .getAsBoolean()))));
         }
+
+        public static Command ffShuttle(Shooter shooter, CommandSwerveDrivetrain drive, Loader loader, Hopper hopper,
+                 DoubleSupplier x, DoubleSupplier y) {
+            return new ParallelCommandGroup(
+                    drive.pointTowardsMe(x, y),
+                    shooter.setShooterState(0.095, 120),
+                    new SequentialCommandGroup(
+                            new ParallelCommandGroup(
+                                    loader.loadBoth(-50))
+                                    .withTimeout(0.2),
+                            Commands.repeatingSequence(
+                                    new ParallelCommandGroup(
+                                            hopper.agitate(HOPPER_LOWER_SPEED / 2,
+                                                    HOPPER_UPPER_SPEED),
+                                            loader.loadBoth(50))
+                                            .unless(() -> {
+                                                return drive.getState().Pose
+                                                        .getY() > Units.inchesToMeters(
+                                                                135)
+                                                        && drive.getState().Pose
+                                                                .getY() < FIELD_WIDTH_M
+                                                                        - Units
+                                                                                .inchesToMeters(135)
+                                                        && drive.isNotInAllianceZone()
+                                                                .getAsBoolean();
+                                            }))
+                                    .repeatedly())
+
+            );
+        }
+
+public static Command ffShuttleNoDrive(Shooter shooter, CommandSwerveDrivetrain drive, Loader loader, Hopper hopper,
+        DoubleSupplier x, DoubleSupplier y) {
+   return new ParallelCommandGroup(
+           shooter.setShooterState(0.095, 120),
+           new SequentialCommandGroup(
+                   new ParallelCommandGroup(
+                           loader.loadBoth(-50))
+                           .withTimeout(0.2),
+                   Commands.repeatingSequence(
+                           new ParallelCommandGroup(
+                                   hopper.agitate(HOPPER_LOWER_SPEED / 2,
+                                           HOPPER_UPPER_SPEED),
+                                   loader.loadBoth(50))
+                                   .unless(() -> {
+                                       return drive.getState().Pose
+                                               .getY() > Units.inchesToMeters(
+                                                       135)
+                                               && drive.getState().Pose
+                                                       .getY() < FIELD_WIDTH_M
+                                                               - Units
+                                                                       .inchesToMeters(135)
+                                               && drive.isNotInAllianceZone()
+                                                       .getAsBoolean();
+                                   }))
+                           .repeatedly())
+
+   );
+}
 }
