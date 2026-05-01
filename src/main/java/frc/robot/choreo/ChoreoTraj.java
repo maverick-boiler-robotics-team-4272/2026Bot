@@ -101,7 +101,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj Right_2nd_Path = new ChoreoTraj(
         "Right_2nd_Path",
         OptionalInt.empty(),
-        6.4849,
+        6.66674,
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266)),
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266))
     );
