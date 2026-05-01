@@ -297,20 +297,20 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public BooleanSupplier isInAllianceZone() {
     return (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red
         ? () -> {
-          return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5);
+          return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(178.5);
         }
         : () -> {
-          return getState().Pose.getX() < Units.inchesToMeters(158.5);
+          return getState().Pose.getX() < Units.inchesToMeters(178.5);
         });
   }
 
   public BooleanSupplier isNotInAllianceZone() {
     return (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red
         ? () -> {
-          return !(getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5));
+          return !(getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(178.5));
         }
         : () -> {
-          return !(getState().Pose.getX() < Units.inchesToMeters(158.5));
+          return !(getState().Pose.getX() < Units.inchesToMeters(178.5));
         });
   }
 
@@ -401,15 +401,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                   .withVelocityY(velY)
                   .withTargetDirection(pose.getRotation().plus(Rotation2d.k180deg)));
         });
-  }
-
-  public Pose2d whereShoot() {
-    if (getState().Pose.getY() > Units.inchesToMeters(158.5)
-        && getState().Pose.getY() < FIELD_LENGTH_M - Units.inchesToMeters(158.5)) {
-      return getState().Pose.nearest(getShuttlePoses());
-    } else {
-      return getHubLocation();
-    }
   }
 
    public boolean isAtDesiredAngle() {

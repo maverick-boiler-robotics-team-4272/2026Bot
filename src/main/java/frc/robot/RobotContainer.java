@@ -246,6 +246,7 @@ public class RobotContainer {
     PathPlannerPath secondSwipTrench;
     PathPlannerPath middle;
     PathPlannerPath depAutoZoneStart;
+    PathPlannerPath OnlyBumpFollow;
 
     try {
       secondSwipFarTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far_Trench");
@@ -263,6 +264,7 @@ public class RobotContainer {
       secondSwipTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Trench");
       middle = PathPlannerPath.fromChoreoTrajectory("Middle");
       depAutoZoneStart = PathPlannerPath.fromChoreoTrajectory("Depauto_Zone_Start");
+      OnlyBumpFollow = PathPlannerPath.fromChoreoTrajectory("Zone_Start_Only_Bump");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -342,6 +344,7 @@ public class RobotContainer {
     pathOne.addOption("Zone Start Trench", ZoneStartTrench);
     pathOne.addOption(("Middle Start"), middle);
     pathOne.addOption("Depauto Zone Start", depAutoZoneStart);
+    pathOne.addOption("Only Bump Follow", OnlyBumpFollow);
 
     pathTwo.setDefaultOption("second path close", secondSwip);
     pathTwo.addOption("second path far", secondSwipFar);

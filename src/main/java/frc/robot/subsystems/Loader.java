@@ -102,8 +102,8 @@ public class Loader extends SubsystemBase {
 
   public Command dejam() {
     return run(() -> {
-      motor1.setControl(new VelocityVoltage(-40));
-      motor2.setControl(new VelocityVoltage(-40));
+      motor1.setControl(new VelocityVoltage(-40).withEnableFOC(true));
+      motor2.setControl(new VelocityVoltage(-40).withEnableFOC(true));
     }).withTimeout(0.2).finallyDo(() -> {
       leftJam = false;
       rightJam = false;
