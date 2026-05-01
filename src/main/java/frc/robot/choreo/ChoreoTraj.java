@@ -94,14 +94,14 @@ public record ChoreoTraj(
     public static final ChoreoTraj New_Right_Start = new ChoreoTraj(
         "New_Right_Start",
         OptionalInt.empty(),
-        4.19553,
+        4.499,
         new Pose2d(4.4, 0.45, Rotation2d.fromRadians(-1.5708)),
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266))
     );
     public static final ChoreoTraj Right_2nd_Path = new ChoreoTraj(
         "Right_2nd_Path",
         OptionalInt.empty(),
-        6.66674,
+        6.78662,
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266)),
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266))
     );
@@ -115,7 +115,7 @@ public record ChoreoTraj(
     public static final ChoreoTraj Right_2nd_Path_Far_Bad = new ChoreoTraj(
         "Right_2nd_Path_Far_Bad",
         OptionalInt.empty(),
-        6.58926,
+        6.70077,
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266)),
         new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266))
     );
@@ -147,6 +147,13 @@ public record ChoreoTraj(
         new Pose2d(3.65, 0.4, Rotation2d.fromRadians(-1.5708)),
         new Pose2d(1.8, 1, Rotation2d.fromRadians(0.85219))
     );
+    public static final ChoreoTraj Zone_Start_Only_Bump = new ChoreoTraj(
+        "Zone_Start_Only_Bump",
+        OptionalInt.empty(),
+        5.91566,
+        new Pose2d(3.61239, 2.16356, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(1.8, 1, Rotation2d.fromRadians(0.85219))
+    );
     public static final ChoreoTraj Zone_Start_Trench = new ChoreoTraj(
         "Zone_Start_Trench",
         OptionalInt.empty(),
@@ -154,12 +161,19 @@ public record ChoreoTraj(
         new Pose2d(3.61239, 2.04662, Rotation2d.fromRadians(-1.5708)),
         new Pose2d(1.8, 1, Rotation2d.fromRadians(0.7854))
     );
-    public static final ChoreoTraj Zone_Start_Only_Bump = new ChoreoTraj(
-        "Zone_Start_Only_Bump",
+    public static final ChoreoTraj Weird_One = new ChoreoTraj(
+        "Weird_One",
         OptionalInt.empty(),
-        5.91566,
-        new Pose2d(3.61239, 2.16356, Rotation2d.fromRadians(-1.5708)),
-        new Pose2d(1.8, 1, Rotation2d.fromRadians(0.85219))
+        4.32784,
+        new Pose2d(3.61561, 0.42706, Rotation2d.fromRadians(-1.5708)),
+        new Pose2d(2.06393, 7.15465, Rotation2d.fromRadians(-0.90251))
+    );
+    public static final ChoreoTraj Right_2nd_Path_Trench_Shallow = new ChoreoTraj(
+        "Right_2nd_Path_Trench_Shallow",
+        OptionalInt.empty(),
+        6.14692,
+        new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266)),
+        new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.87266))
     );
 
     /**
@@ -185,8 +199,10 @@ public record ChoreoTraj(
         Map.entry("Right_2nd_Path_shallow", Right_2nd_Path_shallow),
         Map.entry("Right_2nd_Path_Trench", Right_2nd_Path_Trench),
         Map.entry("Zone_Start_Bump", Zone_Start_Bump),
+        Map.entry("Zone_Start_Only_Bump", Zone_Start_Only_Bump),
         Map.entry("Zone_Start_Trench", Zone_Start_Trench),
-        Map.entry("Zone_Start_Only_Bump", Zone_Start_Only_Bump)
+        Map.entry("Weird_One", Weird_One),
+        Map.entry("Right_2nd_Path_Trench_Shallow", Right_2nd_Path_Trench_Shallow)
     );
 
     /**
