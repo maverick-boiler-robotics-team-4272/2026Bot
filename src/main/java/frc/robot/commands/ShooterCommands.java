@@ -54,7 +54,7 @@ public class ShooterCommands {
                                 .withTimeout(0.2).onlyWhile(() -> !shooter.isAtDesiredSpeed()),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
-                                        loader.loadBoth(50),
+                                        loader.loadBoth(40),
                                         intake.agitateIntake(),
                                         hopper.agitate(HOPPER_LOWER_SPEED,
                                                 HOPPER_UPPER_SPEED))
@@ -73,7 +73,7 @@ public class ShooterCommands {
                 // new WaitUntilCommand(0.2),
                 Commands.repeatingSequence(
                 new ParallelCommandGroup(
-                                loader.loadBoth(70),
+                                    loader.loadBoth(40),
                                 intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED),
                                                 hopper.agitate(HOPPER_LOWER_SPEED,
                                                                 HOPPER_UPPER_SPEED))
@@ -104,7 +104,7 @@ public class ShooterCommands {
                                                                                 .getTranslation()
                                                                                 .getDistance(getHubLocation()
                                                                                                                     .getTranslation()))
-                                                                                    - 1.76; // TODO: 3 clicks
+                                                - 1.0;
                                     })
                                     .until(drive.isNotInAllianceZone()),
                             shooter.defer(
@@ -151,11 +151,12 @@ public class ShooterCommands {
                                             .getAsBoolean()))));
         }
 
-        public static Command ffShuttle(Shooter shooter, CommandSwerveDrivetrain drive, Loader loader, Hopper hopper,
+        public static Command ffShuttle(Shooter shooter, CommandSwerveDrivetrain drive, Loader loader, Intake intake,
+                Hopper hopper,
                  DoubleSupplier x, DoubleSupplier y) {
             return new ParallelCommandGroup(
                     drive.pointTowardsMe(x, y),
-                    shooter.setShooterState(0.095, 120),
+                    shooter.setShooterState(0.11, 120),
                     new SequentialCommandGroup(
                             new ParallelCommandGroup(
                                     loader.loadBoth(-50))
@@ -164,7 +165,8 @@ public class ShooterCommands {
                                     new ParallelCommandGroup(
                                             hopper.agitate(HOPPER_LOWER_SPEED / 2,
                                                     HOPPER_UPPER_SPEED),
-                                            loader.loadBoth(50))
+                                            intake.noIntakAgitate(),
+                                            loader.loadBoth(100))
                                             .unless(() -> {
                                                 return drive.getState().Pose
                                                         .getY() > Units.inchesToMeters(
@@ -181,10 +183,11 @@ public class ShooterCommands {
             );
         }
 
-public static Command ffShuttleNoDrive(Shooter shooter, CommandSwerveDrivetrain drive, Loader loader, Hopper hopper,
+        public static Command ffShuttleNoDrive(Shooter shooter, CommandSwerveDrivetrain drive, Loader loader,
+                Intake intake, Hopper hopper,
         DoubleSupplier x, DoubleSupplier y) {
    return new ParallelCommandGroup(
-           shooter.setShooterState(0.095, 120),
+           shooter.setShooterState(0.11, 120),
            new SequentialCommandGroup(
                    new ParallelCommandGroup(
                            loader.loadBoth(-50))
@@ -193,7 +196,8 @@ public static Command ffShuttleNoDrive(Shooter shooter, CommandSwerveDrivetrain 
                            new ParallelCommandGroup(
                                    hopper.agitate(HOPPER_LOWER_SPEED / 2,
                                            HOPPER_UPPER_SPEED),
-                                   loader.loadBoth(50))
+                                   intake.noIntakAgitate(),
+                                   loader.loadBoth(100))
                                    .unless(() -> {
                                        return drive.getState().Pose
                                                .getY() > Units.inchesToMeters(

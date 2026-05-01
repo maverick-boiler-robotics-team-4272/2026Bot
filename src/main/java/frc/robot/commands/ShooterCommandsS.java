@@ -37,7 +37,7 @@ public class ShooterCommandsS{
                 Commands.repeatingSequence(
                     //default is run 
                     new ParallelRaceGroup(
-                        loader.loadBoth(70),
+                        loader.loadBoth(40),
                         intake.agitateIntake(),
                         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED)
                     ).until(

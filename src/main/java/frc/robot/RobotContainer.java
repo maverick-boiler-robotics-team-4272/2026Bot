@@ -140,7 +140,7 @@ public class RobotContainer {
 
     joystick.y().whileTrue(drivetrain.applyRequest(() -> brake));// sure
 
-    joystick.b().whileTrue(ShooterCommands.ffShuttle(shooter, drivetrain, loader, hopper, joystick::getLeftX,
+    joystick.b().whileTrue(ShooterCommands.ffShuttle(shooter, drivetrain, loader, intake, hopper, joystick::getLeftX,
             joystick::getLeftY));
     // joystick.b().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));// not
     // me
@@ -183,7 +183,7 @@ public class RobotContainer {
     // operator.x().whileTrue(
     // hopper.agitate(-50, -30));
 
-    operator.b().whileTrue(ShooterCommands.ffShuttleNoDrive(shooter, drivetrain, loader, hopper, joystick::getLeftX, joystick::getLeftY));
+    operator.b().whileTrue(ShooterCommands.ffShuttleNoDrive(shooter, drivetrain, loader, intake, hopper, joystick::getLeftX, joystick::getLeftY));
 
     operator.a().whileTrue(
         shooter.setShooterState(0.01, 43));
@@ -191,11 +191,11 @@ public class RobotContainer {
         //power conserving runner
     operator.x().whileTrue(new ParallelCommandGroup(
             hopper.agitate(HOPPER_LOWER_SPEED/2, HOPPER_UPPER_SPEED),
-        loader.loadBoth(70)).repeatedly());
+        loader.loadBoth(40)).repeatedly());
     operator.y().whileTrue(new ParallelCommandGroup(
             intake.agitateIntake(),
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
-        loader.loadBoth(70)).repeatedly());
+        loader.loadBoth(40)).repeatedly());
   }
 
   // public void registerNamedCommands() {
@@ -245,6 +245,7 @@ public class RobotContainer {
     PathPlannerPath acrossTheBumb;
     PathPlannerPath secondSwipTrench;
     PathPlannerPath middle;
+    PathPlannerPath depAutoZoneStart;
 
     try {
       secondSwipFarTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Far_Trench");
@@ -261,6 +262,7 @@ public class RobotContainer {
       acrossTheBumb = PathPlannerPath.fromChoreoTrajectory("across_The_Bumb");
       secondSwipTrench = PathPlannerPath.fromChoreoTrajectory("Right_2nd_Path_Trench");
       middle = PathPlannerPath.fromChoreoTrajectory("Middle");
+      depAutoZoneStart = PathPlannerPath.fromChoreoTrajectory("Depauto_Zone_Start");
     } catch (Exception e) {
       throw new RuntimeException("Failed to load Choreo trajectory: " + e.getMessage());
     }
@@ -339,12 +341,14 @@ public class RobotContainer {
     pathOne.addOption("Zone Start Bump", ZoneStartBump);
     pathOne.addOption("Zone Start Trench", ZoneStartTrench);
     pathOne.addOption(("Middle Start"), middle);
+    pathOne.addOption("Depauto Zone Start", depAutoZoneStart);
 
     pathTwo.setDefaultOption("second path close", secondSwip);
     pathTwo.addOption("second path far", secondSwipFar);
     pathTwo.addOption("second path far trench", secondSwipFarTrench);
     pathTwo.addOption("second Swip Shallow", secondSwipShallow);
-    pathTwo.addOption("Depot", newDepot);
+    pathTwo.addOption("normal depot",depot);
+    pathTwo.addOption("Shooting on the fly Depot", newDepot);
     pathTwo.addOption("Across The Bumb", acrossTheBumb);
     pathTwo.addOption("Second Swip Trench", secondSwipTrench);
 
@@ -356,6 +360,7 @@ public class RobotContainer {
     pathThree.addOption("Depot", newDepot);
     pathThree.addOption("Across The Bumb", acrossTheBumb);
     pathThree.addOption("Second Swip Trench", secondSwipTrench);
+    pathThree.addOption("normal depot",depot);
 
     // autoChooser.setDefaultOption("Example", exampleAuto);
     // autoChooser.addOption("Right One and Outpost Cycle",

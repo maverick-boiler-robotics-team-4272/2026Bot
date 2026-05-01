@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
 
     DogLog.setOptions(
         new DogLogOptions().withNtPublish(false));
-    RobotController.setBrownoutVoltage(6);
+    RobotController.setBrownoutVoltage(6.1);
     DriverStation.silenceJoystickConnectionWarning(true);
   }
 

@@ -121,17 +121,6 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command setIntakeStateOUT(double rotationsDistance, double rotationsPerSecond) {
-    return run(
-        () -> {
-          desiredExtensionRotations = rotationsDistance;
-          desiredIntakeSpeed = rotationsPerSecond;
-          extensionMotor.setControl(new VoltageOut(12).withEnableFOC(true));
-          extensionMotor2.setControl(new VoltageOut(12).withEnableFOC(true));
-          intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
-        }).finallyDo(() -> extensionMotor.setPosition(EXTEND_DISTANCE));
-  }
-
   public Command setIntakeState(DoubleSupplier rotationsDistance, DoubleSupplier rotationsPerSecond) {
     return run(
         () -> {
@@ -174,6 +163,25 @@ public class Intake extends SubsystemBase {
           zeroTimer.stop();
           zeroTimer.reset();
         });
+  }
+
+  public Command setExtendState(double distance) {
+    return run(
+      () -> {
+        extensionMotor.setControl(new PositionVoltage(distance));
+        extensionMotor2.setControl(new PositionVoltage(distance));
+        intakeMotor.setControl(new VoltageOut(0));
+      }
+    );
+  }
+
+  public Command noIntakAgitate() {
+    return new SequentialCommandGroup(
+      setExtendState(7.5).withTimeout(0.2),
+      setExtendState(EXTEND_DISTANCE - 0.1).withTimeout(0.2)).repeatedly()
+      .beforeStarting(() -> {
+        disableSafety = true;
+      }).finallyDo(() -> disableSafety = false);
   }
 
   public Command zeroExtension() {
