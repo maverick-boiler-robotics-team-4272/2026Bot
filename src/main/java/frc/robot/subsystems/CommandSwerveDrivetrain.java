@@ -333,8 +333,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(
         () -> this.setControl(
             request
-                .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
-                .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
+                .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED * 0.33)
+                .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED * 0.33)
                 .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)));
   }
 

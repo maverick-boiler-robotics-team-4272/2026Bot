@@ -104,13 +104,13 @@ public class RobotContainer {
     // intake));
 
     // shoot rev
-    joystick.a().whileTrue(
-        ShooterCommands.teleHalfShooterCommand(shooter,
-            drivetrain, joystick::getLeftX,
-            joystick::getLeftY)); // IT WORKS!!!!
-    // shoot with intake agitation
-    joystick.a().whileTrue(
-        ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
+    // joystick.a().whileTrue(
+    //     ShooterCommands.teleHalfShooterCommand(shooter,
+    //         drivetrain, joystick::getLeftX,
+    //         joystick::getLeftY)); // IT WORKS!!!!
+    // // shoot with intake agitation
+    // joystick.a().whileTrue(
+    //     ShooterCommands.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain));
     joystick.povUp().whileTrue(
         intake.agitateIntakeMM()
     );
@@ -125,16 +125,16 @@ public class RobotContainer {
     joystick.povRight().whileTrue(
         shooter.zeroHood());
 
-    joystick.rightBumper().whileTrue(
+    joystick.a().whileTrue(
         ShooterCommandsCopy.teleHalfShooterCommand(shooter, drivetrain, joystick::getLeftX, joystick::getLeftY));
-    joystick.rightBumper().whileTrue(
+    joystick.a().whileTrue(
         ShooterCommandsCopy.tele2ndHalfShooterCommand(loader, intake, hopper, shooter, drivetrain)
     );
-    joystick.rightBumper().and(joystick.leftTrigger()).whileTrue(
+    joystick.a().and(joystick.leftTrigger()).whileTrue(
       ShooterCommandsCopy.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
     );
 
-    joystick.leftTrigger().and(joystick.rightBumper()).whileTrue(
+    joystick.leftTrigger().and(joystick.a()).whileTrue(
         ShooterCommandsCopy.tele2ndHalfShooterCommandWithIntake(loader, intake, hopper, shooter, drivetrain)
       );
 
