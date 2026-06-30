@@ -44,6 +44,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Loader;
 import frc.robot.subsystems.Shooter;
 
+
 public class RobotContainer {
   private final Hopper hopper = new Hopper();
   private final Intake intake = new Intake();
@@ -53,6 +54,8 @@ public class RobotContainer {
   private final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
   private SendableChooser<Command> autoChooser;
+  //private SendableChooser<Command> speed;
+  //private SendableChooser<Command> angle;
   private SendableChooser<PathPlannerPath> pathOne;
   private SendableChooser<PathPlannerPath> pathTwo;
   private SendableChooser<PathPlannerPath> pathThree;
@@ -186,7 +189,7 @@ public class RobotContainer {
     operator.b().whileTrue(ShooterCommands.ffShuttleNoDrive(shooter, drivetrain, loader, intake, hopper, joystick::getLeftX, joystick::getLeftY));
 
     operator.a().whileTrue(
-        shooter.setShooterState(0.01, 43));
+        shooter.setShooterState(15,100));
 
         //power conserving runner
     operator.x().whileTrue(new ParallelCommandGroup(
@@ -195,7 +198,7 @@ public class RobotContainer {
     operator.y().whileTrue(new ParallelCommandGroup(
             intake.agitateIntake(),
         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED),
-        loader.loadBoth(40)).repeatedly());
+        loader.loadBoth(67)).repeatedly());
   }
 
   // public void registerNamedCommands() {
@@ -210,13 +213,18 @@ public class RobotContainer {
     pathOne = new SendableChooser<>();
     pathTwo = new SendableChooser<>();
     pathThree = new SendableChooser<>();
+    //speed = new SendableChooser<>();
+    //angle = new SendableChooser<>();
     SmartDashboard.putData("Auto chooser", autoChooser);
     SmartDashboard.putData("First Path", pathOne);
     SmartDashboard.putData("Second Path", pathTwo);
     SmartDashboard.putData("Third Path", pathThree);
 
-    // SmartDashboard.putNumber("ANGLE", 0.02);
-    // SmartDashboard.putNumber("SPEED", 50);
+    SmartDashboard.putNumber("ANGLE", 0.02);
+    SmartDashboard.putNumber("SPEED", 10);
+
+    //speed.addOption("10", 10);
+
 
     SmartDashboard.putNumber("Wait Time", 0.0);
     SmartDashboard.putNumber("Shoot One", 5.0);
@@ -232,6 +240,7 @@ public class RobotContainer {
     // }
 
     PathPlannerPath ControledChaos;
+    //spelling is fun
     PathPlannerPath newStart;
     PathPlannerPath secondSwip;
     PathPlannerPath secondSwipShallow;
