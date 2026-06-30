@@ -37,22 +37,22 @@ public class Loader extends SubsystemBase {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
-        .withIdleMode(NeutralModeValue.Brake)
-        .withSlot0PIDSGAV(0.75, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
-    motor1.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
+    motor1.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(1));
 
     motor2 = KrakenBuilder.create(LOADER_MOTOR_2_ID, CAN_BUS, "Loader", "Loader Motor 2") // Left
         .withCurrentLimit(
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true))
-        .withIdleMode(NeutralModeValue.Brake)
-        .withSlot0PIDSGAV(0.75, 0, 0.0, 0, 0, 0, 0.12413 * 24 / 11)
+        .withIdleMode(NeutralModeValue.Coast)
+        .withSlot0PIDSGAV(0.0, 0, 0.0, 0, 0, 0, 0.12413)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
-    motor2.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(24.0 / 11.0));
+    motor2.getConfigurator().apply(new FeedbackConfigs().withSensorToMechanismRatio(1));
 
     loadLeftTimer = new Timer();
     loadRightTimer = new Timer();
@@ -65,44 +65,45 @@ public class Loader extends SubsystemBase {
     return run(
         () -> {
           this.desiredSpeed = speed;
-          loadLeftTimer.start();
-          loadRightTimer.start();
-          if (loadLeftTimer.get() < 2) {
-            leftJam = false;
-          } else if (motor2.getSupplyCurrent().getValueAsDouble() > 14) {
-            loadLeftTimer.restart();
-            leftJam = false;
-          } else {
-            leftJam = true;
-          }
+          // loadLeftTimer.start();
+          // loadRightTimer.start();
+          // if (loadLeftTimer.get() < 2) {
+          //   leftJam = false;
+          // } else if (motor2.getSupplyCurrent().getValueAsDouble() > 14) {
+          //   loadLeftTimer.restart();
+          //   leftJam = false;
+          // } else {
+          //   leftJam = true;
+          // }
 
-          if (loadRightTimer.get() < 2) {
-            rightJam = false;
-          } else if (motor1.getSupplyCurrent().getValueAsDouble() > 14) {
-            loadRightTimer.restart();
-            rightJam = false;
-          } else {
-            rightJam = true;
-          }
+          // if (loadRightTimer.get() < 2) {
+          //   rightJam = false;
+          // } else if (motor1.getSupplyCurrent().getValueAsDouble() > 14) {
+          //   loadRightTimer.restart();
+          //   rightJam = false;
+          // } else {
+          //   rightJam = true;
+          // }
 
           motor1.setControl(new VelocityVoltage(speed).withEnableFOC(true));
           motor2.setControl(new VelocityVoltage(speed).withEnableFOC(true));
-        }).until(isJammed()).finallyDo(() -> {
-          loadLeftTimer.stop();
-          loadRightTimer.stop();
-          loadLeftTimer.reset();
-          loadRightTimer.reset();
         });
+        // .until(isJammed()).finallyDo(() -> {
+        //   loadLeftTimer.stop();
+        //   loadRightTimer.stop();
+        //   loadLeftTimer.reset();
+        //   loadRightTimer.reset();
+        // });
   }
 
   public BooleanSupplier isJammed() {
-    return () -> rightJam || leftJam;
+    return () -> false;
   }
 
   public Command dejam() {
     return run(() -> {
-      motor1.setControl(new VelocityVoltage(-50));
-      motor2.setControl(new VelocityVoltage(-50));
+      motor1.setControl(new VelocityVoltage(-40).withEnableFOC(true));
+      motor2.setControl(new VelocityVoltage(-40).withEnableFOC(true));
     }).withTimeout(0.2).finallyDo(() -> {
       leftJam = false;
       rightJam = false;
@@ -116,6 +117,6 @@ public class Loader extends SubsystemBase {
   @Override
   public void periodic() {
     DogLog.log(LOADER_KEY + "Speed", desiredSpeed);
-    DogLog.log(LOADER_KEY + "Jammed", isJammed().getAsBoolean());
+    // DogLog.log(LOADER_KEY + "Jammed", isJammed().getAsBoolean());
   }
 }

@@ -14,7 +14,7 @@ public final class ChoreoVars {
 
 
     public static final class Poses {
-        public static final Pose2d Depot_Shoot = new Pose2d(2, 1, Rotation2d.fromRadians(0));
+        public static final Pose2d Depot_Shoot = new Pose2d(1.8, 1, Rotation2d.fromRadians(0.7853982));
         public static final Pose2d Double_Swipe_Shoot = new Pose2d(2.4, 1.3, Rotation2d.fromRadians(0.8726646));
     }
 }

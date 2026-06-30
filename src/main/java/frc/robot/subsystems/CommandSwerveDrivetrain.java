@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Vision;
@@ -65,6 +66,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   Vision cameraD = new Vision(this::addVisionMeasurement, CAMERA_D, CAMERA_D_TRANSFORM);
   Vision[] cameras = { cameraA, cameraB, cameraC, cameraD };
   Rotation2d desriedAngle = Rotation2d.kZero;
+
+  private boolean sotfMode = false;
 
   /* Blue alliance sees forward as 0 degrees (toward red alliance wall) */
   private static final Rotation2d kBlueAlliancePerspectiveRotation = Rotation2d.kZero;
@@ -236,6 +239,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     // DCMotor.krakenX60,
     // 1))
     // TunerConstants...
+
     Translation2d[] moduleOffsets = new Translation2d[] {
         new Translation2d(TunerConstants.FrontLeft.LocationX, TunerConstants.FrontLeft.LocationY),
         new Translation2d(
@@ -244,6 +248,19 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
     RobotConfig config = new RobotConfig(ROBOT_MASS_KG, WHEEL_COF, MODULE_CONFIG, moduleOffsets);
+
+    PPHolonomicDriveController controller = new PPHolonomicDriveController(
+      new PIDConstants(DRIVE_P, DRIVE_I, DRIVE_D), // TODO: tune these drive pid constants
+      new PIDConstants(
+          ROTATION_P, ROTATION_I, ROTATION_D));
+    
+    // controller.setRotationTargetOverride(() -> {
+    //   if (sotfMode) {
+    //     return Optional.of(null)
+    //   } else {
+    //     return Optional.empty()
+    //   }
+    // });
 
     AutoBuilder.configure(
         () -> getState().Pose,
@@ -254,11 +271,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                 .withSpeeds(speeds)
                 .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
                 .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-        new PPHolonomicDriveController(
-            new PIDConstants(DRIVE_P, DRIVE_I, DRIVE_D), // TODO: tune these drive pid constants
-            new PIDConstants(
-                ROTATION_P, ROTATION_I, ROTATION_D)
-        ),
+        controller,
         config,
         () -> {
           var alliance = DriverStation.getAlliance();
@@ -284,30 +297,30 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
   public BooleanSupplier isInAllianceZone() {
     return (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red
         ? () -> {
-          return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5);
+          return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(178.5);
         }
         : () -> {
-          return getState().Pose.getX() < Units.inchesToMeters(158.5);
+          return getState().Pose.getX() < Units.inchesToMeters(178.5);
         });
   }
 
   public BooleanSupplier isNotInAllianceZone() {
     return (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red
         ? () -> {
-          return !(getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5));
+          return !(getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(178.5));
         }
         : () -> {
-          return !(getState().Pose.getX() < Units.inchesToMeters(158.5));
+          return !(getState().Pose.getX() < Units.inchesToMeters(178.5));
         });
   }
 
   public BooleanSupplier isInOpposingAllianceZone() {
     return (!(DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == DriverStation.Alliance.Red)
     ? () -> {
-      return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(158.5);
+      return getState().Pose.getX() > FIELD_LENGTH_M - Units.inchesToMeters(200);
     }
     : () -> {
-      return getState().Pose.getX() < Units.inchesToMeters(158.5);
+      return getState().Pose.getX() < Units.inchesToMeters(200); //158.5
     });
   }
 
@@ -320,8 +333,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     return run(
         () -> this.setControl(
             request
-                .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED)
-                .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED)
+                .withVelocityX(-joystickY.getAsDouble() * MAX_DRIVE_SPEED * 0.33)
+                .withVelocityY(-joystickX.getAsDouble() * MAX_DRIVE_SPEED * 0.33)
                 .withRotationalRate(-joystickThetaX.getAsDouble() * MAX_ROTATIONAL_SPEED)));
   }
 
@@ -347,6 +360,31 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         }));
   }
 
+  public Command pointTowardsMe(DoubleSupplier x, DoubleSupplier y) {
+    FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
+      .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
+      .withDeadband(MAX_DRIVE_SPEED * 0.05);
+    request.withHeadingPID(ROTATION_P, ROTATION_I, ROTATION_D);
+
+    return defer(
+      () -> run(() -> {
+        desriedAngle = Rotation2d.k180deg;
+        this.setControl(
+        request
+          .withVelocityX(-y.getAsDouble() * MAX_DRIVE_SPEED)
+          .withVelocityY(-x.getAsDouble() * MAX_DRIVE_SPEED)
+          .withTargetDirection(Rotation2d.k180deg));
+      })
+    );
+  }
+
+  public Command autoSotf(Command autoPath) {
+    return defer(() -> new SequentialCommandGroup(
+      runOnce(() -> {sotfMode = true;}),
+      autoPath).finallyDo(() -> {sotfMode = false;})
+    );
+  }
+
   public Command pidToPoint(Pose2d pose) {
     FieldCentricFacingAngle request = new SwerveRequest.FieldCentricFacingAngle()
         .withDriveRequestType(DriveRequestType.OpenLoopVoltage)
@@ -363,15 +401,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                   .withVelocityY(velY)
                   .withTargetDirection(pose.getRotation().plus(Rotation2d.k180deg)));
         });
-  }
-
-  public Pose2d whereShoot() {
-    if (getState().Pose.getY() > Units.inchesToMeters(158.5)
-        && getState().Pose.getY() < FIELD_LENGTH_M - Units.inchesToMeters(158.5)) {
-      return getState().Pose.nearest(getShuttlePoses());
-    } else {
-      return getHubLocation();
-    }
   }
 
    public boolean isAtDesiredAngle() {

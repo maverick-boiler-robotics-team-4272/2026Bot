@@ -121,17 +121,6 @@ public class Intake extends SubsystemBase {
         });
   }
 
-  public Command setIntakeStateOUT(double rotationsDistance, double rotationsPerSecond) {
-    return run(
-        () -> {
-          desiredExtensionRotations = rotationsDistance;
-          desiredIntakeSpeed = rotationsPerSecond;
-          extensionMotor.setControl(new VoltageOut(12).withEnableFOC(true));
-          extensionMotor2.setControl(new VoltageOut(12).withEnableFOC(true));
-          intakeMotor.setControl(new VelocityVoltage(rotationsPerSecond).withEnableFOC(true));
-        }).finallyDo(() -> extensionMotor.setPosition(EXTEND_DISTANCE));
-  }
-
   public Command setIntakeState(DoubleSupplier rotationsDistance, DoubleSupplier rotationsPerSecond) {
     return run(
         () -> {
@@ -157,23 +146,42 @@ public class Intake extends SubsystemBase {
           desiredExtensionRotations = EXTEND_DISTANCE;
           desiredIntakeSpeed = INTAKE_SPEED;
 
-          intakeMotor.setControl(new VelocityVoltage(INTAKE_SPEED));
+          intakeMotor.setControl(new VelocityVoltage(INTAKE_SPEED).withEnableFOC(true));
 
           if (zeroTimer.get() < 0.1) {
-            extensionMotor.setControl(new VoltageOut(3));
-            extensionMotor2.setControl(new VoltageOut(3));
+            extensionMotor.setControl(new VoltageOut(3).withEnableFOC(true));
+            extensionMotor2.setControl(new VoltageOut(3).withEnableFOC(true));
             extensionMotor.setPosition(EXTEND_DISTANCE);
             extensionMotor2.setPosition(EXTEND_DISTANCE);
           } else {
             extensionMotor.setPosition(EXTEND_DISTANCE);
             extensionMotor2.setPosition(EXTEND_DISTANCE);
-            extensionMotor.setControl(new PositionDutyCycle(EXTEND_DISTANCE));
-            extensionMotor2.setControl(new PositionDutyCycle(EXTEND_DISTANCE));
+            extensionMotor.setControl(new PositionDutyCycle(EXTEND_DISTANCE).withEnableFOC(true));
+            extensionMotor2.setControl(new PositionDutyCycle(EXTEND_DISTANCE).withEnableFOC(true));
           }
         }).finallyDo(() -> {
           zeroTimer.stop();
           zeroTimer.reset();
         });
+  }
+
+  public Command setExtendState(double distance) {
+    return run(
+      () -> {
+        extensionMotor.setControl(new PositionVoltage(distance).withEnableFOC(true));
+        extensionMotor2.setControl(new PositionVoltage(distance).withEnableFOC(true));
+        intakeMotor.setControl(new VoltageOut(0).withEnableFOC(true));
+      }
+    );
+  }
+
+  public Command noIntakAgitate() {
+    return new SequentialCommandGroup(
+      setExtendState(7.5).withTimeout(0.2),
+      setExtendState(EXTEND_DISTANCE - 0.1).withTimeout(0.2)).repeatedly()
+      .beforeStarting(() -> {
+        disableSafety = true;
+      }).finallyDo(() -> disableSafety = false);
   }
 
   public Command zeroExtension() {
@@ -249,8 +257,8 @@ public class Intake extends SubsystemBase {
 
   public Command agitateIntakeSlow() {
     return new SequentialCommandGroup(
-        setIntakeState(7.5, 45).withTimeout(0.5),
-        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.5)).repeatedly()
+        setIntakeState(7.5, 45).withTimeout(0.6),
+        setIntakeState(EXTEND_DISTANCE - 0.1, 45).withTimeout(0.6)).repeatedly()
         .beforeStarting(() -> {
           disableSafety = true;
         }).finallyDo(() -> disableSafety = false);

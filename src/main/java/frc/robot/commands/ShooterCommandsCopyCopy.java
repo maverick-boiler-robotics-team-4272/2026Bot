@@ -56,7 +56,7 @@ public class ShooterCommandsCopyCopy
                                 new WaitUntilCommand(0.2),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
-                                                loader.loadBoth(70),
+                                                loader.loadBoth(40),
                                                 intake.agitateIntake(),
                                                                 hopper.agitate(HOPPER_LOWER_SPEED,
                                                                                 HOPPER_UPPER_SPEED))
@@ -74,7 +74,7 @@ public class ShooterCommandsCopyCopy
                 new WaitUntilCommand(0.2),
                 Commands.repeatingSequence(
                 new ParallelCommandGroup(
-                                loader.loadBoth(70),
+                                loader.loadBoth(40),
                                 intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED),
                                                 hopper.agitate(HOPPER_LOWER_SPEED,
                                                                 HOPPER_UPPER_SPEED))

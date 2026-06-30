@@ -35,7 +35,7 @@ public class Hopper extends SubsystemBase {
                 .withSupplyCurrentLimitEnable(true)
                 .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(10, 00, 0.1, 10, 0, 0, 01)
+        .withSlot0PIDSGAV(0, 00, 0.1, 10, 0, 0, 01)
         .withInversion(InvertedValue.CounterClockwise_Positive)
         .build();
 
@@ -48,7 +48,7 @@ public class Hopper extends SubsystemBase {
                 .withSupplyCurrentLimitEnable(true)
                 .withStatorCurrentLimitEnable(false))
         .withIdleMode(NeutralModeValue.Coast)
-        .withSlot0PIDSGAV(10, 00, 0.0, 10, 0, 0, 01)
+        .withSlot0PIDSGAV(0, 00, 0.0, 10, 0, 0, 01)
         .withInversion(InvertedValue.Clockwise_Positive)
         .build();
 

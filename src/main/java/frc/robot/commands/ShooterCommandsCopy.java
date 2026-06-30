@@ -57,7 +57,7 @@ public class ShooterCommandsCopy{
                                 ).withTimeout(0.15).onlyWhile(() -> !shooter.isAtDesiredSpeed()),
                                 Commands.repeatingSequence(
                                 new ParallelCommandGroup(
-                                                loader.loadBoth(70),
+                                                loader.loadBoth(40),
                                                 intake.agitateIntake(),
                                         hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED))
                                         .unless(() -> {
@@ -80,7 +80,7 @@ public class ShooterCommandsCopy{
                                 ).withTimeout(0.15).onlyWhile(() -> !shooter.isAtDesiredSpeed()),
                         Commands.repeatingSequence(
                         new ParallelCommandGroup(
-                                        loader.loadBoth(70),
+                                        loader.loadBoth(40),
                                         intake.setIntakeState(EXTEND_DISTANCE, INTAKE_SPEED),
                                 hopper.agitate(HOPPER_LOWER_SPEED, HOPPER_UPPER_SPEED))
                                 .unless(() -> {
