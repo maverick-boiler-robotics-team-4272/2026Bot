@@ -19,10 +19,10 @@
  },
  "params":{
   "waypoints":[
-    {"x":{"exp":"Depot_Shoot.x", "val":2.0}, "y":{"exp":"Depot_Shoot.y", "val":1.0}, "heading":{"exp":"Depot_Shoot.heading", "val":0.0}, "intervals":13, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
+    {"x":{"exp":"Depot_Shoot.x", "val":1.8}, "y":{"exp":"Depot_Shoot.y", "val":5.8}, "heading":{"exp":"Depot_Shoot.heading", "val":-0.5235987755982988}, "intervals":13, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"1.7 m", "val":1.7}, "y":{"exp":"2 m", "val":2.0}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":28, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false},
     {"x":{"exp":"0.4 m", "val":0.4}, "y":{"exp":"2 m", "val":2.0}, "heading":{"exp":"0 deg", "val":0.0}, "intervals":18, "split":false, "fixTranslation":true, "fixHeading":false, "overrideIntervals":false},
-    {"x":{"exp":"Depot_Shoot.x", "val":2.0}, "y":{"exp":"Depot_Shoot.y", "val":1.0}, "heading":{"exp":"Depot_Shoot.heading", "val":0.0}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
+    {"x":{"exp":"Depot_Shoot.x", "val":1.8}, "y":{"exp":"Depot_Shoot.y", "val":5.8}, "heading":{"exp":"Depot_Shoot.heading", "val":-0.5235987755982988}, "intervals":40, "split":false, "fixTranslation":true, "fixHeading":true, "overrideIntervals":false}],
   "constraints":[
     {"from":"first", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
     {"from":"last", "to":null, "data":{"type":"StopPoint", "props":{}}, "enabled":true},
